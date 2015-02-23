@@ -5,29 +5,15 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.http.HttpClient;
 import io.vertx.rxjava.core.http.HttpClientRequest;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class GatewayServerTest {
 
     private final Vertx vertx = Vertx.vertx();
 
-    @Before
-    public void init() {
-        vertx.deployVerticle("com.senacor.reactile.gateway.GatewayServer", response -> {
-                    System.err.println("Start succeeded: " + response.succeeded());
-                }
-        );
-    }
-
-    @After
-    public void stop() {
-        vertx.undeployVerticle("com.senacor.reactile.gateway.GatewayServer", response -> {
-                    System.out.println("Stop succeeded: " + response.succeeded());
-                }
-        );
-    }
+    @Rule
+    public final VertxRule vertxRule = new VertxRule(GatewayServer.class);
 
     @Test
     public void thatRequestsAreHandled() throws InterruptedException {
