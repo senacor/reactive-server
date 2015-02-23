@@ -63,3 +63,5 @@ bin/
 .settings/
 .springBeans
 .checkstyle
+gradlew
+gradlew.bat
