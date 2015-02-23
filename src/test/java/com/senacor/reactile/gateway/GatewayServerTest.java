@@ -31,27 +31,23 @@ public class GatewayServerTest {
 
     @Test
     public void thatRequestsAreHandled() throws InterruptedException {
-
-        vertx.deployVerticle("com.senacor.reactile.gateway.GatewayServer", response -> {
-                    System.err.println("Start succeeded: " + response.succeeded());
-                    HttpClient client = vertx.createHttpClient(new HttpClientOptions());
-                    HttpClientRequest request = client.request(HttpMethod.GET, 8080, "localhost", "/the_uri");
-                    request.toObservable().subscribe(
-                            re -> {
-                                System.out.println("response:" + re);
-                            },
-                            error -> {
-                                System.out.println("error:" + error);
-                                // Could not connect
+        HttpClient client = vertx.createHttpClient(new HttpClientOptions());
+        Thread.sleep(2000);
+        HttpClientRequest request = client.request(HttpMethod.GET, 8080, "localhost", "/the_uri");
+        request.toObservable().subscribe(
+                response -> {
+                    response.bodyHandler(handler -> {
+                                System.out.println("response: " + handler.getString(0, handler.length()));
                             }
                     );
-                    request.end();
+                },
+                error -> {
+                    System.out.println("error:" + error);
+                    // Could not connect
                 }
         );
-
-
-        System.err.println("Starting test");
-
+        request.end();
+        Thread.sleep(2000);
 
     }
 
