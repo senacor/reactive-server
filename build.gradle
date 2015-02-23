@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+apply from: "gradle/dependencies.gradle"
+
+dependencies {
+
+    compile libraries.vertx
+    testCompile libraries.junit
+}
+
