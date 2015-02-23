@@ -8,15 +8,17 @@ import org.junit.rules.ExternalResource;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class VertxRule extends ExternalResource {
 
+    public static final String FAILED_ID = "FAILED";
     private final Vertx vertx = Vertx.vertx();
 
     private final Set<Class<? extends Verticle>> verticlesNotStarted = new HashSet<>();
-    private final Set<Class<? extends Verticle>> verticlesStarted = new HashSet<>();
+    private final Set<String> verticlesStarted = new HashSet<>();
 
     public VertxRule(Class<? extends Verticle>... verticlesNotStarted) {
         Arrays.stream(verticlesNotStarted).forEach(this.verticlesNotStarted::add);
@@ -24,21 +26,11 @@ public class VertxRule extends ExternalResource {
 
     private void deployVerticle(Class<? extends Verticle> verticle) {
         try {
-            startVerticle(verticle);
-            verticlesStarted.add(verticle);
+            String deploymentId = startVerticle(verticle);
+            verticlesStarted.add(deploymentId);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void undeployVerticle(Class<? extends Verticle> verticle) {
-        try {
-            stopVerticle(verticle);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        verticlesStarted.remove(verticle);
-
     }
 
     public Vertx vertx() {
@@ -47,35 +39,51 @@ public class VertxRule extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
-        verticlesNotStarted.forEach(this::deployVerticle);
+        verticlesNotStarted.forEach(verticle -> {
+            try {
+                String deploymentId = startVerticle(verticle);
+                verticlesStarted.add(deploymentId);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        });
     }
 
 
     @Override
     protected void after() {
-        verticlesStarted.forEach(this::undeployVerticle);
+        vertx.deployments().forEach(deploymentId -> {
+            try {
+                stopVerticle(deploymentId);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    private void startVerticle(Class<? extends Verticle> verticle) throws InterruptedException {
+    private String startVerticle(Class<? extends Verticle> verticle) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String verticleId = verticle.getName();
+        Optional<String> optional = Optional.empty();
         vertx.deployVerticle(verticleId, response -> {
                     printResult(verticleId, response, "Start");
                     countDownLatch.countDown();
+                    optional.orElse(response.result());
                 }
         );
         countDownLatch.await();
+        return optional.orElse(FAILED_ID);
     }
 
     @After
-    private void stopVerticle(Class<? extends Verticle> verticle) throws InterruptedException {
+    private void stopVerticle(String deploymentId) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        String verticleId = verticle.getName();
-        vertx.undeployVerticle(verticleId, response -> {
+        vertx.undeployVerticle(deploymentId, response -> {
                     if (response.succeeded()) {
-                        System.out.println("Stop succeeded for Verticle " + verticleId);
+                        System.out.println("Stop succeeded for DeploymentId " + deploymentId);
                     } else if (response.failed()) {
-                        System.out.println("Stop failed for Verticle " + verticleId + ". Cause: " + response.cause());
+                        System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + response.cause());
                     }
                     countDownLatch.countDown();
                 }
