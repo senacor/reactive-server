@@ -18,7 +18,6 @@ public class GatewayServerTest {
     @Test
     public void thatRequestsAreHandled() throws InterruptedException {
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
-        Thread.sleep(2000);
         HttpClientRequest request = client.request(HttpMethod.GET, 8080, "localhost", "/the_uri");
         request.toObservable().subscribe(
                 response -> {
@@ -33,8 +32,7 @@ public class GatewayServerTest {
                 }
         );
         request.end();
-        Thread.sleep(2000);
-
+        Thread.sleep(300);
     }
 
 }
