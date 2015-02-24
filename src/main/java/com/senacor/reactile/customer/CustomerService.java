@@ -7,7 +7,7 @@ import io.vertx.rxjava.core.Context;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
 
-public class CustomerServiceVerticle extends AbstractVerticle {
+public class CustomerService extends AbstractVerticle {
 
 
     public static final String ADDRESS = "customer";
@@ -20,7 +20,6 @@ public class CustomerServiceVerticle extends AbstractVerticle {
         printConfig();
 
         MessageConsumer<CustomerId> consumer = eventBus.consumer(ADDRESS);
-
         consumer.toObservable()
                 .subscribe(message -> {
                     CustomerId customerId = message.body();

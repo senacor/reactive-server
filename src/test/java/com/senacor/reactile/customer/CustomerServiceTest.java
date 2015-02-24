@@ -9,10 +9,10 @@ import org.junit.Test;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public class CustomerServiceVerticleTest {
+public class CustomerServiceTest {
 
     @Rule
-    public final VertxRule rule = new VertxRule(CustomerServiceVerticle.class);
+    public final VertxRule rule = new VertxRule(CustomerService.class);
 
     @Test(timeout = 500)
     public void thatVerticleRespondsToMessage() throws InterruptedException {
@@ -21,12 +21,11 @@ public class CustomerServiceVerticleTest {
         EventBus eventBus = vertx.eventBus();
 
         CompletableFuture<Object> responseFuture = new CompletableFuture<>();
-        eventBus.sendObservable(CustomerServiceVerticle.ADDRESS, new CustomerId("007")).subscribe(response -> responseFuture.complete(response.body()));
+        eventBus.sendObservable(CustomerService.ADDRESS, new CustomerId("007")).subscribe(response -> responseFuture.complete(response.body()));
 
         while (!responseFuture.isDone()) {
             TimeUnit.MILLISECONDS.sleep(100);
         }
-
     }
 
 }
