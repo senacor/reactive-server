@@ -6,6 +6,7 @@ import io.vertx.rxjava.core.http.HttpServer;
 
 public class GatewayServer extends AbstractVerticle {
 
+    @Override
     public void start() {
         HttpServerOptions options = new HttpServerOptions().setPort(8080).setHost("localhost");
         HttpServer httpServer = vertx.createHttpServer(options);
@@ -17,6 +18,7 @@ public class GatewayServer extends AbstractVerticle {
         );
     }
 
+    @Override
     public void stop() {
         System.out.println("Verticle stopped");
     }
