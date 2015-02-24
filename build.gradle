@@ -25,7 +25,10 @@ apply from: "dependencies.gradle"
 dependencies {
 
     compile libraries.vertx
+    compile libraries.guava
+
     testCompile libraries.junit
+
     testCompile group: 'io.vertx', name: 'vertx-core', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-rx-java', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-mongo-embedded-db', classifier: 'sources', version: vertxVersion

@@ -1,5 +1,7 @@
 package com.senacor.reactile.customer;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class CustomerId {
 
     private final String id;
