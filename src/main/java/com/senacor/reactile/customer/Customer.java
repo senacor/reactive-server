@@ -1,4 +1,4 @@
-package com.senacor.reactile.gateway.com.senacor.reactile.customer;
+package com.senacor.reactile.customer;
 
 import java.util.List;
 
@@ -7,6 +7,8 @@ public class Customer {
     private final CustomerId id;
 
     private List<Address> addresses;
+
+    private List<Contact> contacts;
 
     private Country taxCountry;
 

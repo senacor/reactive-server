@@ -6,12 +6,11 @@ sourceCompatibility = 1.8
 
 buildscript {
     repositories {
-        mavenLocal()
+        mavenCentral()
     }
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven {
         url "https://oss.sonatype.org/maven2"

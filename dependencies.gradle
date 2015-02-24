@@ -11,6 +11,8 @@ ext {
 
     hystrixVersion = '1.4.0-RC6'
 
+    jacksonVersion = '1.9.13'
+
     vertxVersion = '3.0.+'
 }
 
@@ -20,8 +22,12 @@ ext.libraries = [
         vertx: [
                 [group: 'io.vertx', name: 'vertx-core', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-rx-java', version: vertxVersion],
-                [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion],
-                [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion]
+                [group: 'io.vertx', name: 'vertx-reactive-streams', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-metrics', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-service-proxy', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion]
         ],
 
         guava: [group: 'com.google.guava', name: 'guava', version: guavaVersion],
@@ -37,5 +43,10 @@ ext.libraries = [
                     exclude group: 'junit'
                 },
 
-        ]
+        ],
+
+        resteasyjson: [
+                [group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: jacksonVersion],
+                [group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: jacksonVersion],
+        ],
 ]
