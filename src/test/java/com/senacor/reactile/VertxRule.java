@@ -1,5 +1,11 @@
 package com.senacor.reactile;
 
+import com.senacor.reactile.codec.DomainObjectMessageCodec;
+import com.senacor.reactile.customer.Address;
+import com.senacor.reactile.customer.Contact;
+import com.senacor.reactile.customer.Country;
+import com.senacor.reactile.customer.Customer;
+import com.senacor.reactile.customer.CustomerId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Verticle;
 import io.vertx.rxjava.core.Vertx;
@@ -11,10 +17,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class VertxRule extends ExternalResource {
 
-    public static final String FAILED_ID = "FAILED";
     private final Vertx vertx = Vertx.vertx();
 
     private final Set<Class<? extends Verticle>> verticlesNotStarted = new HashSet<>();
@@ -39,6 +45,7 @@ public class VertxRule extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
+        registerDomainObjectCodec();
         verticlesNotStarted.forEach(verticle -> {
             try {
                 String deploymentId = startVerticle(verticle);
@@ -97,7 +104,19 @@ public class VertxRule extends ExternalResource {
         undeploymentFuture.get(1, TimeUnit.SECONDS);
     }
 
-    private void printResult(String verticleId, AsyncResult<String> response, final String operation) {
+    private void registerDomainObjectCodec() {
+        Stream.of(
+                Address.class,
+                Contact.class,
+                Country.class,
+                Customer.class,
+                CustomerId.class)
+                .forEach(clazz -> {
+                    ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz));
+                });
+    }
+
+    private static void printResult(String verticleId, AsyncResult<String> response, final String operation) {
         if (response.succeeded()) {
             System.out.println(operation + " succeeded for Verticle " + verticleId);
         } else if (response.failed()) {
