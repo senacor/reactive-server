@@ -20,6 +20,10 @@ ext.libraries = [
         vertx: [
                 [group: 'io.vertx', name: 'vertx-core', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-rx-java', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-reactive-streams', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-metrics', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-service-proxy', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion]
         ],
 
