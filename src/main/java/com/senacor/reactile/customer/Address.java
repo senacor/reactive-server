@@ -1,4 +1,4 @@
-package com.senacor.reactile.gateway.com.senacor.reactile.customer;
+package com.senacor.reactile.customer;
 
 public class Address {
 
