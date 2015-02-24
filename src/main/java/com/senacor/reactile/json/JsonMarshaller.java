@@ -1,16 +1,12 @@
-package com.senacor.reactile.codec;
+package com.senacor.reactile.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.MessageCodec;
+import io.vertx.rxjava.core.buffer.Buffer;
 
-import java.io.IOException;
-
-public class DomainObjectMessageCodec<T> implements MessageCodec<T, T> {
-
+public class JsonMarshaller {
     private final static ObjectMapper om = new ObjectMapper();
 
     {
@@ -24,48 +20,23 @@ public class DomainObjectMessageCodec<T> implements MessageCodec<T, T> {
         om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-    private final Class<T> clazz;
-
-    private DomainObjectMessageCodec(Class<T> clazz) {
-        this.clazz = clazz;
-    }
-
-    public static final <T> DomainObjectMessageCodec from(Class<T> clazz) {
-        return new DomainObjectMessageCodec<>(clazz);
-    }
-
-
-    @Override
-    public void encodeToWire(Buffer buffer, T o) {
+    public byte[] toJson(Object object) {
         try {
-            buffer.appendBytes(om.writeValueAsBytes(o));
+            return om.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public T decodeFromWire(int pos, Buffer buffer) {
-        int length = buffer.getInt(pos);
+    public String toJsonString(Object object) {
         try {
-            return om.readValue(buffer.getBytes(pos, length), clazz);
-        } catch (IOException e) {
+            return om.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public T transform(T object) {
-        return object;
-    }
-
-    @Override
-    public String name() {
-        return "json-" + clazz.getSimpleName();
-    }
-
-    @Override
-    public byte systemCodecID() {
-        return -1;
+    public Buffer toBuffer(Object object) {
+        return Buffer.buffer(toJsonString(object));
     }
 }

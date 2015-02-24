@@ -26,8 +26,8 @@ public class VertxRule extends ExternalResource {
     private final Set<Class<? extends Verticle>> verticlesNotStarted = new HashSet<>();
     private final Set<String> verticlesStarted = new HashSet<>();
 
-    public VertxRule(Class<? extends Verticle>... verticlesNotStarted) {
-        Arrays.stream(verticlesNotStarted).forEach(this.verticlesNotStarted::add);
+    public VertxRule(Class<? extends Verticle>... deployVerticles) {
+        Arrays.stream(deployVerticles).forEach(this.verticlesNotStarted::add);
     }
 
     private void deployVerticle(Class<? extends Verticle> verticle) {
