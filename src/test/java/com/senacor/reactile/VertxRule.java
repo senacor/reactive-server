@@ -1,4 +1,4 @@
-package com.senacor.reactile.gateway;
+package com.senacor.reactile;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Verticle;
@@ -8,9 +8,9 @@ import org.junit.rules.ExternalResource;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class VertxRule extends ExternalResource {
 
@@ -28,7 +28,7 @@ public class VertxRule extends ExternalResource {
         try {
             String deploymentId = startVerticle(verticle);
             verticlesStarted.add(deploymentId);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -43,10 +43,11 @@ public class VertxRule extends ExternalResource {
             try {
                 String deploymentId = startVerticle(verticle);
                 verticlesStarted.add(deploymentId);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-
         });
     }
 
@@ -56,40 +57,44 @@ public class VertxRule extends ExternalResource {
         vertx.deployments().forEach(deploymentId -> {
             try {
                 stopVerticle(deploymentId);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         });
         vertx.close();
     }
 
-    private String startVerticle(Class<? extends Verticle> verticle) throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
+    private String startVerticle(Class<? extends Verticle> verticle) throws Exception {
         String verticleId = verticle.getName();
-        Optional<String> optional = Optional.empty();
+        CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
         vertx.deployVerticle(verticleId, response -> {
                     printResult(verticleId, response, "Start");
-                    countDownLatch.countDown();
-                    optional.orElse(response.result());
+                    if (response.failed()) {
+                        deploymentIdFuture.completeExceptionally(response.cause());
+                    } else {
+                        deploymentIdFuture.complete(response.result());
+                    }
                 }
         );
-        countDownLatch.await();
-        return optional.orElse(FAILED_ID);
+        return deploymentIdFuture.get(1, TimeUnit.SECONDS);
     }
 
     @After
-    private void stopVerticle(String deploymentId) throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
+    private void stopVerticle(String deploymentId) throws Exception {
+        CompletableFuture<String> undeploymentFuture = new CompletableFuture<>();
         vertx.undeployVerticle(deploymentId, response -> {
                     if (response.succeeded()) {
                         System.out.println("Stop succeeded for DeploymentId " + deploymentId);
+                        undeploymentFuture.complete(deploymentId);
                     } else if (response.failed()) {
                         System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + response.cause());
+                        undeploymentFuture.completeExceptionally(response.cause());
                     }
-                    countDownLatch.countDown();
                 }
         );
-        countDownLatch.await();
+        undeploymentFuture.get(1, TimeUnit.SECONDS);
     }
 
     private void printResult(String verticleId, AsyncResult<String> response, final String operation) {
