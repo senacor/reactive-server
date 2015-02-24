@@ -26,6 +26,7 @@ ext.libraries = [
                 [group: 'io.vertx', name: 'vertx-metrics', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-proxy', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion]
         ],
 
