@@ -29,7 +29,7 @@ public class CustomerServiceTest {
         CustomerId id = new CustomerId("007");
         eventBus.sendObservable(CustomerService.ADDRESS, id)
                 .map(response -> (Customer) response.body())
-                .subscribe(customer -> responseFuture.complete(customer));
+                .subscribe(responseFuture::complete);
 
         while (!responseFuture.isDone()) {
             TimeUnit.MILLISECONDS.sleep(20);
