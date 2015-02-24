@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.vertx.rxjava.core.buffer.Buffer;
 
 public class JsonMarshaller {
     private final static ObjectMapper om = new ObjectMapper();
@@ -33,5 +34,9 @@ public class JsonMarshaller {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Buffer toBuffer(Object object) {
+        return Buffer.buffer(toJsonString(object));
     }
 }
