@@ -11,6 +11,8 @@ ext {
 
     hystrixVersion = '1.4.0-RC6'
 
+    jacksonVersion = '1.9.13'
+
     vertxVersion = '3.0.+'
 }
 
@@ -40,5 +42,10 @@ ext.libraries = [
                     exclude group: 'junit'
                 },
 
-        ]
+        ],
+
+        resteasyjson: [
+                [group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: jacksonVersion],
+                [group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: jacksonVersion],
+        ],
 ]
