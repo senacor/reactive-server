@@ -60,6 +60,7 @@ public class VertxRule extends ExternalResource {
                 e.printStackTrace();
             }
         });
+        vertx.close();
     }
 
     private String startVerticle(Class<? extends Verticle> verticle) throws InterruptedException {
