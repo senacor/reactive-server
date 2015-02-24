@@ -5,6 +5,7 @@ public class CustomerId {
     private final String id;
 
     public CustomerId(String id) {
+        checkArgument(id != null);
         this.id = id;
     }
 
