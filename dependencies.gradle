@@ -20,7 +20,8 @@ ext.libraries = [
         vertx: [
                 [group: 'io.vertx', name: 'vertx-core', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-rx-java', version: vertxVersion],
-                [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion]
+                [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion]
         ],
 
         guava: [group: 'com.google.guava', name: 'guava', version: guavaVersion],

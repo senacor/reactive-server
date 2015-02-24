@@ -13,6 +13,9 @@ buildscript {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/maven2"
+    }
 }
 
 apply from: "dependencies.gradle"
