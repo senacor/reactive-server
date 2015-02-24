@@ -31,7 +31,7 @@ public class DomainObjectMessageCodec<T> implements MessageCodec<T, T> {
     }
 
     public static final <T> DomainObjectMessageCodec from(Class<T> clazz) {
-        return new DomainObjectMessageCodec(clazz);
+        return new DomainObjectMessageCodec<>(clazz);
     }
 
 
