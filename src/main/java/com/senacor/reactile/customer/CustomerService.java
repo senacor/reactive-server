@@ -20,15 +20,8 @@ public class CustomerService extends AbstractVerticle {
         printConfig();
 
         MessageConsumer<CustomerId> consumer = eventBus.consumer(ADDRESS);
-        consumer.toObservable()
-                .subscribe(message -> {
-                    CustomerId customerId = message.body();
-                    log.info("Receiving message: " + customerId);
-                    log.info("Replying to " + message.replyAddress());
-                    message.reply(getCustomer(customerId.getId()));
-                });
+        consumer.toObservable().subscribe(message ->  message.reply(getCustomer(message.body().getId())));
 
-        registerCompletionHandler(consumer);
     }
 
     private Customer getCustomer(String id) {
@@ -42,13 +35,6 @@ public class CustomerService extends AbstractVerticle {
     private void printConfig() {
         Context context = vertx.getOrCreateContext();
         log.info("Config for verticle " + this + " :" + context.config());
-    }
-
-    private void registerCompletionHandler(MessageConsumer<CustomerId> consumer) {
-        consumer.completionHandlerObservable().subscribe(
-                Void -> log.info("The handler registration has reached all nodes"),
-                Void -> log.error("Registration failed!")
-        );
     }
 
     @Override
