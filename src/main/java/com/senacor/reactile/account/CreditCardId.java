@@ -1,10 +1,11 @@
 package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.IdObject;
 
 import java.util.Objects;
 
-public class CreditCardId {
+public class CreditCardId implements IdObject {
 
     private final String id;
 
@@ -12,6 +13,7 @@ public class CreditCardId {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

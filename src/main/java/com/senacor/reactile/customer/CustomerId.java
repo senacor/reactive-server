@@ -1,12 +1,12 @@
 package com.senacor.reactile.customer;
 
-import io.vertx.core.json.JsonObject;
+import com.senacor.reactile.IdObject;
 
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class CustomerId {
+public class CustomerId implements IdObject {
 
     private final String id;
 
@@ -15,6 +15,7 @@ public class CustomerId {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -43,7 +44,4 @@ public class CustomerId {
                 '}';
     }
 
-    public JsonObject toJson() {
-        return new JsonObject().put("id", id);
-    }
 }

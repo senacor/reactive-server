@@ -1,21 +1,21 @@
 package com.senacor.reactile.account;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.IdObject;
 
 import java.util.Objects;
 
-public class AccountId {
+public class AccountId implements IdObject {
 
     private final String id;
 
-    public AccountId(@JsonProperty("id") String id) {
+    public AccountId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
-
 
     @Override
     public int hashCode() {
