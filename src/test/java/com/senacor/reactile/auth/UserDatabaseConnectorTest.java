@@ -18,7 +18,7 @@ public class UserDatabaseConnectorTest {
     @Rule
     public final VertxRule vertxRule = new VertxRule(UserDatabaseConnector.class);
 
-    @Test
+    @Test(timeout = 300)
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException {
         CompletableFuture<User> userFuture = new CompletableFuture<>();
         vertxRule.eventBus().sendObservable(UserDatabaseConnector.ADDRESS, new UserId("momann")).subscribe(
