@@ -1,5 +1,10 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.account.Account;
+import com.senacor.reactile.account.CreditCard;
+import com.senacor.reactile.auth.User;
+import com.senacor.reactile.auth.UserDatabaseConnector;
+import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.customer.CustomerService;
@@ -18,6 +23,11 @@ import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import rx.Observable;
+
+import java.math.BigDecimal;
+
+import static com.senacor.reactile.account.Account.anAccount;
+import static com.senacor.reactile.account.CreditCard.aCreditCard;
 
 public class GatewayServer extends AbstractVerticle {
 
@@ -53,17 +63,50 @@ public class GatewayServer extends AbstractVerticle {
     }
 
     private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
-        return getCustomer(getParam(params, "customerId"))
-                .map(customer -> {
+        String userId = getParam(params, "user");
+        String customerId = getParam(params, "customerId");
+
+        return getUser(userId).flatMap(user -> {
+                    Observable<Customer> customerObservable = getCustomer(customerId);
+                    Observable<Account> accountObservable = getAccounts(customerId);
+                    Observable<CreditCard> creditCardObservable = getCreditCards(customerId);
+                    Observable.zip(customerObservable, accountObservable, creditCardObservable, (cust, acc, cred) -> cust);
+                    return customerObservable;
+                }).map(customer -> {
                     Buffer content = jsonMarshaller.toBuffer(customer);
                     response.headers().set("Content-Length", "" + content.length());
                     return response.write(content);
                 });
     }
 
+    private Observable<CreditCard> getCreditCards(String customerId) {
+        return Observable.just(aCreditCard()
+                .withId("333")
+                .withCustomerId(customerId)
+                .withBalance(BigDecimal.TEN)
+                .withCurrency("EUR")
+                .build());
+    }
+
+    private Observable<Account> getAccounts(String customerId) {
+        return Observable.just(anAccount()
+                .withId("333")
+                .withCustomerId(customerId)
+                .withBalance(BigDecimal.TEN)
+                .withCurrency("EUR")
+                .build());
+    }
+
+    private Observable<User> getUser(String userId) {
+        return vertx.eventBus()
+                .<User>sendObservable(UserDatabaseConnector.ADDRESS, new UserId(userId))
+                .map(Message::body);
+    }
+
     private Observable<Customer> getCustomer(String customerId) {
-        Observable<Message<Customer>> messageObservable = vertx.eventBus().sendObservable(CustomerService.ADDRESS, new CustomerId(customerId));
-        return messageObservable.map(message -> message.body());
+        return vertx.eventBus()
+                .<Customer>sendObservable(CustomerService.ADDRESS, new CustomerId(customerId))
+                .map(Message::body);
     }
 
     private static String getParam(MultiMap params, String key) {
