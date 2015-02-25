@@ -102,16 +102,18 @@ public class GatewayVerticle extends AbstractVerticle {
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 
         return userService.getUser(userId).flatMap(user -> {
-            Observable<Customer> customerObservable = customerService.getCustomer(customerId);
+                Observable<Customer> customerObservable = customerService.getCustomer(customerId);
                 Observable<Account> accountObservable = accountService.getAccount(customerId);
                 Observable<CreditCard> creditCardObservable = creditCardService.getCreditCard(customerId);
                 Observable.zip(customerObservable, accountObservable, creditCardObservable, (cust, acc, cred) -> cust);
                 return customerObservable;
-        }).map(customer -> {
-            Buffer content = jsonMarshaller.toBuffer(customer);
-            response.headers().set("Content-Length", "" + content.length());
-            return response.write(content);
-        });
+        }).map(customer -> writeResponse(response, customer));
+    }
+
+    private HttpServerResponse writeResponse(HttpServerResponse response, Customer customer) {
+        Buffer content = jsonMarshaller.toBuffer(customer);
+        response.headers().set("Content-Length", "" + content.length());
+        return response.write(content);
     }
 
     private static String getParam(MultiMap params, String key) {
