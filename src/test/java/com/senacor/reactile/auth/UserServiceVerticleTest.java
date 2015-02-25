@@ -1,12 +1,13 @@
 package com.senacor.reactile.auth;
 
+import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.VertxRule;
+import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -17,20 +18,14 @@ public class UserServiceVerticleTest {
 
     @Rule
     public final VertxRule vertxRule = new VertxRule(UserServiceVerticle.class);
+    @Rule
+    public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
 
-    @Test(timeout = 300)
-    public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException {
-        CompletableFuture<User> userFuture = new CompletableFuture<>();
-        vertxRule.eventBus().sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann")).subscribe(
-                message -> userFuture.complete((User) message.body()),
-                userFuture::completeExceptionally
-        );
+    @Test
+    public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {
+        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"));
 
-        while (!userFuture.isDone()) {
-            TimeUnit.MILLISECONDS.sleep(20);
-        }
-
-        User user = userFuture.get();
+        User user = userMessage.body();
         assertThat(user, is(notNullValue()));
         assertThat(user.getId().getId(), is(equalTo("momann")));
         assertThat(user.getFirstName(), is(equalTo("Michael")));
