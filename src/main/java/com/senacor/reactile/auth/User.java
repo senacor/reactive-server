@@ -63,7 +63,7 @@ public class User {
 
     public JsonObject toJson() {
         return new JsonObject()
-                .put("id", id.toJson())
+                .put("id", id.toValue())
                 .put("firstName", firstName)
                 .put("lastName", lastName);
     }

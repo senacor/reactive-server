@@ -1,13 +1,13 @@
 package com.senacor.reactile.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.vertx.core.json.JsonObject;
+import com.senacor.reactile.IdObject;
 
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class UserId {
+public class UserId implements IdObject {
 
     private final String id;
 
@@ -16,6 +16,7 @@ public class UserId {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -45,7 +46,4 @@ public class UserId {
                 '}';
     }
 
-    public JsonObject toJson() {
-        return new JsonObject().put("id", id);
-    }
 }
