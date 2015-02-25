@@ -14,10 +14,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CustomerServiceTest {
+public class CustomerServiceVerticleTest {
 
     @Rule
-    public final VertxRule rule = new VertxRule(CustomerService.class);
+    public final VertxRule rule = new VertxRule(CustomerServiceVerticle.class);
 
     @Test(timeout = 500)
     public void thatVerticleRespondsToMessage() throws InterruptedException, ExecutionException {
@@ -27,7 +27,7 @@ public class CustomerServiceTest {
 
         CompletableFuture<Customer> responseFuture = new CompletableFuture<>();
         CustomerId id = new CustomerId("007");
-        eventBus.sendObservable(CustomerService.ADDRESS, id)
+        eventBus.sendObservable(CustomerServiceVerticle.ADDRESS, id)
                 .map(response -> (Customer) response.body())
                 .subscribe(responseFuture::complete);
 

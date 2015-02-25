@@ -3,12 +3,12 @@ package com.senacor.reactile.gateway;
 import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.CreditCard;
 import com.senacor.reactile.auth.User;
-import com.senacor.reactile.auth.UserDatabaseService;
+import com.senacor.reactile.auth.UserServiceVerticle;
 import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.customer.CustomerService;
+import com.senacor.reactile.customer.CustomerServiceVerticle;
 import com.senacor.reactile.json.JsonMarshaller;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.logging.Logger;
@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 import static com.senacor.reactile.account.Account.anAccount;
 import static com.senacor.reactile.account.CreditCard.aCreditCard;
 
-public class GatewayServer extends AbstractVerticle {
+public class GatewayVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -119,13 +119,13 @@ public class GatewayServer extends AbstractVerticle {
 
     private Observable<User> getUser(String userId) {
         return vertx.eventBus()
-                .<User>sendObservable(UserDatabaseService.ADDRESS, new UserId(userId))
+                .<User>sendObservable(UserServiceVerticle.ADDRESS, new UserId(userId))
                 .map(Message::body);
     }
 
     private Observable<Customer> getCustomer(String customerId) {
         return vertx.eventBus()
-                .<Customer>sendObservable(CustomerService.ADDRESS, new CustomerId(customerId))
+                .<Customer>sendObservable(CustomerServiceVerticle.ADDRESS, new CustomerId(customerId))
                 .map(Message::body);
     }
 

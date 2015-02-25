@@ -1,8 +1,8 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.auth.UserDatabaseService;
-import com.senacor.reactile.customer.CustomerService;
+import com.senacor.reactile.auth.UserServiceVerticle;
+import com.senacor.reactile.customer.CustomerServiceVerticle;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.rxjava.core.http.HttpClient;
@@ -12,15 +12,18 @@ import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
 
-public class GatewayServerTest {
+public class GatewayVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(GatewayServer.class, CustomerService.class, UserDatabaseService.class);
+    public final VertxRule vertxRule = new VertxRule(GatewayVerticle.class, CustomerServiceVerticle.class, UserServiceVerticle.class);
+
 
     @Test(timeout = 1000)
     public void thatRequestsAreHandled() throws InterruptedException {
         HttpClient client = vertxRule.vertx().createHttpClient(new HttpClientOptions());
         HttpClientRequest request = client.request(HttpMethod.GET, 8080, "localhost", "/start?user=momann&customerId=007");
+
+
 
         CompletableFuture<Object> responseFuture = new CompletableFuture<>();
         request.toObservable().subscribe(
