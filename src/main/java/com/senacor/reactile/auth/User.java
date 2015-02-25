@@ -1,6 +1,7 @@
 package com.senacor.reactile.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
@@ -58,5 +59,12 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
+    }
+
+    public JsonObject toJson() {
+        return new JsonObject()
+                .put("id", id.toJson())
+                .put("firstName", firstName)
+                .put("lastName", lastName);
     }
 }
