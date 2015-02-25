@@ -14,9 +14,6 @@ ext {
     vertxVersion = '3.0.+'
 }
 
-ext.libraries = [
-        mongodriver: [group: 'org.mongodb', name: 'mongodb-driver-async', version: '3.0.0-beta2']
-]
 
 ext.libraries += [
 
@@ -28,12 +25,9 @@ ext.libraries += [
                 [group: 'io.vertx', name: 'vertx-metrics', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-proxy', version: vertxVersion],
-                dependencies.create([group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion]) {
-                    exclude module: 'driver-async'
-                },
+                [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion] ,
                 [group: 'io.vertx', name: 'vertx-mongo-embedded-db', version: vertxVersion],
-                [group: 'io.vertx', name: 'vertx-dependencies', version: vertxVersion],
-                libraries.mongodriver
+                [group: 'io.vertx', name: 'vertx-dependencies', version: vertxVersion]
         ],
 
         guava       : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
