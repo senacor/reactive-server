@@ -38,10 +38,7 @@ public class GatewayServer extends AbstractVerticle {
     public void start() {
         HttpServerOptions options = newServerConfig();
         HttpServer httpServer = vertx.createHttpServer(options);
-
-        HttpServerRequestStream requestStream = httpServer.requestStream();
-        requestStream.exceptionHandler(this::handleException);
-        requestStream.endHandler(this::handleRequestEnd);
+        addRequestStreamHooks(httpServer);
         ObservableHandler<HttpServerRequest> requestHandler = RxHelper.observableHandler();
         requestHandler
                 .flatMap(this::handleRequest)
@@ -56,6 +53,12 @@ public class GatewayServer extends AbstractVerticle {
                 server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
                 failure -> log.error("Failed to start")
         );
+    }
+
+    private void addRequestStreamHooks(HttpServer httpServer) {
+        HttpServerRequestStream requestStream = httpServer.requestStream();
+        requestStream.exceptionHandler(this::handleException);
+        requestStream.endHandler(this::handleRequestEnd);
     }
 
     private Observable<HttpServerResponse> handleRequest(HttpServerRequest request) {
