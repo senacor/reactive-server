@@ -1,6 +1,9 @@
 package com.senacor.reactile.customer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.impl.Json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +53,33 @@ public class Customer {
         return taxNumber;
     }
 
+    public static Customer fromJson(JsonObject jsonObject) {
+        Customer cust = Customer.newBuilder()
+                .withId(jsonObject.getString("id"))
+                .withTaxNumber(jsonObject.getString("taxnumber")).build();
+
+        return cust;
+    }
+
+    public JsonObject toJson() {
+
+        JsonArray ads = new JsonArray();
+        for (Address address: addresses) {
+            ads.add(address.toJson());
+        }
+
+        JsonArray cons = new JsonArray();
+        for (Contact contact: contacts) {
+            cons.add(contact.toJson());
+        }
+
+        return new JsonObject()
+                .put("id", id.getId())
+                .put("addresses", addresses)
+                .put("contacts", contacts)
+                .put("taxCountry", taxCountry.toJson())
+                .put("taxnumber", taxNumber);
+    }
 
     public static final class Builder {
         private CustomerId id;

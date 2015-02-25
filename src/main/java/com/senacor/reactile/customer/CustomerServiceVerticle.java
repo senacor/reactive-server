@@ -2,11 +2,16 @@ package com.senacor.reactile.customer;
 
 import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.gateway.GatewayVerticle;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.ext.mongo.MongoService;
+import io.vertx.rx.java.ObservableFuture;
+import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
+import rx.Observable;
 
 import static com.senacor.reactile.customer.Address.anAddress;
 
@@ -17,23 +22,28 @@ public class CustomerServiceVerticle extends AbstractVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private MongoService mongoService;
+
     @Override
     public void start() throws Exception {
+        mongoService = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
+
         EventBus eventBus = vertx.eventBus();
 
         MessageConsumer<CustomerId> consumer = eventBus.consumer(ADDRESS);
-        consumer.toObservable().subscribe(message -> message.reply(getCustomer(message.body().getId())));
+        consumer.toObservable().subscribe(message -> getCustomer(message.body()).subscribe(result -> message.reply(result)));
 
         vertx.setPeriodic(1, tick -> eventBus.publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
-
     }
 
-    private Customer getCustomer(String id) {
-        return Customer.newBuilder()
-                .withId(id)
-                .withTaxCountry(new Country("Deutschland", "DE"))
-                .withTaxNumber("SSDS3242342342342")
-                .build();
+
+    private Observable<Customer> getCustomer(CustomerId id) {
+        ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
+
+        JsonObject query = id.toJson();
+        mongoService.findOne("customers", query, null, observable.asHandler());
+
+        return observable.map(Customer::fromJson);
     }
 
     @Override

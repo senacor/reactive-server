@@ -1,5 +1,7 @@
 package com.senacor.reactile.customer;
 
+import io.vertx.core.json.JsonObject;
+
 public class Country {
 
     private final String name;
@@ -16,5 +18,9 @@ public class Country {
 
     public String getCode() {
         return code;
+    }
+
+    public JsonObject toJson() {
+        return new JsonObject().put("name", name).put("code", code);
     }
 }
