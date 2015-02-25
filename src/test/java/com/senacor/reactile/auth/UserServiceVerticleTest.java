@@ -13,15 +13,15 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class UserDatabaseServiceTest {
+public class UserServiceVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(UserDatabaseService.class);
+    public final VertxRule vertxRule = new VertxRule(UserServiceVerticle.class);
 
     @Test(timeout = 300)
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException {
         CompletableFuture<User> userFuture = new CompletableFuture<>();
-        vertxRule.eventBus().sendObservable(UserDatabaseService.ADDRESS, new UserId("momann")).subscribe(
+        vertxRule.eventBus().sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann")).subscribe(
                 message -> userFuture.complete((User) message.body()),
                 userFuture::completeExceptionally
         );

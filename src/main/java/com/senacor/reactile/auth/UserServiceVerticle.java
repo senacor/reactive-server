@@ -6,7 +6,7 @@ import rx.functions.Action1;
 
 import java.util.concurrent.TimeUnit;
 
-public class UserDatabaseService extends AbstractVerticle {
+public class UserServiceVerticle extends AbstractVerticle {
 
     public static final String ADDRESS = "UserDatabaseConnector";
 

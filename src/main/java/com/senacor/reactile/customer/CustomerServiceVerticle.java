@@ -1,7 +1,7 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.auth.UserId;
-import com.senacor.reactile.gateway.GatewayServer;
+import com.senacor.reactile.gateway.GatewayVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
@@ -10,7 +10,7 @@ import io.vertx.rxjava.core.eventbus.MessageConsumer;
 
 import static com.senacor.reactile.customer.Address.anAddress;
 
-public class CustomerService extends AbstractVerticle {
+public class CustomerServiceVerticle extends AbstractVerticle {
 
 
     public static final String ADDRESS = "customer";
@@ -24,7 +24,7 @@ public class CustomerService extends AbstractVerticle {
         MessageConsumer<CustomerId> consumer = eventBus.consumer(ADDRESS);
         consumer.toObservable().subscribe(message -> message.reply(getCustomer(message.body().getId())));
 
-        vertx.setPeriodic(1, tick -> eventBus.publish(GatewayServer.PUBLISH_ADDRESS, newCustomerChangedEvent()));
+        vertx.setPeriodic(1, tick -> eventBus.publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
 
     }
 
