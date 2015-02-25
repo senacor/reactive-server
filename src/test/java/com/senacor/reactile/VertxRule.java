@@ -85,7 +85,7 @@ public class VertxRule extends ExternalResource {
                     }
                 }
         );
-        return deploymentIdFuture.get(1, TimeUnit.SECONDS);
+        return deploymentIdFuture.get(3, TimeUnit.SECONDS);
     }
 
     @After
@@ -101,7 +101,7 @@ public class VertxRule extends ExternalResource {
                     }
                 }
         );
-        undeploymentFuture.get(1, TimeUnit.SECONDS);
+        undeploymentFuture.get(3, TimeUnit.SECONDS);
     }
 
     private void registerDomainObjectCodec() {
