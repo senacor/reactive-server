@@ -1,5 +1,7 @@
 package com.senacor.reactile.customer;
 
+import io.vertx.core.json.JsonObject;
+
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -39,5 +41,9 @@ public class CustomerId {
         return "CustomerId{" +
                 "id='" + id + '\'' +
                 '}';
+    }
+
+    public JsonObject toJson() {
+        return new JsonObject().put("id", id);
     }
 }
