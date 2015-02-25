@@ -30,7 +30,7 @@ public class GatewayServerTest {
                     responseFuture.complete(body);
                 }),
                 error -> {
-                    System.out.println("error:" + error);
+                    System.out.println("error: " + error);
                     responseFuture.complete(error);
                 }
         );
