@@ -1,5 +1,7 @@
 package com.senacor.reactile;
 
+import com.senacor.reactile.auth.User;
+import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
@@ -9,6 +11,7 @@ import com.senacor.reactile.customer.CustomerId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Verticle;
 import io.vertx.rxjava.core.Vertx;
+import io.vertx.rxjava.core.eventbus.EventBus;
 import org.junit.After;
 import org.junit.rules.ExternalResource;
 
@@ -41,6 +44,10 @@ public class VertxRule extends ExternalResource {
 
     public Vertx vertx() {
         return vertx;
+    }
+
+    public EventBus eventBus() {
+        return vertx.eventBus();
     }
 
     @Override
@@ -106,14 +113,14 @@ public class VertxRule extends ExternalResource {
 
     private void registerDomainObjectCodec() {
         Stream.of(
+                User.class,
+                UserId.class,
                 Address.class,
                 Contact.class,
                 Country.class,
                 Customer.class,
                 CustomerId.class)
-                .forEach(clazz -> {
-                    ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz));
-                });
+                .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
     }
 
     private static void printResult(String verticleId, AsyncResult<String> response, final String operation) {
