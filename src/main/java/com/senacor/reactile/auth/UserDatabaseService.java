@@ -6,7 +6,7 @@ import rx.functions.Action1;
 
 import java.util.concurrent.TimeUnit;
 
-public class UserDatabaseConnector extends AbstractVerticle {
+public class UserDatabaseService extends AbstractVerticle {
 
     public static final String ADDRESS = "UserDatabaseConnector";
 
@@ -15,15 +15,13 @@ public class UserDatabaseConnector extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-
-        vertx.timerStream(1000).handler(timeout -> {
-        });
-
-
         vertx.eventBus().consumer(ADDRESS).toObservable().delay(latency, TimeUnit.MILLISECONDS).subscribe(replyWithCustomer());
     }
 
     private Action1<Message<Object>> replyWithCustomer() {
-        return message -> message.reply(database.getUser((UserId) message.body()));
+        return message -> {
+            message.replyAddress();
+            message.reply(database.getUser((UserId) message.body()));
+        };
     }
 }

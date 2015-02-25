@@ -1,6 +1,12 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.account.Account;
+import com.senacor.reactile.account.CreditCard;
+import com.senacor.reactile.auth.User;
+import com.senacor.reactile.auth.UserDatabaseService;
+import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.customer.Customer;
+import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.json.JsonMarshaller;
@@ -19,19 +25,27 @@ import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import rx.Observable;
 
+import java.math.BigDecimal;
+
+import static com.senacor.reactile.account.Account.anAccount;
+import static com.senacor.reactile.account.CreditCard.aCreditCard;
+
 public class GatewayServer extends AbstractVerticle {
 
+    public static final String PUBLISH_ADDRESS = "EventPump";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JsonMarshaller jsonMarshaller = new JsonMarshaller();
 
     @Override
     public void start() {
+        createHttpServer();
+        registerEventSubcriber();
+    }
+
+    private void createHttpServer() {
         HttpServerOptions options = newServerConfig();
         HttpServer httpServer = vertx.createHttpServer(options);
-
-        HttpServerRequestStream requestStream = httpServer.requestStream();
-        requestStream.exceptionHandler(this::handleException);
-        requestStream.endHandler(this::handleRequestEnd);
+        addRequestStreamHooks(httpServer);
         ObservableHandler<HttpServerRequest> requestHandler = RxHelper.observableHandler();
         requestHandler
                 .flatMap(this::handleRequest)
@@ -40,12 +54,28 @@ public class GatewayServer extends AbstractVerticle {
                         Throwable::printStackTrace
                 );
 
-
         httpServer.requestHandler(requestHandler.asHandler());
+
         httpServer.listenObservable().subscribe(
-                server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
-                failure -> log.error("Failed to start")
-        );
+                        server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
+                        failure -> log.error("Failed to start")
+                );
+    }
+
+    private void registerEventSubcriber() {
+        vertx.eventBus().consumer(PUBLISH_ADDRESS).toObservable()
+                .map(message -> (CustomerAddressChangedEvt) message.body())
+                .flatMap(event -> {
+                    Observable<User> userObservable = getUser(event.getUserId().getId());
+                    return userObservable.map(user -> event.replaceUser(user));
+                })
+                .subscribe(eventWithUser -> log.info("Received event " + eventWithUser));
+    }
+
+    private void addRequestStreamHooks(HttpServer httpServer) {
+        HttpServerRequestStream requestStream = httpServer.requestStream();
+        requestStream.exceptionHandler(this::handleException);
+        requestStream.endHandler(this::handleRequestEnd);
     }
 
     private Observable<HttpServerResponse> handleRequest(HttpServerRequest request) {
@@ -53,19 +83,50 @@ public class GatewayServer extends AbstractVerticle {
     }
 
     private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
-        return getCustomer(getParam(params, "customerId"))
-                .map(customer -> respondWith(response, customer));
+        String userId = getParam(params, "user");
+        String customerId = getParam(params, "customerId");
+
+        return getUser(userId).flatMap(user -> {
+            Observable<Customer> customerObservable = getCustomer(customerId);
+            Observable<Account> accountObservable = getAccounts(customerId);
+            Observable<CreditCard> creditCardObservable = getCreditCards(customerId);
+            Observable.zip(customerObservable, accountObservable, creditCardObservable, (cust, acc, cred) -> cust);
+            return customerObservable;
+        }).map(customer -> {
+            Buffer content = jsonMarshaller.toBuffer(customer);
+            response.headers().set("Content-Length", "" + content.length());
+            return response.write(content);
+        });
     }
 
-    private HttpServerResponse respondWith(HttpServerResponse response, Customer customer) {
-        Buffer content = jsonMarshaller.toBuffer(customer);
-        response.headers().set("Content-Length", "" + content.length());
-        return response.write(content);
+    private Observable<CreditCard> getCreditCards(String customerId) {
+        return Observable.just(aCreditCard()
+                .withId("333")
+                .withCustomerId(customerId)
+                .withBalance(BigDecimal.TEN)
+                .withCurrency("EUR")
+                .build());
+    }
+
+    private Observable<Account> getAccounts(String customerId) {
+        return Observable.just(anAccount()
+                .withId("333")
+                .withCustomerId(customerId)
+                .withBalance(BigDecimal.TEN)
+                .withCurrency("EUR")
+                .build());
+    }
+
+    private Observable<User> getUser(String userId) {
+        return vertx.eventBus()
+                .<User>sendObservable(UserDatabaseService.ADDRESS, new UserId(userId))
+                .map(Message::body);
     }
 
     private Observable<Customer> getCustomer(String customerId) {
-        Observable<Message<Customer>> messageObservable = vertx.eventBus().sendObservable(CustomerService.ADDRESS, new CustomerId(customerId));
-        return messageObservable.map(message -> message.body());
+        return vertx.eventBus()
+                .<Customer>sendObservable(CustomerService.ADDRESS, new CustomerId(customerId))
+                .map(Message::body);
     }
 
     private static String getParam(MultiMap params, String key) {

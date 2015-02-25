@@ -1,5 +1,10 @@
 package com.senacor.reactile;
 
+import com.senacor.reactile.account.Account;
+import com.senacor.reactile.account.AccountId;
+import com.senacor.reactile.account.CreditCard;
+import com.senacor.reactile.account.CreditCardId;
+import com.senacor.reactile.account.Currency;
 import com.senacor.reactile.auth.User;
 import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
@@ -7,6 +12,7 @@ import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
 import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
+import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Verticle;
@@ -119,7 +125,14 @@ public class VertxRule extends ExternalResource {
                 Contact.class,
                 Country.class,
                 Customer.class,
-                CustomerId.class)
+                CustomerId.class,
+                Account.class,
+                AccountId.class,
+                CreditCard.class,
+                CreditCardId.class,
+                Currency.class,
+                CustomerAddressChangedEvt.class
+        )
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
     }
 

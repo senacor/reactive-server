@@ -1,18 +1,14 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-public class UserId {
+public class AccountId {
 
     private final String id;
 
-    public UserId(@JsonProperty("id") String id) {
-        checkArgument(id != null);
+    public AccountId(@JsonProperty("id") String id) {
         this.id = id;
     }
 
@@ -34,18 +30,14 @@ public class UserId {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final UserId other = (UserId) obj;
+        final AccountId other = (AccountId) obj;
         return Objects.equals(this.id, other.id);
     }
 
     @Override
     public String toString() {
-        return "UserId{" +
+        return "AccountId{" +
                 "id='" + id + '\'' +
                 '}';
-    }
-
-    public JsonObject toJson() {
-        return new JsonObject().put("id", id);
     }
 }

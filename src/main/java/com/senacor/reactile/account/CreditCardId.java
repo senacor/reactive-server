@@ -1,25 +1,20 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-public class UserId {
+public class CreditCardId {
 
     private final String id;
 
-    public UserId(@JsonProperty("id") String id) {
-        checkArgument(id != null);
+    public CreditCardId(@JsonProperty("id") String id) {
         this.id = id;
     }
 
     public String getId() {
         return id;
     }
-
 
     @Override
     public int hashCode() {
@@ -34,18 +29,14 @@ public class UserId {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final UserId other = (UserId) obj;
+        final CreditCardId other = (CreditCardId) obj;
         return Objects.equals(this.id, other.id);
     }
 
     @Override
     public String toString() {
-        return "UserId{" +
+        return "CreditCardId{" +
                 "id='" + id + '\'' +
                 '}';
-    }
-
-    public JsonObject toJson() {
-        return new JsonObject().put("id", id);
     }
 }

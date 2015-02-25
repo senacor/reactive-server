@@ -1,5 +1,7 @@
 package com.senacor.reactile.customer;
 
+import io.vertx.core.json.JsonObject;
+
 public class Address {
 
     private final String coHint;
@@ -17,6 +19,19 @@ public class Address {
         this.addressNumber = addressNumber;
         this.city = city;
         this.country = country;
+    }
+
+    private Address(Builder builder) {
+        coHint = builder.coHint;
+        street = builder.street;
+        zipCode = builder.zipCode;
+        addressNumber = builder.addressNumber;
+        city = builder.city;
+        country = builder.country;
+    }
+
+    public static Builder anAddress() {
+        return new Builder();
     }
 
 
@@ -42,5 +57,61 @@ public class Address {
 
     public Country getCountry() {
         return country;
+    }
+
+
+    public JsonObject toJson() {
+        return new JsonObject()
+                .put("coHint", coHint)
+                .put("street", street)
+                .put("zipCode", zipCode)
+                .put("addressNumber", addressNumber)
+                .put("city", city);
+    }
+
+    public static final class Builder {
+        private String coHint;
+        private String street;
+        private String zipCode;
+        private String addressNumber;
+        private String city;
+        private Country country;
+
+        private Builder() {
+        }
+
+        public Builder withCoHint(String coHint) {
+            this.coHint = coHint;
+            return this;
+        }
+
+        public Builder withStreet(String street) {
+            this.street = street;
+            return this;
+        }
+
+        public Builder withZipCode(String zipCode) {
+            this.zipCode = zipCode;
+            return this;
+        }
+
+        public Builder withAddressNumber(String addressNumber) {
+            this.addressNumber = addressNumber;
+            return this;
+        }
+
+        public Builder withCity(String city) {
+            this.city = city;
+            return this;
+        }
+
+        public Builder withCountry(Country country) {
+            this.country = country;
+            return this;
+        }
+
+        public Address build() {
+            return new Address(coHint, street, zipCode, addressNumber, city, country);
+        }
     }
 }
