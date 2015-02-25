@@ -54,11 +54,13 @@ public class GatewayServer extends AbstractVerticle {
 
     private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
         return getCustomer(getParam(params, "customerId"))
-                .map(customer -> {
-                    Buffer content = jsonMarshaller.toBuffer(customer);
-                    response.headers().set("Content-Length", "" + content.length());
-                    return response.write(content);
-                });
+                .map(customer -> respondWith(response, customer));
+    }
+
+    private HttpServerResponse respondWith(HttpServerResponse response, Customer customer) {
+        Buffer content = jsonMarshaller.toBuffer(customer);
+        response.headers().set("Content-Length", "" + content.length());
+        return response.write(content);
     }
 
     private Observable<Customer> getCustomer(String customerId) {
