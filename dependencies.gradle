@@ -15,7 +15,7 @@ ext {
 }
 
 
-ext.libraries += [
+ext.libraries = [
 
 
         vertx       : [
