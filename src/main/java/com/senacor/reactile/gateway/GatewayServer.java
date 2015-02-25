@@ -3,7 +3,7 @@ package com.senacor.reactile.gateway;
 import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.CreditCard;
 import com.senacor.reactile.auth.User;
-import com.senacor.reactile.auth.UserDatabaseConnector;
+import com.senacor.reactile.auth.UserDatabaseService;
 import com.senacor.reactile.auth.UserId;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
@@ -102,7 +102,7 @@ public class GatewayServer extends AbstractVerticle {
 
     private Observable<User> getUser(String userId) {
         return vertx.eventBus()
-                .<User>sendObservable(UserDatabaseConnector.ADDRESS, new UserId(userId))
+                .<User>sendObservable(UserDatabaseService.ADDRESS, new UserId(userId))
                 .map(Message::body);
     }
 

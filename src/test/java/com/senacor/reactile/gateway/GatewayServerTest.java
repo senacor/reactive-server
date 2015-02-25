@@ -1,7 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.auth.UserDatabaseConnector;
+import com.senacor.reactile.auth.UserDatabaseService;
 import com.senacor.reactile.customer.CustomerService;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpMethod;
@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public class GatewayServerTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(GatewayServer.class, CustomerService.class, UserDatabaseConnector.class);
+    public final VertxRule vertxRule = new VertxRule(GatewayServer.class, CustomerService.class, UserDatabaseService.class);
 
     @Test(timeout = 1000)
     public void thatRequestsAreHandled() throws InterruptedException {
