@@ -49,7 +49,6 @@ dependencies {
     testCompile group: 'io.vertx', name: 'vertx-service-proxy', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-mongo-service', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-mongo-embedded-db', classifier: 'sources', version: vertxVersion
-    testCompile group: 'io.vertx', name: 'vertx-dependencies', classifier: 'sources', version: vertxVersion
 }
 
 shadowJar {
