@@ -23,7 +23,7 @@ public class UserServiceVerticleTest {
 
     @Test
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {
-        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"));
+        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
 
         User user = userMessage.body();
         assertThat(user, is(notNullValue()));

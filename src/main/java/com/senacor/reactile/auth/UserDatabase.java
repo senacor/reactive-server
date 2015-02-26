@@ -1,8 +1,11 @@
 package com.senacor.reactile.auth;
 
+
 public interface UserDatabase {
 
+    User login(UserId userId);
 
-    User getUser(UserId id);
+    User findUser(UserId id);
 
+    void addUser(User user);
 }

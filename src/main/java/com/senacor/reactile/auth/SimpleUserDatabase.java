@@ -29,8 +29,18 @@ public class SimpleUserDatabase implements UserDatabase {
 
 
     @Override
-    public User getUser(UserId id) {
+    public User login(UserId id) {
         return users.get(id);
+    }
+
+    @Override
+    public User findUser(UserId id) {
+        return users.get(id);
+    }
+
+    @Override
+    public void addUser(User user) {
+        users.put(user.getId(), user);
     }
 
 
