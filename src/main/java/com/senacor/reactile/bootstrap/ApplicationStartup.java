@@ -6,53 +6,53 @@ import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
+import io.vertx.rx.java.ObservableFuture;
+import io.vertx.rx.java.RxHelper;
+import rx.Observable;
+import rx.functions.Action1;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by rwinzing on 24.02.15.
  */
 public class ApplicationStartup extends AbstractVerticle {
     @Override
-    public void start() throws Exception {
-        launchEmbeddedMongo();
+    public void start(Future<Void> startFuture) throws Exception {
+        // launchEmbeddedMongo(startFuture);
+
+        Action1<Throwable> errorhandler = cause -> {
+            cause.printStackTrace();
+        };
+
+        launchEmbeddedMongoObservable().subscribe(res1 -> launchMongoServiceObservable().subscribe(res2 -> writeSomethingObservable().subscribe(outcome -> {
+            System.out.println("all verticles started and dummy-data written");
+            startFuture.complete();
+        }), errorhandler), errorhandler);
     }
 
-    private void launchEmbeddedMongo() {
-        vertx.deployVerticle("service:io.vertx:vertx-mongo-embedded-db", response -> {
-            if (response.succeeded()) {
-                System.out.println("embedded-mongo-service started: " + response.result());
-                launchMongoService();
-            } else {
-                System.out.println("embedded-mongo-service failed: " + response.cause());
-                throw new RuntimeException("embedded-mongo-service failed: " + response.cause());
-            }
-        });
-
+    private ObservableFuture<String> launchEmbeddedMongoObservable() {
+        ObservableFuture<String> observable = RxHelper.observableFuture();
+        vertx.deployVerticle("service:io.vertx:vertx-mongo-embedded-db", observable.asHandler());
+        return observable;
     }
 
-    private void launchMongoService() {
+    private ObservableFuture<String> launchMongoServiceObservable() {
         JsonObject config = new JsonObject();
         config.put("address", "vertx.mongo").put("port", 27018);
-        // config.put("username", "john").put("password", "passw0rd");
-        // service:io.vertx:ext-mongo
-        vertx.deployVerticle("io.vertx.ext.mongo.MongoServiceVerticle", new DeploymentOptions().setConfig(config), response -> {
-            if (response.succeeded()) {
-                System.out.println("mongo-service started: " + response.result());
-                writeSomething();
-                findSomething();
-            } else {
-                System.out.println("mongo-service failed: " + response.cause());
-                throw new RuntimeException("mongo-service failed: " + response.cause());
-            }
-        });
+
+        ObservableFuture<String> observable = RxHelper.observableFuture();
+        vertx.deployVerticle("io.vertx.ext.mongo.MongoServiceVerticle", new DeploymentOptions().setConfig(config), observable.asHandler());
+        return observable;
     }
 
-    private void writeSomething() {
+    private ObservableFuture<String> writeSomethingObservable() {
+        ObservableFuture<String> observable = RxHelper.observableFuture();
+
         MongoService service = MongoService.createEventBusProxy(vertx, "vertx.mongo");
 
         List<Address> addresses = new ArrayList<>();
@@ -74,13 +74,50 @@ public class ApplicationStartup extends AbstractVerticle {
 
         JsonObject doc = customer.toJson();
 
-        service.insert("customers", doc, outcome -> {
-            if (outcome.succeeded()) {
-                System.out.println("yay: "+outcome.result());
-            } else {
-                System.out.println("boo: "+outcome.cause());
-            }
-        });
+        service.insert("customers", doc, observable.asHandler());
+
+
+        /*
+
+        Observable<Customer> testCustomers = Observable.zip(
+                addressNumber(),
+                firstName(),
+                lastName(),
+                streetName(),
+                streetType(), (f, l, sn, st) -> {
+                    return Customer.newBuilder().withId("111");
+                }
+
+                );
+
+        return observable;
+        */
+
+        return null;
+    }
+
+    private Observable<Integer> addressNumber() {
+        return Observable.range(100, 200);
+    }
+
+    private Observable<String> streetName() {
+        List streets = Arrays.asList("Winter", "Frühling", "Sommer", "Herbst", "Amsel", "Drossel", "Fink", "Star");
+        return Observable.from(streets).repeat();
+    }
+
+    private Observable<String> streetType() {
+        List streets = Arrays.asList("strasse", "weg", "pfad");
+        return Observable.from(streets).repeat();
+    }
+
+    private Observable<String> firstName() {
+        List streets = Arrays.asList("Adam", "Anneliese", "Berthold", "Berta", "Christopher", "Charlotte", "Dennis", "Dorothea");
+        return Observable.from(streets).repeat();
+    }
+
+    private Observable<String> lastName() {
+        List streets = Arrays.asList("Kugler", "Lurchig", "Monheim", "Naaber", "Peine", "Quaid", "Rastatt");
+        return Observable.from(streets).repeat();
     }
 
     private void findSomething() {
