@@ -14,7 +14,6 @@ import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Verticle;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.EventBus;
@@ -107,8 +106,8 @@ public class VertxRule extends ExternalResource {
                     System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + failure);
                     undeploymentFuture.completeExceptionally(failure);
                 });
-    undeploymentFuture.get(3,TimeUnit.SECONDS);
-}
+        undeploymentFuture.get(3, TimeUnit.SECONDS);
+    }
 
     private void registerDomainObjectCodec() {
         Stream.of(
@@ -127,14 +126,6 @@ public class VertxRule extends ExternalResource {
                 CustomerAddressChangedEvt.class
         )
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
-    }
-
-    private static void printResult(String verticleId, AsyncResult<String> response, final String operation) {
-        if (response.succeeded()) {
-            System.out.println(operation + " succeeded for Verticle " + verticleId);
-        } else if (response.failed()) {
-            System.out.println(operation + " failed for Verticle " + verticleId + ". Cause: " + response.cause());
-        }
     }
 
 }
