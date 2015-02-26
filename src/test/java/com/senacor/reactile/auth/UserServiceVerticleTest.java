@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 public class UserServiceVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(UserServiceVerticle.class);
+    public final VertxRule vertxRule = new VertxRule(UserServiceVerticle.class, UserConnectorVerticle.class);
     @Rule
     public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
 
@@ -26,13 +26,6 @@ public class UserServiceVerticleTest {
         Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
         User user = userMessage.body();
         assertIsUser(user);
-    }
-
-    private void assertIsUser(User user) {
-        assertThat(user, is(notNullValue()));
-        assertThat(user.getId().getId(), is(equalTo("momann")));
-        assertThat(user.getFirstName(), is(equalTo("Michael")));
-        assertThat(user.getLastName(), is(equalTo("Omann")));
     }
 
     @Test
@@ -48,6 +41,13 @@ public class UserServiceVerticleTest {
         Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, message, "create");
         User user = userMessage.body();
         assertIsUser(user);
+    }
+
+    private void assertIsUser(User user) {
+        assertThat(user, is(notNullValue()));
+        assertThat(user.getId().getId(), is(equalTo("momann")));
+        assertThat(user.getFirstName(), is(equalTo("Michael")));
+        assertThat(user.getLastName(), is(equalTo("Omann")));
     }
 
 }

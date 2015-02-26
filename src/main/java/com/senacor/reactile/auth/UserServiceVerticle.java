@@ -10,12 +10,12 @@ public class UserServiceVerticle extends AbstractServiceVerticle {
 
     public static final String ADDRESS = "UserDatabaseConnector";
 
-    private UserServiceConnector connector;
+    private UserConnector connector;
 
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        connector = new UserServiceConnector(super.vertx);
+        connector = new UserConnector(super.vertx);
     }
 
     @Override
