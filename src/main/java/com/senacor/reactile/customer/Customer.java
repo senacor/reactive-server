@@ -54,15 +54,29 @@ public class Customer {
     }
 
     public static Customer fromJson(JsonObject jsonObject) {
+        System.out.println("jsonObject.encodePrettily() = " + jsonObject.encodePrettily());
+
         Customer cust = Customer.newBuilder()
                 .withId(jsonObject.getString("id"))
-                .withTaxNumber(jsonObject.getString("taxnumber")).build();
+                .withTaxNumber(jsonObject.getString("taxNumber"))
+                .withTaxCountry(Country.fromJson(jsonObject.getJsonObject("taxCountry"))).build();
+
+        JsonArray ads = jsonObject.getJsonArray("addresses");
+        for (Object ad: ads) {
+            JsonObject jsonAd = (JsonObject) ad;
+            cust.addresses.add(Address.fromJson(jsonAd));
+        }
+
+        JsonArray cons = jsonObject.getJsonArray("contacts");
+        for (Object con: cons) {
+            JsonObject jsonCon = (JsonObject) con;
+            cust.contacts.add(Contact.fromJson(jsonCon));
+        }
 
         return cust;
     }
 
     public JsonObject toJson() {
-
         JsonArray ads = new JsonArray();
         for (Address address: addresses) {
             ads.add(address.toJson());
@@ -75,8 +89,8 @@ public class Customer {
 
         return new JsonObject()
                 .put("id", id.getId())
-                .put("addresses", addresses)
-                .put("contacts", contacts)
+                .put("addresses", ads)
+                .put("contacts", cons)
                 .put("taxCountry", taxCountry.toJson())
                 .put("taxnumber", taxNumber);
     }

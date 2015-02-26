@@ -23,4 +23,8 @@ public class Country {
     public JsonObject toJson() {
         return new JsonObject().put("name", name).put("code", code);
     }
+
+    public static Country fromJson(JsonObject jsonObject) {
+        return new Country(jsonObject.getString("name"), jsonObject.getString("code"));
+    }
 }

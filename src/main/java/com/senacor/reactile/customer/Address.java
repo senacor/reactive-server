@@ -69,6 +69,15 @@ public class Address {
                 .put("city", city);
     }
 
+    public static Address fromJson(JsonObject jsonObject) {
+        return Address.anAddress()
+                .withCoHint(jsonObject.getString("coHint"))
+                .withStreet(jsonObject.getString("street"))
+                .withZipCode(jsonObject.getString("zipCode"))
+                .withAddressNumber(jsonObject.getString("addressNumber"))
+                .withCity(jsonObject.getString("city")).build();
+    }
+
     public static final class Builder {
         private String coHint;
         private String street;

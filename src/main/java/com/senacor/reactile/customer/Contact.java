@@ -6,4 +6,8 @@ public class Contact {
     public JsonObject toJson() {
         return new JsonObject();
     }
+
+    public static Contact fromJson(JsonObject jsonObject) {
+        return new Contact();
+    }
 }
