@@ -27,7 +27,9 @@ public class EventBusRule extends ExternalResource {
     }
 
     public <T> Message<T> sendObservable(String address, Object message, String action, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
-        return sendObservable(address, message, new DeliveryOptions().addHeader("action", action), timeout);
+        DeliveryOptions options = new DeliveryOptions();
+        if (action != null) options.addHeader("action", action);
+        return sendObservable(address, message, options, timeout);
 
     }
 
