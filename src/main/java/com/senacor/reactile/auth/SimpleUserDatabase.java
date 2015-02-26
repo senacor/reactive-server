@@ -4,13 +4,14 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SimpleUserDatabase implements UserDatabase {
 
     private final Map<UserId, User> users;
 
     {
-        users = ImmutableMap.<UserId, User>builder()
+        Map<UserId, User> initialUsers = ImmutableMap.<UserId, User>builder()
                 .put(user("momann", "Michael", "Omann"))
                 .put(user("rwinzinger", "Ralph", "Winzinger"))
                 .put(user("mmenzel", "Michael", "Menzel"))
@@ -20,6 +21,7 @@ public class SimpleUserDatabase implements UserDatabase {
                 .put(user("aangel", "Aurora", "Angel"))
                 .put(user("cross", "Crystal", "Ross"))
                 .build();
+        users = new ConcurrentHashMap<>(initialUsers);
     }
 
     private static Map.Entry<UserId, User> user(String shortName, String fistName, String lastName) {
@@ -29,8 +31,18 @@ public class SimpleUserDatabase implements UserDatabase {
 
 
     @Override
-    public User getUser(UserId id) {
+    public User login(UserId id) {
         return users.get(id);
+    }
+
+    @Override
+    public User findUser(UserId id) {
+        return users.get(id);
+    }
+
+    @Override
+    public void addUser(User user) {
+        users.put(user.getId(), user);
     }
 
 

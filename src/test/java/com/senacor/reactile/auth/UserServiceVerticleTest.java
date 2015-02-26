@@ -23,14 +23,31 @@ public class UserServiceVerticleTest {
 
     @Test
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {
-        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"));
-
+        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
         User user = userMessage.body();
+        assertIsUser(user);
+    }
+
+    private void assertIsUser(User user) {
         assertThat(user, is(notNullValue()));
         assertThat(user.getId().getId(), is(equalTo("momann")));
         assertThat(user.getFirstName(), is(equalTo("Michael")));
         assertThat(user.getLastName(), is(equalTo("Omann")));
+    }
 
+    @Test
+    public void thatUserCanBeLoggedIn() throws ExecutionException, InterruptedException, TimeoutException {
+        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "login");
+        User user = userMessage.body();
+        assertIsUser(user);
+    }
+
+    @Test
+    public void thatUserCanBeCreated() throws ExecutionException, InterruptedException, TimeoutException {
+        User message = new User(new UserId("momann"), "Michael", "Omann");
+        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, message, "create");
+        User user = userMessage.body();
+        assertIsUser(user);
     }
 
 }

@@ -21,6 +21,10 @@ public class User {
         this.lastName = lastName;
     }
 
+    public static Builder aUser() {
+        return new Builder();
+    }
+
     public UserId getId() {
         return id;
     }
@@ -66,5 +70,38 @@ public class User {
                 .put("id", id.toValue())
                 .put("firstName", firstName)
                 .put("lastName", lastName);
+    }
+
+    public static final class Builder {
+        private UserId id;
+        private String firstName;
+        private String lastName;
+
+        private Builder() {
+        }
+
+        public Builder withId(UserId id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder withId(String id) {
+            this.id = new UserId(id);
+            return this;
+        }
+
+        public Builder withFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public Builder withLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public User build() {
+            return new User(id, firstName, lastName);
+        }
     }
 }

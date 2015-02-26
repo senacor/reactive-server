@@ -14,7 +14,6 @@ import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Verticle;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.EventBus;
@@ -89,32 +88,25 @@ public class VertxRule extends ExternalResource {
     private String startVerticle(Class<? extends Verticle> verticle) throws Exception {
         String verticleId = verticle.getName();
         CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
-        vertx.deployVerticle(verticleId, response -> {
-                    printResult(verticleId, response, "Start");
-                    if (response.failed()) {
-                        deploymentIdFuture.completeExceptionally(response.cause());
-                    } else {
-                        deploymentIdFuture.complete(response.result());
-                    }
-                }
-        );
-        return deploymentIdFuture.get(10, TimeUnit.SECONDS);
+        vertx.deployVerticleObservable(verticleId).subscribe(
+                deploymentIdFuture::complete,
+                deploymentIdFuture::completeExceptionally);
+        return deploymentIdFuture.get(3, TimeUnit.SECONDS);
     }
 
     @After
     private void stopVerticle(String deploymentId) throws Exception {
         CompletableFuture<String> undeploymentFuture = new CompletableFuture<>();
-        vertx.undeployVerticle(deploymentId, response -> {
-                    if (response.succeeded()) {
-                        System.out.println("Stop succeeded for DeploymentId " + deploymentId);
-                        undeploymentFuture.complete(deploymentId);
-                    } else if (response.failed()) {
-                        System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + response.cause());
-                        undeploymentFuture.completeExceptionally(response.cause());
-                    }
-                }
-        );
-        undeploymentFuture.get(10, TimeUnit.SECONDS);
+        vertx.undeployVerticleObservable(deploymentId).subscribe(
+                reponse -> {
+                    System.out.println("Stop succeeded for DeploymentId " + deploymentId);
+                    undeploymentFuture.complete(deploymentId);
+                },
+                failure -> {
+                    System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + failure);
+                    undeploymentFuture.completeExceptionally(failure);
+                });
+        undeploymentFuture.get(3, TimeUnit.SECONDS);
     }
 
     private void registerDomainObjectCodec() {
@@ -134,14 +126,6 @@ public class VertxRule extends ExternalResource {
                 CustomerAddressChangedEvt.class
         )
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
-    }
-
-    private static void printResult(String verticleId, AsyncResult<String> response, final String operation) {
-        if (response.succeeded()) {
-            System.out.println(operation + " succeeded for Verticle " + verticleId);
-        } else if (response.failed()) {
-            System.out.println(operation + " failed for Verticle " + verticleId + ". Cause: " + response.cause());
-        }
     }
 
 }
