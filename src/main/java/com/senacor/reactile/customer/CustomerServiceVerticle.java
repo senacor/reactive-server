@@ -31,16 +31,16 @@ public class CustomerServiceVerticle extends AbstractVerticle {
         EventBus eventBus = vertx.eventBus();
 
         MessageConsumer<CustomerId> consumer = eventBus.consumer(ADDRESS);
-        consumer.toObservable().subscribe(message -> getCustomer(message.body()).subscribe(result -> message.reply(result)));
+        consumer.toObservable().subscribe(message -> getCustomer(message.body()).subscribe(message::reply));
 
-        vertx.setPeriodic(1, tick -> eventBus.publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
+        vertx.setPeriodic(1000, tick -> eventBus.publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
 
 
     private Observable<Customer> getCustomer(CustomerId id) {
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
-        JsonObject query = id.toJson();
+        JsonObject query = new JsonObject().put("id", id.toValue());
         mongoService.findOne("customers", query, null, observable.asHandler());
 
         return observable.map(Customer::fromJson);

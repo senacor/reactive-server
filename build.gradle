@@ -1,15 +1,25 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/maven2"
+        }
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+
 
 sourceCompatibility = 1.8
 
 
-buildscript {
-    repositories {
-        mavenCentral()
-
-    }
-}
 
 repositories {
     mavenCentral()
@@ -33,6 +43,21 @@ dependencies {
 
     testCompile group: 'io.vertx', name: 'vertx-core', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-rx-java', classifier: 'sources', version: vertxVersion
+    testCompile group: 'io.vertx', name: 'vertx-reactive-streams', classifier: 'sources', version: vertxVersion
+    testCompile group: 'io.vertx', name: 'vertx-metrics', classifier: 'sources', version: vertxVersion
+    testCompile group: 'io.vertx', name: 'vertx-service-factory', classifier: 'sources', version: vertxVersion
+    testCompile group: 'io.vertx', name: 'vertx-service-proxy', classifier: 'sources', version: vertxVersion
+    testCompile group: 'io.vertx', name: 'vertx-mongo-service', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-mongo-embedded-db', classifier: 'sources', version: vertxVersion
 }
 
+shadowJar {
+    classifier = 'fat'
+    manifest {
+        attributes 'Main-Class': 'io.vertx.core.Starter'
+        attributes 'Main-Verticle': 'com.senacor.reactile.bootstrap.ApplicationStartup'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
