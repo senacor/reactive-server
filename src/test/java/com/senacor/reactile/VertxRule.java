@@ -91,7 +91,7 @@ public class VertxRule extends ExternalResource {
         vertx.deployVerticleObservable(verticleId).subscribe(
                 deploymentIdFuture::complete,
                 deploymentIdFuture::completeExceptionally);
-        return deploymentIdFuture.get(3, TimeUnit.SECONDS);
+        return deploymentIdFuture.get(10, TimeUnit.SECONDS);
     }
 
     @After
@@ -106,7 +106,7 @@ public class VertxRule extends ExternalResource {
                     System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + failure);
                     undeploymentFuture.completeExceptionally(failure);
                 });
-        undeploymentFuture.get(3, TimeUnit.SECONDS);
+        undeploymentFuture.get(10, TimeUnit.SECONDS);
     }
 
     private void registerDomainObjectCodec() {
