@@ -12,6 +12,10 @@ public class Customer {
 
     private final CustomerId id;
 
+    private final String firstname;
+
+    private final String lastname;
+
     private final List<Address> addresses;
 
     private final List<Contact> contacts;
@@ -22,11 +26,15 @@ public class Customer {
 
     public Customer(
             @JsonProperty("id") CustomerId id,
+            @JsonProperty("firstname") String firstname,
+            @JsonProperty("lastname") String lastname,
             @JsonProperty("addresses") List<Address> addresses,
             @JsonProperty("contacts") List<Contact> contacts,
             @JsonProperty("taxNumber") String taxNumber,
             @JsonProperty("taxCountry") Country taxCountry) {
         this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.addresses = addresses;
         this.contacts = contacts;
         this.taxNumber = taxNumber;
@@ -40,6 +48,10 @@ public class Customer {
     public CustomerId getId() {
         return id;
     }
+
+    public String getFirstname() { return firstname; }
+
+    public String getLastname() { return lastname; }
 
     public List<Address> getAddresses() {
         return addresses;
@@ -58,6 +70,8 @@ public class Customer {
 
         Customer cust = Customer.newBuilder()
                 .withId(jsonObject.getString("id"))
+                .withFirstname(jsonObject.getString("firstname"))
+                .withLastname(jsonObject.getString("lastname"))
                 .withTaxNumber(jsonObject.getString("taxNumber"))
                 .withTaxCountry(Country.fromJson(jsonObject.getJsonObject("taxCountry"))).build();
 
@@ -89,6 +103,8 @@ public class Customer {
 
         return new JsonObject()
                 .put("id", id.getId())
+                .put("firstname", firstname)
+                .put("lastname", lastname)
                 .put("addresses", ads)
                 .put("contacts", cons)
                 .put("taxCountry", taxCountry.toJson())
@@ -97,6 +113,8 @@ public class Customer {
 
     public static final class Builder {
         private CustomerId id;
+        private String firstname;
+        private String lastname;
         private List<Address> addresses = new ArrayList<>();
         private List<Contact> contacts = new ArrayList<>();
         private Country taxCountry;
@@ -107,6 +125,16 @@ public class Customer {
 
         public Builder withId(CustomerId id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder withFirstname(String firstname) {
+            this.firstname = firstname;
+            return this;
+        }
+
+        public Builder withLastname(String lastname) {
+            this.lastname = lastname;
             return this;
         }
 
@@ -131,7 +159,7 @@ public class Customer {
         }
 
         public Customer build() {
-            return new Customer(id, addresses, contacts, taxNumber, taxCountry);
+            return new Customer(id, firstname, lastname, addresses, contacts, taxNumber, taxCountry);
         }
 
         public Builder withId(String id) {
