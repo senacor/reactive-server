@@ -8,8 +8,10 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
+import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
 import rx.Observable;
@@ -67,58 +69,19 @@ public class ApplicationStartup extends AbstractVerticle {
 
         Customer customer = Customer.newBuilder()
                 .withId(new CustomerId("08-cust-15"))
+                .withFirstname("Hans")
+                .withLastname("Dampf")
                 .withAddresses(addresses)
                 .withTaxCountry(new Country("England", "EN"))
                 .withTaxNumber("47-tax-11").build();
 
 
         JsonObject doc = customer.toJson();
-
         service.insert("customers", doc, observable.asHandler());
 
-
-        /*
-
-        Observable<Customer> testCustomers = Observable.zip(
-                addressNumber(),
-                firstName(),
-                lastName(),
-                streetName(),
-                streetType(), (f, l, sn, st) -> {
-                    return Customer.newBuilder().withId("111");
-                }
-
-                );
-
         return observable;
-        */
-
-        return null;
     }
 
-    private Observable<Integer> addressNumber() {
-        return Observable.range(100, 200);
-    }
-
-    private Observable<String> streetName() {
-        List streets = Arrays.asList("Winter", "Frühling", "Sommer", "Herbst", "Amsel", "Drossel", "Fink", "Star");
-        return Observable.from(streets).repeat();
-    }
-
-    private Observable<String> streetType() {
-        List streets = Arrays.asList("strasse", "weg", "pfad");
-        return Observable.from(streets).repeat();
-    }
-
-    private Observable<String> firstName() {
-        List streets = Arrays.asList("Adam", "Anneliese", "Berthold", "Berta", "Christopher", "Charlotte", "Dennis", "Dorothea");
-        return Observable.from(streets).repeat();
-    }
-
-    private Observable<String> lastName() {
-        List streets = Arrays.asList("Kugler", "Lurchig", "Monheim", "Naaber", "Peine", "Quaid", "Rastatt");
-        return Observable.from(streets).repeat();
-    }
 
     private void findSomething() {
         JsonObject query = new JsonObject().put("id", "007");
