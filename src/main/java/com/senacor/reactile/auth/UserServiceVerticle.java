@@ -1,15 +1,13 @@
 package com.senacor.reactile.auth;
 
+import com.senacor.reactile.service.AbstractServiceVerticle;
+import com.senacor.reactile.service.Action;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
-import rx.functions.Action1;
 
-public class UserServiceVerticle extends AbstractVerticle {
+public class UserServiceVerticle extends AbstractServiceVerticle {
 
-    //TODO read from context.config
     public static final String ADDRESS = "UserDatabaseConnector";
 
     private UserServiceConnector connector;
@@ -21,56 +19,23 @@ public class UserServiceVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void start() throws Exception {
-        vertx.eventBus().consumer(ADDRESS).toObservable().subscribe(
-                this::messageHandler,
-                errorHandler());
+    protected String getAddress() {
+        return ADDRESS;
     }
 
-    //this can be frameworked
-    private void messageHandler(Message<Object> message) {
-        Object payload = message.body();
-        String action = message.headers().get("action");
-        Observable<? extends Object> serviceResult = null;
-        switch (action) {
-            case "login": {
-                serviceResult = login((UserId) payload);
-                break;
-            }
-            case "get": {
-                serviceResult = getUser((UserId) payload);
-                break;
-            }
-            case "create": {
-                serviceResult = addUser((User) payload);
-                break;
-            }
-            default: throw new IllegalArgumentException("Unknown service operation " + action);
-        }
-        serviceResult.subscribe(
-                message::reply,
-                Throwable::printStackTrace
-        );
-    }
-
-    //Here goes the service business logic, invocation of connectors and combining results, etc
-    private Observable<User> login(UserId userId) {
+    @Action
+    public Observable<User> login(UserId userId) {
         return connector.authenticate(userId);
 
     }
 
-    //Here goes the service business logic, invocation of connectors and combining results, etc
-    private Observable<User> getUser(UserId userId) {
+    @Action("get")
+    public Observable<User> getUser(UserId userId) {
         return connector.findUser(userId);
     }
 
-    //Here goes the service business logic, invocation of connectors and combining results, etc
-    private Observable<User> addUser(User user) {
+    @Action("create")
+    public Observable<User> addUser(User user) {
         return connector.addUser(user);
-    }
-
-    //TODO error handling
-    private Action1<Throwable> errorHandler() {
-        return Throwable::printStackTrace;
     }
 }
