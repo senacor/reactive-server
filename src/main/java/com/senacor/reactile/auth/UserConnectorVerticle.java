@@ -4,7 +4,6 @@ import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
 import rx.Observable;
 
-//Worker Verticle
 public class UserConnectorVerticle extends AbstractServiceVerticle {
 
     public final static String ADDRESS = "UserConnectorVerticle";

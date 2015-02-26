@@ -1,6 +1,7 @@
 package com.senacor.reactile.auth;
 
 import com.senacor.reactile.EventBusRule;
+import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertThat;
 public class UserServiceVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(UserServiceVerticle.class, UserConnectorVerticle.class);
+    public final VertxRule vertxRule = new VertxRule(Services.UserConnector, Services.UserService);
     @Rule
     public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
 
