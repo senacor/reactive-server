@@ -24,8 +24,6 @@ public class CustomerServiceVerticleTest {
 
     @Test
     public void thatVerticleRespondsToMessage() throws InterruptedException, ExecutionException, TimeoutException {
-        Thread.sleep(5000);
-
         CustomerId customerId = new CustomerId("08-cust-15");
         Message<Customer> customer = eventBusRule.sendObservable(CustomerServiceVerticle.ADDRESS, customerId);
         assertThat(customer.body().getId(), is(equalTo(customerId)));
