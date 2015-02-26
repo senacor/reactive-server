@@ -60,7 +60,7 @@ public class UserServiceVerticle extends AbstractVerticle {
     }
 
     //Here goes the service business logic, invocation of connectors and combining results, etc
-    private Observable<? extends Object> getUser(UserId userId) {
+    private Observable<User> getUser(UserId userId) {
         return connector.findUser(userId);
     }
 
