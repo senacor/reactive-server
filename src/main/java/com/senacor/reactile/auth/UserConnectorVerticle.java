@@ -27,10 +27,4 @@ public class UserConnectorVerticle extends AbstractServiceVerticle {
         return Observable.just(user);
     }
 
-    @Override
-    protected String getAddress() {
-        return ADDRESS;
-    }
-
-
 }

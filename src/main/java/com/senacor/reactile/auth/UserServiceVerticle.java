@@ -8,7 +8,7 @@ import rx.Observable;
 
 public class UserServiceVerticle extends AbstractServiceVerticle {
 
-    public static final String ADDRESS = "UserDatabaseConnector";
+    public static final String ADDRESS = "UserServiceVerticle";
 
     private UserConnector connector;
 
@@ -16,11 +16,6 @@ public class UserServiceVerticle extends AbstractServiceVerticle {
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
         connector = new UserConnector(super.vertx);
-    }
-
-    @Override
-    protected String getAddress() {
-        return ADDRESS;
     }
 
     @Action
