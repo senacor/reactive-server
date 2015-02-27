@@ -32,19 +32,15 @@ public class VertxRule extends ExternalResource {
     private final Vertx vertx = Vertx.vertx();
 
     private final Set<Class<? extends Verticle>> verticlesNotStarted = new HashSet<>();
+    private final Set<ServiceIdProvider> servicesNotStarted = new HashSet<>();
     private final Set<String> verticlesStarted = new HashSet<>();
+
+    public VertxRule(ServiceIdProvider... deployVerticles) {
+        Arrays.stream(deployVerticles).forEach(this.servicesNotStarted::add);
+    }
 
     public VertxRule(Class<? extends Verticle>... deployVerticles) {
         Arrays.stream(deployVerticles).forEach(this.verticlesNotStarted::add);
-    }
-
-    private void deployVerticle(Class<? extends Verticle> verticle) {
-        try {
-            String deploymentId = startVerticle(verticle);
-            verticlesStarted.add(deploymentId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public Vertx vertx() {
@@ -58,16 +54,12 @@ public class VertxRule extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         registerDomainObjectCodec();
-        verticlesNotStarted.forEach(verticle -> {
-            try {
-                String deploymentId = startVerticle(verticle);
-                verticlesStarted.add(deploymentId);
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        for (Class<? extends Verticle> verticleClass : verticlesNotStarted) {
+            startVerticle(verticleClass.getName());
+        }
+        for (ServiceIdProvider provider : servicesNotStarted) {
+            startVerticle(provider.getId());
+        }
     }
 
 
@@ -85,10 +77,9 @@ public class VertxRule extends ExternalResource {
         vertx.close();
     }
 
-    private String startVerticle(Class<? extends Verticle> verticle) throws Exception {
-        String verticleId = verticle.getName();
+    private String startVerticle(String identifier) throws Exception {
         CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
-        vertx.deployVerticleObservable(verticleId).subscribe(
+        vertx.deployVerticleObservable(identifier).subscribe(
                 deploymentIdFuture::complete,
                 deploymentIdFuture::completeExceptionally);
         return deploymentIdFuture.get(10, TimeUnit.SECONDS);
