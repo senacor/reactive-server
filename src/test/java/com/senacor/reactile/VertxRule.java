@@ -5,8 +5,6 @@ import com.senacor.reactile.account.AccountId;
 import com.senacor.reactile.account.CreditCard;
 import com.senacor.reactile.account.CreditCardId;
 import com.senacor.reactile.account.Currency;
-import com.senacor.reactile.user.User;
-import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
@@ -14,6 +12,8 @@ import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.user.User;
+import com.senacor.reactile.user.UserId;
 import io.vertx.core.Verticle;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.EventBus;
@@ -80,8 +80,13 @@ public class VertxRule extends ExternalResource {
     private String startVerticle(String identifier) throws Exception {
         CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
         vertx.deployVerticleObservable(identifier).subscribe(
-                deploymentIdFuture::complete,
-                deploymentIdFuture::completeExceptionally);
+                deploymentId -> {
+                    System.out.println("Start succeeded for " + identifier + " with DeploymentId " + deploymentId);
+                    deploymentIdFuture.complete(deploymentId);
+                }, failure -> {
+                    System.out.println("Start failed for " + identifier + ". Cause: " + failure);
+                    deploymentIdFuture.completeExceptionally(failure);
+                });
         return deploymentIdFuture.get(10, TimeUnit.SECONDS);
     }
 
@@ -89,7 +94,7 @@ public class VertxRule extends ExternalResource {
     private void stopVerticle(String deploymentId) throws Exception {
         CompletableFuture<String> undeploymentFuture = new CompletableFuture<>();
         vertx.undeployVerticleObservable(deploymentId).subscribe(
-                reponse -> {
+                response -> {
                     System.out.println("Stop succeeded for DeploymentId " + deploymentId);
                     undeploymentFuture.complete(deploymentId);
                 },
