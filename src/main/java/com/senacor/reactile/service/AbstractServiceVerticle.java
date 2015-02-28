@@ -1,5 +1,6 @@
 package com.senacor.reactile.service;
 
+import com.senacor.reactile.verticle.VerticeLogging;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
@@ -12,7 +13,7 @@ import java.lang.reflect.Method;
 
 import static com.google.common.base.Preconditions.checkState;
 
-public abstract class AbstractServiceVerticle extends AbstractVerticle {
+public abstract class AbstractServiceVerticle extends AbstractVerticle implements VerticeLogging {
 
     public static final String ADDRESS_KEY = "address";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -65,7 +66,8 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle {
         }
     }
 
-    protected Logger log() {
+    @Override
+    public Logger log() {
         return log;
     }
 }
