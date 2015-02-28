@@ -2,7 +2,7 @@ package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.HttpClientRule;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.auth.UserServiceVerticle;
+import com.senacor.reactile.user.UserServiceVerticle;
 import com.senacor.reactile.customer.CustomerServiceVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.rxjava.core.http.HttpClientRequest;

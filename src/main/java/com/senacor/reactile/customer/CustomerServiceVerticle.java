@@ -1,6 +1,6 @@
 package com.senacor.reactile.customer;
 
-import com.senacor.reactile.auth.UserId;
+import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.gateway.GatewayVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;

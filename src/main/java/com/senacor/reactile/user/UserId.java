@@ -1,4 +1,4 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.IdObject;

@@ -1,5 +1,5 @@
 {
-  "main": "com.senacor.reactile.auth.UserConnectorVerticle",
+  "main": "com.senacor.reactile.user.UserConnectorVerticle",
 
   "options": {
     "worker": true,

@@ -1,4 +1,4 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.user;
 
 import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.Services;
