@@ -17,30 +17,22 @@ import com.senacor.reactile.user.UserId;
 import io.vertx.core.Verticle;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.EventBus;
-import org.junit.After;
 import org.junit.rules.ExternalResource;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class VertxRule extends ExternalResource {
 
     private final Vertx vertx = Vertx.vertx();
-
-    private final Set<Class<? extends Verticle>> verticlesNotStarted = new HashSet<>();
-    private final Set<ServiceIdProvider> servicesNotStarted = new HashSet<>();
-    private final Set<String> verticlesStarted = new HashSet<>();
+    private final VerticleDeployer verticleDeployer = new VerticleDeployer(vertx);
 
     public VertxRule(ServiceIdProvider... deployVerticles) {
-        Arrays.stream(deployVerticles).forEach(this.servicesNotStarted::add);
+        Arrays.stream(deployVerticles).forEach(this.verticleDeployer::addService);
     }
 
     public VertxRule(Class<? extends Verticle>... deployVerticles) {
-        Arrays.stream(deployVerticles).forEach(this.verticlesNotStarted::add);
+        Arrays.stream(deployVerticles).forEach(this.verticleDeployer::addVerticle);
     }
 
     public Vertx vertx() {
@@ -54,56 +46,18 @@ public class VertxRule extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         registerDomainObjectCodec();
-        for (Class<? extends Verticle> verticleClass : verticlesNotStarted) {
-            startVerticle(verticleClass.getName());
-        }
-        for (ServiceIdProvider provider : servicesNotStarted) {
-            startVerticle(provider.getId());
-        }
+        verticleDeployer.deployVerticles(10_000);
+
     }
 
 
     @Override
     protected void after() {
-        vertx.deployments().forEach(deploymentId -> {
-            try {
-                stopVerticle(deploymentId);
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        verticleDeployer.stopVerticles(10_000);
         vertx.close();
     }
 
-    private String startVerticle(String identifier) throws Exception {
-        CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
-        vertx.deployVerticleObservable(identifier).subscribe(
-                deploymentId -> {
-                    System.out.println("Start succeeded for " + identifier + " with DeploymentId " + deploymentId);
-                    deploymentIdFuture.complete(deploymentId);
-                }, failure -> {
-                    System.out.println("Start failed for " + identifier + ". Cause: " + failure);
-                    deploymentIdFuture.completeExceptionally(failure);
-                });
-        return deploymentIdFuture.get(10, TimeUnit.SECONDS);
-    }
 
-    @After
-    private void stopVerticle(String deploymentId) throws Exception {
-        CompletableFuture<String> undeploymentFuture = new CompletableFuture<>();
-        vertx.undeployVerticleObservable(deploymentId).subscribe(
-                response -> {
-                    System.out.println("Stop succeeded for DeploymentId " + deploymentId);
-                    undeploymentFuture.complete(deploymentId);
-                },
-                failure -> {
-                    System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + failure);
-                    undeploymentFuture.completeExceptionally(failure);
-                });
-        undeploymentFuture.get(10, TimeUnit.SECONDS);
-    }
 
     private void registerDomainObjectCodec() {
         Stream.of(
