@@ -1,6 +1,7 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.EventBusRule;
+import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.ApplicationStartup;
 import io.vertx.core.Vertx;
@@ -12,7 +13,6 @@ import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
 import org.junit.Test;
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +26,10 @@ import static org.junit.Assert.assertThat;
 public class CustomerServiceVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(ApplicationStartup.class, CustomerServiceVerticle.class);
+    public final VertxRule vertxRule = new VertxRule(ApplicationStartup.class);
+    {
+        vertxRule.deployVerticle(Services.CustomerService);
+    }
 
     @Rule
     public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
@@ -34,7 +37,7 @@ public class CustomerServiceVerticleTest {
     @Test
     public void thatVerticleRespondsToMessage() throws InterruptedException, ExecutionException, TimeoutException {
         CustomerId customerId = new CustomerId("08-cust-15");
-        Message<Customer> customer = eventBusRule.sendObservable(CustomerServiceVerticle.ADDRESS, customerId);
+        Message<Customer> customer = eventBusRule.sendObservable(CustomerServiceVerticle.ADDRESS, customerId, "getCustomer");
         assertThat(customer.body().getId(), is(equalTo(customerId)));
     }
 

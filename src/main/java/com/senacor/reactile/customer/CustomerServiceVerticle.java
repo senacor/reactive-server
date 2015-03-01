@@ -1,26 +1,20 @@
 package com.senacor.reactile.customer;
 
-import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.gateway.GatewayVerticle;
+import com.senacor.reactile.service.AbstractServiceVerticle;
+import com.senacor.reactile.service.Action;
+import com.senacor.reactile.user.UserId;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.core.eventbus.EventBus;
-import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import rx.Observable;
 
 import static com.senacor.reactile.customer.Address.anAddress;
 
-public class CustomerServiceVerticle extends AbstractVerticle {
+public class CustomerServiceVerticle extends AbstractServiceVerticle {
 
-
-    public static final String ADDRESS = "customer";
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    public static final String ADDRESS = "CustomerServiceVerticle";
 
     private MongoService mongoService;
 
@@ -28,15 +22,11 @@ public class CustomerServiceVerticle extends AbstractVerticle {
     public void start() throws Exception {
         mongoService = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
 
-        EventBus eventBus = vertx.eventBus();
-
-        MessageConsumer<CustomerId> consumer = eventBus.consumer(ADDRESS);
-        consumer.toObservable().subscribe(message -> getCustomer(message.body()).subscribe(message::reply));
-
-        vertx.setPeriodic(1000, tick -> eventBus.publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
+        vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
 
 
+    @Action
     private Observable<Customer> getCustomer(CustomerId id) {
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
@@ -44,11 +34,6 @@ public class CustomerServiceVerticle extends AbstractVerticle {
         mongoService.findOne("customers", query, null, observable.asHandler());
 
         return observable.map(Customer::fromJson);
-    }
-
-    @Override
-    public void stop() throws Exception {
-
     }
 
     private CustomerAddressChangedEvt newCustomerChangedEvent() {
