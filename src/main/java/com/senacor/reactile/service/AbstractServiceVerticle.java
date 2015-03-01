@@ -22,7 +22,7 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle implement
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        checkState(config().containsKey("address"), String.format("Missing config key %s for Verticle %s", this.getClass(), ADDRESS_KEY));
+        checkState(config().containsKey(ADDRESS_KEY), String.format("Missing config key %s for Verticle %s", this.getClass(), ADDRESS_KEY));
     }
 
     @Override
