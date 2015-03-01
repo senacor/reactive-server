@@ -1,0 +1,9 @@
+{
+  "main": "com.senacor.reactile.customer.CustomerServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "CustomerServiceVerticle"
+    }
+  }
+}
