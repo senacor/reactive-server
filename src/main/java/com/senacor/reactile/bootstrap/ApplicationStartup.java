@@ -40,9 +40,10 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
     private Observable<String> launchMongoServiceObservable() {
-        JsonObject config = new JsonObject();
-        config.put("address", "vertx.mongo").put("port", 27018);
-        return vertx.deployVerticleObservable("io.vertx.ext.mongo.MongoServiceVerticle", new DeploymentOptions().setConfig(config));
+        JsonObject config = new JsonObject()
+                .put("connection_string", "mongodb://localhost:27018")
+                .put("db_name", "reactile");
+        return vertx.deployVerticleObservable("service:io.vertx:mongo-service", new DeploymentOptions().setConfig(config));
     }
 
     private ObservableFuture<String> writeSomethingObservable() {
