@@ -6,6 +6,8 @@ import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
 import rx.Observable;
+import rx.functions.Func1;
+import rx.functions.Func5;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,35 +28,42 @@ public class CustomerMongoInitializer {
                 firstName(),
                 lastName(),
                 streetName(),
-                streetType(), (addrNum, fname, lname, sname, stype) -> {
-                    Address addr = Address.anAddress()
-                            .withAddressNumber("addr-" + addrNum)
-                            .withStreet(sname + stype)
-                            .withCoHint("")
-                            .withCity("Nürnberg")
-                            .withZipCode("12345")
-                            .withCountry(new Country("Deutschland", "DE")).build();
-
-                    return Customer.newBuilder()
-                            .withId("cust-" + addrNum)
-                            .withFirstname(fname)
-                            .withLastname(lname)
-                            .withAddresses(Arrays.asList(addr))
-                            .withTaxNumber("tax-" + addrNum)
-                            .withTaxCountry(new Country("Deutschland", "DE"))
-                            .build();
-                }
+                streetType(), zipToCustomer()
         );
 
-        testCustomers.flatMap(customer -> {
+        testCustomers.flatMap(insert(service)).subscribe(
+                outcome -> System.out.println("outcome = " + outcome),
+                Throwable::printStackTrace,
+                () -> System.out.println("done!!!!"));
+    }
+
+    private Func1<Customer, Observable<? extends String>> insert(MongoService service) {
+        return customer -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
             service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
             return newOne;
-        }).subscribe(outcome -> {
-            System.out.println("outcome = " + outcome);
-        }, Throwable::printStackTrace, () -> {
-            System.out.println("done!!!!");
-        });
+        };
+    }
+
+    private Func5<Integer, String, String, String, String, Customer> zipToCustomer() {
+        return (addrNum, fname, lname, sname, stype) -> {
+            Address addr = Address.anAddress()
+                    .withAddressNumber("addr-" + addrNum)
+                    .withStreet(sname + stype)
+                    .withCoHint("")
+                    .withCity("Nürnberg")
+                    .withZipCode("12345")
+                    .withCountry(new Country("Deutschland", "DE")).build();
+
+            return Customer.newBuilder()
+                    .withId("cust-" + addrNum)
+                    .withFirstname(fname)
+                    .withLastname(lname)
+                    .withAddresses(Arrays.asList(addr))
+                    .withTaxNumber("tax-" + addrNum)
+                    .withTaxCountry(new Country("Deutschland", "DE"))
+                    .build();
+        };
     }
 
 
