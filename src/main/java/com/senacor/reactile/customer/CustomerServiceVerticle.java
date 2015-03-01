@@ -20,6 +20,7 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
 
     @Override
     public void start() throws Exception {
+        super.start();
         mongoService = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
 
         vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
@@ -27,7 +28,7 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
 
 
     @Action
-    private Observable<Customer> getCustomer(CustomerId id) {
+    public Observable<Customer> getCustomer(CustomerId id) {
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("id", id.toValue());
