@@ -3,11 +3,9 @@ package com.senacor.reactile;
 import com.google.common.base.Throwables;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Verticle;
-import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import org.junit.After;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +27,7 @@ public class VerticleDeployer {
     }
 
     public void deployVerticles(long timeoutInMillis, DeploymentOptions options) {
-        notStarted.stream().map(identifier -> startVerticle(identifier, options)).map(future -> waitForCompletion(future, timeoutInMillis)).forEach(started::add);
+        notStarted.stream().map(identifier -> startVerticle(identifier, new DeploymentOptions(options))).map(future -> waitForCompletion(future, timeoutInMillis)).forEach(started::add);
     }
 
     private <T> T waitForCompletion(CompletableFuture<T> future, long timeoutInMillis) {
@@ -47,13 +45,6 @@ public class VerticleDeployer {
 
     private CompletableFuture<String> startVerticle(String identifier, DeploymentOptions options){
         CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
-        if (identifier.trim().startsWith("service")) {
-            try {
-                options = mergeOptions(identifier, options);
-            } catch (IOException e) {
-                deploymentIdFuture.completeExceptionally(e);
-            }
-        }
         vertx.deployVerticleObservable(identifier, options).subscribe(
                 deploymentId -> {
                     System.out.println("Start succeeded for " + identifier + " with DeploymentId " + deploymentId);
@@ -63,12 +54,6 @@ public class VerticleDeployer {
                     deploymentIdFuture.completeExceptionally(failure);
                 });
         return deploymentIdFuture;
-    }
-
-    private DeploymentOptions mergeOptions(String identifier, DeploymentOptions options) throws IOException {
-        DeploymentOptions deploymentOptions = DeploymentOptionsLoader.load(identifier);
-        JsonObject merged = options.toJson().mergeIn(deploymentOptions.toJson());
-        return new DeploymentOptions(merged);
     }
 
     @After
