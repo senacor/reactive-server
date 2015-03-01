@@ -44,4 +44,5 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
                 .withCountry(new Country("DE", "Deutschland"))
                 .build());
     }
+
 }

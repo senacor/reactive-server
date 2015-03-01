@@ -73,11 +73,9 @@ public class CustomerServiceVerticleTest {
 
 
 
-        testCustomers.map(customer -> {
+        testCustomers.flatMap(customer -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
             service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
-            // newOne.subscribe(element -> ps.onNext(element));
-
             return newOne;
         }).subscribe(outcome -> {
             System.out.println("outcome = " + outcome);

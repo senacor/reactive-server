@@ -4,20 +4,19 @@ import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
-import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
+import io.vertx.rxjava.core.AbstractVerticle;
 import rx.Observable;
 import rx.functions.Action1;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rwinzing on 24.02.15.
@@ -25,37 +24,30 @@ import java.util.*;
 public class ApplicationStartup extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        // launchEmbeddedMongo(startFuture);
+        Action1<Throwable> errorhandler = Throwable::printStackTrace;
 
-        Action1<Throwable> errorhandler = cause -> {
-            cause.printStackTrace();
-        };
-
-        launchEmbeddedMongoObservable().subscribe(res1 -> launchMongoServiceObservable().subscribe(res2 -> writeSomethingObservable().subscribe(outcome -> {
-            System.out.println("all verticles started and dummy-data written");
-            startFuture.complete();
-        }), errorhandler), errorhandler);
+        launchEmbeddedMongoObservable()
+                .subscribe(res1 -> launchMongoServiceObservable()
+                        .subscribe(res2 -> writeSomethingObservable().subscribe(outcome -> {
+                            System.out.println("all verticles started and dummy-data written");
+                            startFuture.complete();
+                        }), errorhandler),
+                        errorhandler);
     }
 
-    private ObservableFuture<String> launchEmbeddedMongoObservable() {
-        ObservableFuture<String> observable = RxHelper.observableFuture();
-        vertx.deployVerticle("service:io.vertx:vertx-mongo-embedded-db", observable.asHandler());
-        return observable;
+    private Observable<String> launchEmbeddedMongoObservable() {
+        return vertx.deployVerticleObservable("service:io.vertx:vertx-mongo-embedded-db");
     }
 
-    private ObservableFuture<String> launchMongoServiceObservable() {
+    private Observable<String> launchMongoServiceObservable() {
         JsonObject config = new JsonObject();
         config.put("address", "vertx.mongo").put("port", 27018);
-
-        ObservableFuture<String> observable = RxHelper.observableFuture();
-        vertx.deployVerticle("io.vertx.ext.mongo.MongoServiceVerticle", new DeploymentOptions().setConfig(config), observable.asHandler());
-        return observable;
+        return vertx.deployVerticleObservable("io.vertx.ext.mongo.MongoServiceVerticle", new DeploymentOptions().setConfig(config));
     }
 
     private ObservableFuture<String> writeSomethingObservable() {
-        ObservableFuture<String> observable = RxHelper.observableFuture();
 
-        MongoService service = MongoService.createEventBusProxy(vertx, "vertx.mongo");
+        MongoService service = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
 
         List<Address> addresses = new ArrayList<>();
         addresses.add(Address.anAddress()
@@ -76,6 +68,7 @@ public class ApplicationStartup extends AbstractVerticle {
                 .withTaxNumber("47-tax-11").build();
 
 
+        ObservableFuture<String> observable = RxHelper.observableFuture();
         JsonObject doc = customer.toJson();
         service.insert("customers", doc, observable.asHandler());
 
