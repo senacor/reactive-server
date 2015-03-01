@@ -35,6 +35,14 @@ public class VertxRule extends ExternalResource {
         Arrays.stream(deployVerticles).forEach(this.verticleDeployer::addVerticle);
     }
 
+    public void deployVerticle(ServiceIdProvider verticle) {
+        verticleDeployer.addService(verticle);
+    }
+
+    public void deployVerticle(Class<? extends Verticle> verticle) {
+        verticleDeployer.addVerticle(verticle);
+    }
+
     public Vertx vertx() {
         return vertx;
     }
