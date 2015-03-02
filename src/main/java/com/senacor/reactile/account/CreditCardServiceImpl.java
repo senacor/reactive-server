@@ -19,7 +19,7 @@ public class CreditCardServiceImpl implements CreditCardService {
     public Observable<CreditCard> getCreditCard(CustomerId customerId) {
         return Observable.just(aCreditCard()
                 .withId("333")
-                .withCustomerId(customerId.getId())
+                .withCustomerId(customerId)
                 .withBalance(BigDecimal.TEN)
                 .withCurrency("EUR")
                 .build());

@@ -74,14 +74,14 @@ public class Transaction {
     public JsonObject toJson() {
         JsonObject retval = new JsonObject();
 
-        retval.put("id", id);
-        retval.put("customerId", customerId);
+        retval.put("id", id.getId());
+        retval.put("customerId", customerId.getId());
         if (accountId != null) {
-            retval.put("accountId", accountId);
+            retval.put("accountId", accountId.getId());
         } else {
-            retval.put("creditCardId", creditCardId);
+            retval.put("creditCardId", creditCardId.getId());
         }
-        retval.put("amount", amount);
+        retval.put("amount", amount.toString());
         retval.put("currency", currency.getCurrency());
 
         return retval;
