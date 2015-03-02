@@ -32,9 +32,12 @@ public class CustomerMongoInitializer {
         );
 
         testCustomers.flatMap(insert(service)).subscribe(
-                outcome -> System.out.println("outcome = " + outcome),
-                Throwable::printStackTrace,
-                () -> System.out.println("done!!!!"));
+                outcome -> {
+                        // System.out.println("outcome = " + outcome);
+                    },
+                    Throwable::printStackTrace,
+                    () -> System.out.println("done!!!!")
+                );
     }
 
     private Func1<Customer, Observable<? extends String>> insert(MongoService service) {
