@@ -77,7 +77,7 @@ public class CustomerServiceVerticleTest {
 
             return newOne;
         }).subscribe(outcome -> {
-            System.out.println("outcome = " + outcome);
+            // System.out.println("outcome = " + outcome);
         }, Throwable::printStackTrace,()-> {
             System.out.println("done!!!!");
         });
@@ -85,7 +85,7 @@ public class CustomerServiceVerticleTest {
 
 
     private Observable<Integer> addressNumber() {
-        return Observable.range(1000, 100000);
+        return Observable.range(1000, 5000);
     }
 
     private Observable<String> streetName() {
