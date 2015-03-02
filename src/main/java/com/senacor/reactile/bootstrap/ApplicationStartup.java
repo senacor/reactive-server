@@ -8,13 +8,10 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
-import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
-import rx.Observable;
 import rx.functions.Action1;
 
 import java.util.*;
@@ -25,8 +22,6 @@ import java.util.*;
 public class ApplicationStartup extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        // launchEmbeddedMongo(startFuture);
-
         Action1<Throwable> errorhandler = cause -> {
             cause.printStackTrace();
         };
