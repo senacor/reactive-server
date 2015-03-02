@@ -1,5 +1,6 @@
 package com.senacor.reactile.customer;
 
+import com.senacor.reactile.account.Account;
 import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.ext.mongo.WriteOption;
@@ -7,14 +8,18 @@ import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
 import rx.Observable;
 import rx.functions.Func1;
+import rx.functions.Func3;
 import rx.functions.Func5;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class CustomerMongoInitializer {
 
     private final io.vertx.rxjava.core.Vertx vertx;
+    private final Random rd = new Random();
 
     public CustomerMongoInitializer(io.vertx.rxjava.core.Vertx vertx) {
         this.vertx = vertx;
@@ -31,19 +36,43 @@ public class CustomerMongoInitializer {
                 streetType(), zipToCustomer()
         );
 
-        testCustomers.flatMap(insert(service)).subscribe(
+        testCustomers.flatMap(insertCustomerWithAccounts(service)).subscribe(
                 outcome -> {
-                        // System.out.println("outcome = " + outcome);
+//                        System.out.println("outcome = " + outcome);
                     },
                     Throwable::printStackTrace,
-                    () -> System.out.println("done!!!!")
+                    () -> System.out.println("done!")
                 );
     }
 
-    private Func1<Customer, Observable<? extends String>> insert(MongoService service) {
+    private Func1<Customer, Observable<? extends String>> insertCustomer(MongoService service) {
         return customer -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
             service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+            return newOne;
+        };
+    }
+
+    private Func1<Customer, Observable<? extends String>> insertCustomerWithAccounts(MongoService service) {
+        return customer -> {
+            Observable<Account> testAccounts = Observable.zip(
+                    accountId(customer.getId()),
+                    Observable.just(customer.getId()).repeat(),
+                    balance(),
+                    zipToAccount()
+            );
+
+            ObservableFuture<String> newOne = RxHelper.observableFuture();
+            service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+
+            return testAccounts.flatMap(insertAccount(service)).mergeWith(newOne);
+        };
+    }
+
+    private Func1<Account, Observable<? extends String>> insertAccount(MongoService service) {
+        return account -> {
+            ObservableFuture<String> newOne = RxHelper.observableFuture();
+            service.insertWithOptions("accounts", account.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
             return newOne;
         };
     }
@@ -92,5 +121,28 @@ public class CustomerMongoInitializer {
     private Observable<String> lastName() {
         List streets = Arrays.asList("Kugler", "Lurchig", "Monheim", "Naaber", "Peine", "Quaid", "Rastatt");
         return Observable.from(streets).repeat();
+    }
+
+    // ========
+
+    private Observable<String> accountId(CustomerId customerId) {
+        return Observable.range(1, rd.nextInt(4)+1).map(accId -> {
+            return customerId.getId()+"-ac-"+accId;
+        });
+    }
+
+    private Observable<BigDecimal> balance() {
+        return Observable.just(new BigDecimal(rd.nextInt(10000) - 5000)).repeat();
+    }
+
+    private Func3<String, CustomerId, BigDecimal, Account> zipToAccount() {
+        return (accountId, customerId, amount) -> {
+            return Account.anAccount()
+                    .withId(accountId)
+                    .withCustomerId(customerId)
+                    .withBalance(amount)
+                    .withCurrency("EUR")
+                    .build();
+        };
     }
 }
