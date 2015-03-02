@@ -1,9 +1,10 @@
 package com.senacor.reactile.user;
 
-import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
+
+import static com.senacor.reactile.header.Headers.action;
 
 public class UserServiceImpl implements UserService {
     private final Vertx vertx;
@@ -20,7 +21,4 @@ public class UserServiceImpl implements UserService {
                 .map(Message::body);
     }
 
-    private static DeliveryOptions action(String action) {
-        return new DeliveryOptions().addHeader("action", action);
-    }
 }

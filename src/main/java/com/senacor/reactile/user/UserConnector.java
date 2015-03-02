@@ -8,6 +8,8 @@ import rx.Observable;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.senacor.reactile.header.Headers.action;
+
 public class UserConnector {
 
     private final Vertx vertx;
@@ -33,10 +35,6 @@ public class UserConnector {
         return getEventBus().<User>sendObservable(UserConnectorVerticle.ADDRESS, payload, action)
                 .delay(latency, TimeUnit.MILLISECONDS)
                 .map(Message::body);
-    }
-
-    private DeliveryOptions action(String action) {
-        return new DeliveryOptions().addHeader("action", action);
     }
 
     private EventBus getEventBus() {

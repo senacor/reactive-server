@@ -1,9 +1,10 @@
 package com.senacor.reactile.customer;
 
-import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
+
+import static com.senacor.reactile.header.Headers.action;
 
 public class CustomerServiceImpl implements CustomerService {
     private final Vertx vertx;
@@ -20,7 +21,4 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-    private static DeliveryOptions action(String action) {
-        return new DeliveryOptions().addHeader("action", action);
-    }
 }
