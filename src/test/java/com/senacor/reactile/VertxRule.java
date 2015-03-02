@@ -27,6 +27,10 @@ public class VertxRule extends ExternalResource {
     private final Vertx vertx = Vertx.vertx();
     private final VerticleDeployer verticleDeployer = new VerticleDeployer(vertx);
 
+
+    public VertxRule() {
+    }
+
     public VertxRule(ServiceIdProvider... deployVerticles) {
         Arrays.stream(deployVerticles).forEach(this.verticleDeployer::addService);
     }
@@ -35,12 +39,19 @@ public class VertxRule extends ExternalResource {
         Arrays.stream(deployVerticles).forEach(this.verticleDeployer::addVerticle);
     }
 
-    public void deployVerticle(ServiceIdProvider verticle) {
+    public void deployVerticle(ServiceIdProvider verticle, ServiceIdProvider... moreVerticles) {
         verticleDeployer.addService(verticle);
+        for (ServiceIdProvider v : moreVerticles) {
+            verticleDeployer.addService(v);
+        }
+
     }
 
-    public void deployVerticle(Class<? extends Verticle> verticle) {
+    public void deployVerticle(Class<? extends Verticle> verticle, Class<? extends Verticle>... moreVerticles) {
         verticleDeployer.addVerticle(verticle);
+        for (Class<? extends Verticle> v : moreVerticles) {
+            verticleDeployer.addVerticle(v);
+        }
     }
 
     public Vertx vertx() {
