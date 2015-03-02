@@ -56,7 +56,7 @@ public class Account {
     public static Account fromJson(JsonObject jsonObject) {
         return anAccount()
                 .withId(jsonObject.getString("id"))
-                .withCustomerId(jsonObject.getString("customerId"))
+                .withCustomerId(new CustomerId(jsonObject.getString("customerId")))
                 .withBalance(new BigDecimal(jsonObject.getString("balance")))
                 .withCurrency(jsonObject.getString("currency"))
                 .build();
@@ -65,9 +65,9 @@ public class Account {
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id.getId())
-                .put("customerId", customerId)
-                .put("balance", balance)
-                .put("currency", currency);
+                .put("customerId", customerId.getId())
+                .put("balance", balance.toString())
+                .put("currency", currency.getCurrency());
     }
 
     public static final class Builder {
@@ -84,8 +84,8 @@ public class Account {
             return this;
         }
 
-        public Builder withCustomerId(String customerId) {
-            this.customerId = new CustomerId(customerId);
+        public Builder withCustomerId(CustomerId customerId) {
+            this.customerId = customerId;
             return this;
         }
 
