@@ -6,6 +6,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
+import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
@@ -16,6 +17,7 @@ import static com.google.common.base.Preconditions.checkState;
 public abstract class AbstractServiceVerticle extends AbstractVerticle implements VerticeLogging {
 
     public static final String ADDRESS_KEY = "address";
+    public static final String ACTION_HEADER = "action";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 
@@ -47,7 +49,11 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle implement
 
     private void setReplyHandler(Message<Object> message, ServiceMetadata actions) {
         Object payload = message.body();
-        String action = message.headers().get("action");
+        MultiMap headers = message.headers();
+        if (!headers.contains(ACTION_HEADER)) {
+            throw new IllegalStateException("Action header " + ACTION_HEADER + " not set for message " + message);
+        }
+        String action = headers.get("action");
         if (!actions.hasAction(action)) {
             throw new IllegalArgumentException("Unknown service operation " + action);
         }
