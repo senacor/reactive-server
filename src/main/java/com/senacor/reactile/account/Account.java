@@ -2,6 +2,7 @@ package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.customer.CustomerId;
+import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
@@ -50,6 +51,23 @@ public class Account {
                 ", balance=" + balance +
                 ", currency=" + currency +
                 '}';
+    }
+
+    public static Account fromJson(JsonObject jsonObject) {
+        return anAccount()
+                .withId(jsonObject.getString("id"))
+                .withCustomerId(jsonObject.getString("customerId"))
+                .withBalance(new BigDecimal(jsonObject.getString("balance")))
+                .withCurrency(jsonObject.getString("currency"))
+                .build();
+    }
+
+    public JsonObject toJson() {
+        return new JsonObject()
+                .put("id", id.getId())
+                .put("customerId", customerId)
+                .put("balance", balance)
+                .put("currency", currency);
     }
 
     public static final class Builder {
