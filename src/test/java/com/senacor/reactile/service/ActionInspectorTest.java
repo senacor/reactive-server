@@ -1,11 +1,11 @@
 package com.senacor.reactile.service;
 
-import com.senacor.reactile.auth.User;
-import com.senacor.reactile.auth.UserId;
+import com.senacor.reactile.user.User;
+import com.senacor.reactile.user.UserId;
 import org.junit.Test;
 import rx.Observable;
 
-import static com.senacor.reactile.auth.User.aUser;
+import static com.senacor.reactile.user.User.aUser;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

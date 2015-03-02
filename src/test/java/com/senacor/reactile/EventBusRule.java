@@ -35,7 +35,10 @@ public class EventBusRule extends ExternalResource {
 
     public <T> Message<T> sendObservable(String address, Object message, DeliveryOptions options, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
         CompletableFuture<Message<T>> responseFuture = new CompletableFuture<>();
-        vertx.eventBus().<T>sendObservable(address, message, options).subscribe(responseFuture::complete);
+        vertx.eventBus().<T>sendObservable(address, message, options).subscribe(
+                responseFuture::complete,
+                Throwable::printStackTrace
+        );
         return responseFuture.get(timeout, TimeUnit.MILLISECONDS);
 
     }

@@ -1,4 +1,4 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.user;
 
 import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
@@ -8,19 +8,14 @@ import rx.Observable;
 
 public class UserServiceVerticle extends AbstractServiceVerticle {
 
-    public static final String ADDRESS = "UserDatabaseConnector";
+    public static final String ADDRESS = "UserServiceVerticle";
 
-    private UserServiceConnector connector;
+    private UserConnector connector;
 
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        connector = new UserServiceConnector(super.vertx);
-    }
-
-    @Override
-    protected String getAddress() {
-        return ADDRESS;
+        connector = new UserConnector(super.vertx);
     }
 
     @Action

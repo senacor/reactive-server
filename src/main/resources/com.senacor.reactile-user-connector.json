@@ -1,0 +1,13 @@
+{
+  "main": "com.senacor.reactile.user.UserConnectorVerticle",
+
+
+  "options": {
+    "worker": true,
+    "config": {
+      "address": "UserConnectorVerticle"
+    }
+
+
+  }
+}

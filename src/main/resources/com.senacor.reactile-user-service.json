@@ -1,0 +1,9 @@
+{
+  "main": "com.senacor.reactile.user.UserServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "UserServiceVerticle"
+    }
+  }
+}

@@ -1,8 +1,10 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.user;
 
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
+
+import static com.senacor.reactile.header.Headers.action;
 
 public class UserServiceImpl implements UserService {
     private final Vertx vertx;
@@ -15,7 +17,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Observable<User> getUser(UserId userId) {
         return vertx.eventBus()
-                .<User>sendObservable(UserServiceVerticle.ADDRESS, userId)
+                .<User>sendObservable(UserServiceVerticle.ADDRESS, userId, action("get"))
                 .map(Message::body);
     }
+
 }

@@ -1,4 +1,4 @@
-package com.senacor.reactile.auth;
+package com.senacor.reactile.user;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -6,7 +6,7 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleUserDatabase implements UserDatabase {
+public class UserDatabase {
 
     private final Map<UserId, User> users;
 
@@ -30,17 +30,14 @@ public class SimpleUserDatabase implements UserDatabase {
     }
 
 
-    @Override
     public User login(UserId id) {
         return users.get(id);
     }
 
-    @Override
     public User findUser(UserId id) {
         return users.get(id);
     }
 
-    @Override
     public void addUser(User user) {
         users.put(user.getId(), user);
     }
