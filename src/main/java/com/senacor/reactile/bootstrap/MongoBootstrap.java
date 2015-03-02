@@ -44,7 +44,6 @@ public class MongoBootstrap extends AbstractVerticle {
     }
 
     private ObservableFuture<String> writeSomethingObservable() {
-
         MongoService service = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
 
         List<Address> addresses = new ArrayList<>();
