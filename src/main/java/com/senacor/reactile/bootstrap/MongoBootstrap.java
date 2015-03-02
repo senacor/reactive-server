@@ -24,12 +24,12 @@ public class MongoBootstrap extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         Action1<Throwable> errorhandler = Throwable::printStackTrace;
 
-        launchEmbeddedMongoObservable().subscribe(res1 -> launchMongoServiceObservable()
-                        .subscribe(res2 -> writeSomethingObservable().subscribe(outcome -> {
-                            System.out.println("Mongo startet and initialized");
-                            startFuture.complete();
-                        }), errorhandler),
-                errorhandler);
+        launchEmbeddedMongoObservable()
+                .flatMap(res1 -> launchMongoServiceObservable())
+                .subscribe(res2 -> writeSomethingObservable().subscribe(outcome -> {
+                    System.out.println("Mongo startet and initialized");
+                    startFuture.complete();
+                }), errorhandler);
     }
 
     private Observable<String> launchEmbeddedMongoObservable() {
