@@ -32,6 +32,8 @@ import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import rx.Observable;
 
+import java.util.List;
+
 public class GatewayVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
@@ -103,8 +105,8 @@ public class GatewayVerticle extends AbstractVerticle {
 
         return userService.getUser(userId).flatMap(user -> {
                 Observable<Customer> customerObservable = customerService.getCustomer(customerId);
-                Observable<Account> accountObservable = accountService.getAccountsForCustomer(customerId);
-                Observable<CreditCard> creditCardObservable = creditCardService.getCreditCard(customerId);
+                Observable<List<Account>> accountObservable = accountService.getAccountsForCustomer(customerId);
+                Observable<List<CreditCard>> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId);
                 Observable.zip(customerObservable, accountObservable, creditCardObservable, (cust, acc, cred) -> cust);
                 return customerObservable;
         }).map(customer -> writeResponse(response, customer));
