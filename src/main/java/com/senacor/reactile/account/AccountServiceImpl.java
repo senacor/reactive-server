@@ -8,6 +8,7 @@ import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.senacor.reactile.account.Account.anAccount;
 import static com.senacor.reactile.header.Headers.action;
@@ -37,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Observable<Account> getAccountsForCustomer(CustomerId customerId) {
-        return vertx.eventBus().<Account>sendObservable(AccountServiceVerticle.ADDRESS, customerId, action("getAccountsForCustomer")).map(Message::body);
+    public Observable<List<Account>> getAccountsForCustomer(CustomerId customerId) {
+        return vertx.eventBus().<List<Account>>sendObservable(AccountServiceVerticle.ADDRESS, customerId, action("getAccountsForCustomer")).map(Message::body);
     }
 }

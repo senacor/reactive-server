@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by rwinzing on 03.03.15.
  */
-public class AccountServiceVerticle extends AbstractServiceVerticle {
+public class AccountServiceVerticle extends AbstractServiceVerticle implements AccountService {
     public static final String ADDRESS = "AccountServiceVerticle";
 
     private MongoService mongoService;
