@@ -5,5 +5,6 @@ import rx.Observable;
 
 public interface AccountService {
 
-    Observable<Account> getAccount(CustomerId customerId);
+    Observable<Account> getAccount(AccountId accountId);
+    Observable<Account> getAccountsForCustomer(CustomerId customerId);
 }

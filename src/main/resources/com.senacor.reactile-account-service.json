@@ -1,0 +1,9 @@
+{
+  "main": "com.senacor.reactile.account.AccountServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "AccountServiceVerticle"
+    }
+  }
+}

@@ -19,6 +19,7 @@ import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import org.junit.rules.ExternalResource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -88,11 +89,13 @@ public class VertxRule extends ExternalResource {
                 Customer.class,
                 CustomerId.class,
                 Account.class,
+                Account[].class,
                 AccountId.class,
                 CreditCard.class,
                 CreditCardId.class,
                 Currency.class,
-                CustomerAddressChangedEvt.class
+                CustomerAddressChangedEvt.class,
+                ArrayList.class
         )
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
     }
