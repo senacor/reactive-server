@@ -15,8 +15,8 @@ import java.util.List;
 /**
  * Created by rwinzing on 03.03.15.
  */
-public class CreditCardServiceVerticle extends AbstractServiceVerticle implements AccountService {
-    public static final String ADDRESS = "AccountServiceVerticle";
+public class CreditCardServiceVerticle extends AbstractServiceVerticle implements CreditCardService {
+    public static final String ADDRESS = "CreditCardServiceVerticle";
 
     private MongoService mongoService;
 
@@ -27,27 +27,27 @@ public class CreditCardServiceVerticle extends AbstractServiceVerticle implement
     }
 
     @Action
-    public Observable<List<Account>> getAccountsForCustomer(CustomerId id) {
+    public Observable<List<CreditCard>> getCreditCardsForCustomer(CustomerId customerId) {
         ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
 
-        JsonObject query = new JsonObject().put("customerId", id.toValue());
-        mongoService.find("accounts", query, observable.asHandler());
+        JsonObject query = new JsonObject().put("customerId", customerId.getId());
+        mongoService.find("creditcards", query, observable.asHandler());
 
         return observable.map(list -> {
-            List<Account> accs = new ArrayList<Account>();
-            list.forEach(item -> accs.add(Account.fromJson(item)));
-            return accs;
+            List<CreditCard> ccs = new ArrayList<CreditCard>();
+            list.forEach(item -> ccs.add(CreditCard.fromJson(item)));
+            return ccs;
         });
         // return observable.flatMap(Observable::from).map(Account::fromJson);
     }
 
     @Action
-    public Observable<Account> getAccount(AccountId id) {
+    public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
-        JsonObject query = new JsonObject().put("id", id.toValue());
-        mongoService.findOne("accounts", query, null, observable.asHandler());
+        JsonObject query = new JsonObject().put("id", creditCardId.getId());
+        mongoService.findOne("creditcards", query, null, observable.asHandler());
 
-        return observable.map(Account::fromJson);
+        return observable.map(CreditCard::fromJson);
     }
 }
