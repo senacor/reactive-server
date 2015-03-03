@@ -1,0 +1,9 @@
+{
+  "main": "com.senacor.reactile.account.CreditCardServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "CreditCardServiceVerticle"
+    }
+  }
+}
