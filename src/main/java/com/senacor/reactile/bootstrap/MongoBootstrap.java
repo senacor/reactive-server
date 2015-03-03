@@ -1,5 +1,6 @@
 package com.senacor.reactile.bootstrap;
 
+import com.senacor.reactile.account.Account;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
@@ -15,6 +16,7 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import rx.Observable;
 import rx.functions.Action1;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +45,9 @@ public class MongoBootstrap extends AbstractVerticle {
         return vertx.deployVerticleObservable("service:io.vertx:mongo-service", new DeploymentOptions().setConfig(config));
     }
 
-    private ObservableFuture<String> writeSomethingObservable() {
+    private Observable<String> writeSomethingObservable() {
         MongoService service = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
+        Observable<String> observable = null;
 
         List<Address> addresses = new ArrayList<>();
         addresses.add(Address.anAddress()
@@ -65,9 +68,30 @@ public class MongoBootstrap extends AbstractVerticle {
                 .withTaxNumber("47-tax-11").build();
 
 
-        ObservableFuture<String> observable = RxHelper.observableFuture();
+        ObservableFuture<String> custObservable = RxHelper.observableFuture();
         JsonObject doc = customer.toJson();
-        service.insert("customers", doc, observable.asHandler());
+        service.insert("customers", doc, custObservable.asHandler());
+        observable = custObservable;
+
+        Account account_1 = Account.anAccount()
+                .withId("08-cust-15-ac-1")
+                .withCustomerId(new CustomerId("08-cust-15"))
+                .withBalance(new BigDecimal("18773"))
+                .withCurrency("EUR")
+                .build();
+        ObservableFuture<String> acc1observable = RxHelper.observableFuture();
+        service.insert("accounts", account_1.toJson(), acc1observable.asHandler());
+        observable = observable.mergeWith(acc1observable);
+
+        Account account_2 = Account.anAccount()
+                .withId("08-cust-15-ac-2")
+                .withCustomerId(new CustomerId("08-cust-15"))
+                .withBalance(new BigDecimal("20773"))
+                .withCurrency("EUR")
+                .build();
+        ObservableFuture<String> acc2observable = RxHelper.observableFuture();
+        service.insert("accounts", account_2.toJson(), acc2observable.asHandler());
+        observable = observable.mergeWith(acc2observable);
 
         return observable;
     }
