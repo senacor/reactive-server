@@ -1,10 +1,6 @@
 package com.senacor.reactile;
 
-import com.senacor.reactile.account.Account;
-import com.senacor.reactile.account.AccountId;
-import com.senacor.reactile.account.CreditCard;
-import com.senacor.reactile.account.CreditCardId;
-import com.senacor.reactile.account.Currency;
+import com.senacor.reactile.account.*;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
@@ -92,6 +88,8 @@ public class VertxRule extends ExternalResource {
                 AccountId.class,
                 CreditCard.class,
                 CreditCardId.class,
+                Transaction.class,
+                TransactionId.class,
                 Currency.class,
                 CustomerAddressChangedEvt.class,
                 ArrayList.class
