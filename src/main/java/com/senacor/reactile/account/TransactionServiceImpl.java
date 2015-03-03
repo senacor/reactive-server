@@ -2,11 +2,14 @@ package com.senacor.reactile.account;
 
 import com.senacor.reactile.customer.CustomerId;
 import io.vertx.rxjava.core.Vertx;
+import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.senacor.reactile.account.Transaction.aTransaction;
+import static com.senacor.reactile.header.Headers.action;
 
 public class TransactionServiceImpl implements TransactionService {
     private final Vertx vertx;
@@ -16,23 +19,16 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Observable<Transaction> getTransaction(CustomerId customerId) {
-        return Observable.just(
-                aTransaction().withCustomerId(customerId.getId()).withAccountId(customerId.getId()+"-ac-01").withAmount(new BigDecimal("18773")).withCurrency("EUR").build(),
-                aTransaction().withCustomerId(customerId.getId()).withAccountId(customerId.getId()+"-cc-01").withAmount(new BigDecimal("20770")).withCurrency("EUR").build()
-        );
+    public Observable<List<Transaction>> getTransactionsForCustomer(CustomerId customerId) {
+        return vertx.eventBus().<List<Transaction>>sendObservable(TransactionServiceVerticle.ADDRESS, customerId, action("getTransactionsForCustomer")).map(Message::body);
     }
 
     @Override
-    public Observable<Transaction> getTransaction(CustomerId customerId, AccountId accountId) {
-        return Observable.just(
-                aTransaction().withCustomerId(customerId.getId()).withAccountId(customerId.getId()+"-ac-01").withAmount(new BigDecimal("17805")).withCurrency("EUR").build()
-        );
+    public Observable<List<Transaction>> getTransactionsForAccount(AccountId accountId) {
+        return vertx.eventBus().<List<Transaction>>sendObservable(TransactionServiceVerticle.ADDRESS, accountId, action("getTransactionsForAccount")).map(Message::body);
     }
     @Override
-    public Observable<Transaction> getTransaction(CustomerId customerId, CreditCardId creditCardId) {
-        return Observable.just(
-                aTransaction().withCustomerId(customerId.getId()).withAccountId(customerId.getId()+"-cc-01").withAmount(new BigDecimal("14597")).withCurrency("EUR").build()
-        );
+    public Observable<List<Transaction>> getTransactionsForCreditCard(CreditCardId creditCardId) {
+        return vertx.eventBus().<List<Transaction>>sendObservable(TransactionServiceVerticle.ADDRESS, creditCardId, action("getTransactionsForCreditCard")).map(Message::body);
     }
 }

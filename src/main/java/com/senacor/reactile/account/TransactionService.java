@@ -3,9 +3,11 @@ package com.senacor.reactile.account;
 import com.senacor.reactile.customer.CustomerId;
 import rx.Observable;
 
+import java.util.List;
+
 public interface TransactionService {
 
-    Observable<Transaction> getTransaction(CustomerId customerId);
-    Observable<Transaction> getTransaction(CustomerId customerId, AccountId accountId);
-    Observable<Transaction> getTransaction(CustomerId customerId, CreditCardId creditCardId);
+    Observable<List<Transaction>> getTransactionsForCustomer(CustomerId customerId);
+    Observable<List<Transaction>> getTransactionsForAccount(AccountId accountId);
+    Observable<List<Transaction>> getTransactionsForCreditCard(CreditCardId creditCardId);
 }

@@ -17,7 +17,7 @@ public class TransactionServiceVerticleTest {
     @Rule
     public final VertxRule vertxRule = new VertxRule(ApplicationStartup.class);
     {
-        vertxRule.deployVerticle(Services.CreditCardService);
+        vertxRule.deployVerticle(Services.TransactionService);
     }
 
     @Rule
