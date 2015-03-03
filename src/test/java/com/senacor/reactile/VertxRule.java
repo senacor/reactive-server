@@ -89,7 +89,6 @@ public class VertxRule extends ExternalResource {
                 Customer.class,
                 CustomerId.class,
                 Account.class,
-                Account[].class,
                 AccountId.class,
                 CreditCard.class,
                 CreditCardId.class,
