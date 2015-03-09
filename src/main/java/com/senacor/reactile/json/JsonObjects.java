@@ -3,7 +3,9 @@ package com.senacor.reactile.json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
@@ -14,7 +16,7 @@ public final class JsonObjects {
 
     public static <T> List<T> unmarshal(JsonArray jsonArray, Function<JsonObject, T> mapping) {
         return jsonArray.stream()
-                .map(object -> (JsonObject) object)
+                .map(object -> object instanceof LinkedHashMap ? new JsonObject((Map<String, Object>) object) : (JsonObject) object)
                 .map(mapping)
                 .collect(toList());
     }
