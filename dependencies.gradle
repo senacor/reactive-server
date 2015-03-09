@@ -11,7 +11,7 @@ ext {
 
     jacksonVersion = '1.9.13'
 
-    vertxVersion = '3.0.+'
+    vertxVersion = '3.0.0-SNAPSHOT'
 }
 
 
