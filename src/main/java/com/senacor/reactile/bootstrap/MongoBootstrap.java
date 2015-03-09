@@ -27,9 +27,13 @@ public class MongoBootstrap extends AbstractVerticle {
                 .flatMap(res -> launchMongoServiceObservable())
                 .flatMap(res -> writeSomethingObservable())
                 .subscribe(
-                        outcome -> System.out.println("Mongo started and initialized"),
-                        throwable -> startFuture.fail(throwable),
-                        () -> startFuture.complete()
+                        outcome -> System.out.println("Value " + outcome + " processed."),
+                        startFuture::fail,
+                        () -> {
+                            startFuture.complete();
+                            System.out.println("Mongo started and initialized.");
+                        }
+
                 );
     }
 
