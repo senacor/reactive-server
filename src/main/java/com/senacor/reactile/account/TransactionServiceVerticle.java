@@ -32,7 +32,7 @@ public class TransactionServiceVerticle extends AbstractServiceVerticle implemen
         ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("customerId", customerId.toValue());
-        mongoService.find("transactions", query, observable.asHandler());
+        mongoService.find("transactions", query, observable.toHandler());
 
         return observable.map(list -> {
             List<Transaction> txs = new ArrayList<Transaction>();
@@ -46,7 +46,7 @@ public class TransactionServiceVerticle extends AbstractServiceVerticle implemen
         ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("accountId", accountId.getId());
-        mongoService.find("transactions", query, observable.asHandler());
+        mongoService.find("transactions", query, observable.toHandler());
 
         return observable.map(list -> {
             List<Transaction> txs = new ArrayList<Transaction>();
@@ -60,7 +60,7 @@ public class TransactionServiceVerticle extends AbstractServiceVerticle implemen
         ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("creditCardId", creditCardId.getId());
-        mongoService.find("transactions", query, observable.asHandler());
+        mongoService.find("transactions", query, observable.toHandler());
 
         return observable.map(list -> {
             List<Transaction> txs = new ArrayList<Transaction>();

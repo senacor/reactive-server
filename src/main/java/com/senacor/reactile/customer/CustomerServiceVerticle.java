@@ -32,7 +32,7 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("id", id.toValue());
-        mongoService.findOne("customers", query, null, observable.asHandler());
+        mongoService.findOne("customers", query, null, observable.toHandler());
 
         return observable.map(Customer::fromJson);
     }

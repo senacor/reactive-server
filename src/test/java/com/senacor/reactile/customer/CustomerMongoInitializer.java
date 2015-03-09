@@ -49,7 +49,7 @@ public class CustomerMongoInitializer {
     private Func1<Customer, Observable<? extends String>> insertCustomer(MongoService service) {
         return customer -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
-            service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+            service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
             return newOne;
         };
     }
@@ -72,7 +72,7 @@ public class CustomerMongoInitializer {
 
             ObservableFuture<String> newOne = RxHelper.observableFuture();
 //            System.err.println(">> inserting cust "+customer.getId());
-            service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+            service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
 
             return testAccounts.flatMap(insertAccount(service)).mergeWith(testCreditCards.flatMap(insertCreditCard(service))).mergeWith(newOne);
         };
@@ -82,7 +82,7 @@ public class CustomerMongoInitializer {
         return account -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
 //            System.err.println(">> inserting acc "+account.getId());
-            service.insertWithOptions("accounts", account.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+            service.insertWithOptions("accounts", account.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
 
             Observable<Transaction> testAccTransactions = Observable.zip(
                     transactionId(account.getId()),
@@ -95,7 +95,7 @@ public class CustomerMongoInitializer {
             return newOne.mergeWith(testAccTransactions.flatMap(transaction -> {
                 ObservableFuture<String> newTx = RxHelper.observableFuture();
 //                System.err.println(">> inserting acc-tx "+transaction.getId());
-                service.insertWithOptions("transactions", transaction.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+                service.insertWithOptions("transactions", transaction.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
                 return newTx;
             }));
         };
@@ -105,7 +105,7 @@ public class CustomerMongoInitializer {
         return creditCard -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
 //            System.err.println(">> inserting cc "+creditCard.getId());
-            service.insertWithOptions("creditcards", creditCard.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+            service.insertWithOptions("creditcards", creditCard.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
 
             Observable<Transaction> testCcTransactions = Observable.zip(
                     transactionId(creditCard.getId()),
@@ -118,7 +118,7 @@ public class CustomerMongoInitializer {
             return newOne.mergeWith(testCcTransactions.flatMap(transaction -> {
                 ObservableFuture<String> newTx = RxHelper.observableFuture();
 //                System.err.println(">> inserting cc-tx "+transaction.getId());
-                service.insertWithOptions("transactions", transaction.toJson(), WriteOption.UNACKNOWLEDGED, newOne.asHandler());
+                service.insertWithOptions("transactions", transaction.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
                 return newTx;
             }));
         };

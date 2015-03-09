@@ -31,7 +31,7 @@ public class AccountServiceVerticle extends AbstractServiceVerticle implements A
         ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("customerId", id.toValue());
-        mongoService.find("accounts", query, observable.asHandler());
+        mongoService.find("accounts", query, observable.toHandler());
 
         return observable.map(list -> {
             List<Account> accs = new ArrayList<Account>();
@@ -46,7 +46,7 @@ public class AccountServiceVerticle extends AbstractServiceVerticle implements A
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("id", id.toValue());
-        mongoService.findOne("accounts", query, null, observable.asHandler());
+        mongoService.findOne("accounts", query, null, observable.toHandler());
 
         return observable.map(Account::fromJson);
     }

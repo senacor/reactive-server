@@ -1,8 +1,6 @@
 package com.senacor.reactile.bootstrap;
 
 import com.senacor.reactile.VertxRule;
-import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +23,7 @@ public class ApplicationStartupTest {
     public void thatAllNecessaryVerticlesLaunched() throws InterruptedException {
         Thread.sleep(5000);
 
-        Set<String> deployments = vertx.deployments();
+        Set<String> deployments = vertx.deploymentIDs();
         for (String deployment: deployments) {
             System.out.println("deployment = " + deployment);
         }

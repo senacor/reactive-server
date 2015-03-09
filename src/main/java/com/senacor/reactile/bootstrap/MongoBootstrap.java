@@ -42,7 +42,9 @@ public class MongoBootstrap extends AbstractVerticle {
         JsonObject config = new JsonObject()
                 .put("connection_string", "mongodb://localhost:27018")
                 .put("db_name", "reactile");
-        return vertx.deployVerticleObservable("service:io.vertx:mongo-service", new DeploymentOptions().setConfig(config));
+        ObservableFuture<String> observableHandler = RxHelper.observableFuture();
+        getVertx().deployVerticle("service:io.vertx:mongo-service", new DeploymentOptions().setConfig(config), observableHandler.toHandler());
+        return observableHandler;
     }
 
     private Observable<String> writeSomethingObservable() {
@@ -70,7 +72,7 @@ public class MongoBootstrap extends AbstractVerticle {
 
         ObservableFuture<String> custObservable = RxHelper.observableFuture();
         JsonObject doc = customer.toJson();
-        service.insert("customers", doc, custObservable.asHandler());
+        service.insert("customers", doc, custObservable.toHandler());
         observable = custObservable;
 
         Account account_1 = Account.anAccount()
@@ -80,7 +82,7 @@ public class MongoBootstrap extends AbstractVerticle {
                 .withCurrency("EUR")
                 .build();
         ObservableFuture<String> acc1observable = RxHelper.observableFuture();
-        service.insert("accounts", account_1.toJson(), acc1observable.asHandler());
+        service.insert("accounts", account_1.toJson(), acc1observable.toHandler());
         observable = observable.mergeWith(acc1observable);
 
         Account account_2 = Account.anAccount()
@@ -90,7 +92,7 @@ public class MongoBootstrap extends AbstractVerticle {
                 .withCurrency("EUR")
                 .build();
         ObservableFuture<String> acc2observable = RxHelper.observableFuture();
-        service.insert("accounts", account_2.toJson(), acc2observable.asHandler());
+        service.insert("accounts", account_2.toJson(), acc2observable.toHandler());
         observable = observable.mergeWith(acc2observable);
 
         return observable;

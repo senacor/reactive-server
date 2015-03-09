@@ -31,7 +31,7 @@ public class CreditCardServiceVerticle extends AbstractServiceVerticle implement
         ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
-        mongoService.find("creditcards", query, observable.asHandler());
+        mongoService.find("creditcards", query, observable.toHandler());
 
         return observable.map(list -> {
             List<CreditCard> ccs = new ArrayList<CreditCard>();
@@ -46,7 +46,7 @@ public class CreditCardServiceVerticle extends AbstractServiceVerticle implement
         ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
 
         JsonObject query = new JsonObject().put("id", creditCardId.getId());
-        mongoService.findOne("creditcards", query, null, observable.asHandler());
+        mongoService.findOne("creditcards", query, null, observable.toHandler());
 
         return observable.map(CreditCard::fromJson);
     }

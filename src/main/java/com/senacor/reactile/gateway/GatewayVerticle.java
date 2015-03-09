@@ -71,7 +71,7 @@ public class GatewayVerticle extends AbstractVerticle {
                         Throwable::printStackTrace
                 );
 
-        httpServer.requestHandler(requestHandler.asHandler());
+        httpServer.requestHandler(requestHandler.toHandler());
 
         httpServer.listenObservable().subscribe(
                 server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
