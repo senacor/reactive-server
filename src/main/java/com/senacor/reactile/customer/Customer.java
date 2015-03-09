@@ -7,6 +7,8 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 public class Customer {
 
     private final CustomerId id;
@@ -94,8 +96,8 @@ public class Customer {
                 .put("id", id.getId())
                 .put("firstname", firstname)
                 .put("lastname", lastname)
-                .put("addresses", new JsonArray(addresses))
-                .put("contacts", new JsonArray(contacts))
+                .put("addresses", addresses.stream().map(address -> address.toJson()).collect(toList()))
+                .put("contacts", contacts.stream().map(contact -> contact.toJson()).collect(toList()))
                 .put("taxCountry", taxCountry.toJson())
                 .put("taxnumber", taxNumber);
     }
