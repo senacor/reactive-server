@@ -14,7 +14,6 @@ import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.AbstractVerticle;
 import rx.Observable;
-import rx.functions.Action1;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,14 +23,17 @@ public class MongoBootstrap extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        Action1<Throwable> errorhandler = Throwable::printStackTrace;
 
         launchEmbeddedMongoObservable()
-                .flatMap(res1 -> launchMongoServiceObservable())
-                .subscribe(res2 -> writeSomethingObservable().subscribe(outcome -> {
-                    System.out.println("Mongo started and initialized");
-                    startFuture.complete();
-                }), errorhandler);
+                .flatMap(res -> launchMongoServiceObservable())
+                .flatMap(res -> writeSomethingObservable())
+                .flatMap(res -> writeSomethingObservable())
+                .subscribe(
+                        outcome -> {
+                            System.out.println("Mongo started and initialized");
+                            startFuture.complete();
+                        },
+                        Throwable::printStackTrace);
     }
 
     private Observable<String> launchEmbeddedMongoObservable() {
