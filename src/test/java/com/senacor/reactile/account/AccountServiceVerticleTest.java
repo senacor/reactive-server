@@ -4,17 +4,12 @@ import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.ApplicationStartup;
-import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.customer.CustomerServiceVerticle;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
 import org.junit.Test;
-import rx.Observable;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -29,6 +24,7 @@ import static org.junit.Assert.assertThat;
 public class AccountServiceVerticleTest {
     @Rule
     public final VertxRule vertxRule = new VertxRule(ApplicationStartup.class);
+
     {
         vertxRule.deployVerticle(Services.AccountService);
     }
@@ -41,7 +37,7 @@ public class AccountServiceVerticleTest {
         CustomerId customerId = new CustomerId("08-cust-15");
 
         Message<List<Account>> accsMsg = eventBusRule.sendObservable(AccountServiceVerticle.ADDRESS, customerId, "getAccountsForCustomer");
-        for(Account acc:accsMsg.body()) {
+        for (Account acc : accsMsg.body()) {
             System.out.println("ACCOUNT: " + acc);
         }
 
