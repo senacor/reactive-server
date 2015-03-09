@@ -1,13 +1,13 @@
 package com.senacor.reactile.customer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import static com.senacor.reactile.json.JsonObjects.marshal;
+import static com.senacor.reactile.json.JsonObjects.unmarshal;
 
 public class Customer {
 
@@ -69,26 +69,15 @@ public class Customer {
     public static Customer fromJson(JsonObject jsonObject) {
         System.out.println("jsonObject.encodePrettily() = " + jsonObject.encodePrettily());
 
-        Customer cust = Customer.newBuilder()
+        return Customer.newBuilder()
                 .withId(jsonObject.getString("id"))
                 .withFirstname(jsonObject.getString("firstname"))
                 .withLastname(jsonObject.getString("lastname"))
                 .withTaxNumber(jsonObject.getString("taxNumber"))
-                .withTaxCountry(Country.fromJson(jsonObject.getJsonObject("taxCountry"))).build();
-
-        JsonArray ads = jsonObject.getJsonArray("addresses");
-        for (Object ad: ads) {
-            JsonObject jsonAd = (JsonObject) ad;
-            cust.addresses.add(Address.fromJson(jsonAd));
-        }
-
-        JsonArray cons = jsonObject.getJsonArray("contacts");
-        for (Object con: cons) {
-            JsonObject jsonCon = (JsonObject) con;
-            cust.contacts.add(Contact.fromJson(jsonCon));
-        }
-
-        return cust;
+                .withTaxCountry(Country.fromJson(jsonObject.getJsonObject("taxCountry")))
+                .withAddresses(unmarshal(jsonObject.getJsonArray("addresses"), Address::fromJson))
+                .withContacts(unmarshal(jsonObject.getJsonArray("contacts"), Contact::fromJson))
+                .build();
     }
 
     public JsonObject toJson() {
@@ -96,8 +85,8 @@ public class Customer {
                 .put("id", id.getId())
                 .put("firstname", firstname)
                 .put("lastname", lastname)
-                .put("addresses", addresses.stream().map(address -> address.toJson()).collect(toList()))
-                .put("contacts", contacts.stream().map(contact -> contact.toJson()).collect(toList()))
+                .put("addresses", marshal(addresses, Address::toJson))
+                .put("contacts", marshal(contacts, Contact::toJson))
                 .put("taxCountry", taxCountry.toJson())
                 .put("taxnumber", taxNumber);
     }
