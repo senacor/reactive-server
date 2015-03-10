@@ -5,6 +5,8 @@ import com.senacor.reactile.mongo.ObservableMongoService;
 import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
 import com.senacor.reactile.user.UserId;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
 import rx.Observable;
@@ -19,13 +21,17 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
     private String collection;
 
     @Override
+    public void init(Vertx vertx, Context context) {
+        super.init(vertx, context);
+        collection = context.config().getString("collection");
+    }
+
+    @Override
     public void start() throws Exception {
         super.start();
         //TODO configuration and guice injection
         MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
         mongoService = ObservableMongoService.from(eventBusProxy);
-
-        collection = config().getString("collection");
 
         vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
