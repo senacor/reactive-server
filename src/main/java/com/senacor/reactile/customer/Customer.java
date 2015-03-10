@@ -93,8 +93,6 @@ public class Customer {
                 .put("taxnumber", taxNumber);
     }
 
-
-
     public static final class Builder {
         private CustomerId id;
         private String firstname;

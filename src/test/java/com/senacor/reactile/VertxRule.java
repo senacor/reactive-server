@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 public class VertxRule extends ExternalResource {
 
     private final Vertx vertx = Vertx.vertx();
-    private final EventBusSender eventBusSender = new EventBusSender(vertx);
+    private final BlockingEventBus blockingEventBus = new BlockingEventBus(vertx);
     private final VerticleDeployer verticleDeployer = new VerticleDeployer(vertx);
 
 
@@ -106,20 +106,19 @@ public class VertxRule extends ExternalResource {
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
     }
 
-    public <T> Message<T> sendObservable(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {
-        return eventBusSender.sendObservable(address, message);
+    public <T> Message<T> sendBlocking(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {
+        return blockingEventBus.sendObservable(address, message);
     }
 
-    public <T> Message<T> sendObservable(String address, Object message, String action) throws InterruptedException, ExecutionException, TimeoutException {
-        return eventBusSender.sendObservable(address, message, action);
+    public <T> Message<T> sendBlocking(String address, Object message, String action) throws InterruptedException, ExecutionException, TimeoutException {
+        return blockingEventBus.sendObservable(address, message, action);
     }
 
-    public <T> Message<T> sendObservable(String address, Object message, String action, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
-        return eventBusSender.sendObservable(address, message, action, timeout);
+    public <T> Message<T> sendBlocking(String address, Object message, String action, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
+        return blockingEventBus.sendObservable(address, message, action, timeout);
     }
 
-    public <T> Message<T> sendObservable(String address, Object message, DeliveryOptions options, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
-        return eventBusSender.sendObservable(address, message, options, timeout);
+    public <T> Message<T> sendBlocking(String address, Object message, DeliveryOptions options, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
+        return blockingEventBus.sendObservable(address, message, options, timeout);
     }
-
 }

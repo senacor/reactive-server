@@ -33,6 +33,12 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
         return mongoService.findOne("customers", query).map(Customer::fromJson);
     }
 
+    @Action("add")
+    public Observable<Customer> addCustomer(Customer customer) {
+        JsonObject customerJson = customer.toJson().put("_id", customer.getId().toValue());
+        return mongoService.insert("customers", customerJson).flatMap(id -> Observable.just(customer));
+    }
+
     private CustomerAddressChangedEvt newCustomerChangedEvent() {
         return new CustomerAddressChangedEvt(new UserId("momann"), new CustomerId("007"), anAddress()
                 .withStreet("Erika-Mann-Straße")

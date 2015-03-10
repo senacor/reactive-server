@@ -21,14 +21,14 @@ public class UserServiceVerticleTest {
 
     @Test
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {
-        Message<User> userMessage = vertxRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
+        Message<User> userMessage = vertxRule.sendBlocking(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
         User user = userMessage.body();
         assertIsUser(user);
     }
 
     @Test
     public void thatUserCanBeLoggedIn() throws ExecutionException, InterruptedException, TimeoutException {
-        Message<User> userMessage = vertxRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "login");
+        Message<User> userMessage = vertxRule.sendBlocking(UserServiceVerticle.ADDRESS, new UserId("momann"), "login");
         User user = userMessage.body();
         assertIsUser(user);
     }
@@ -36,7 +36,7 @@ public class UserServiceVerticleTest {
     @Test
     public void thatUserCanBeCreated() throws ExecutionException, InterruptedException, TimeoutException {
         User message = new User(new UserId("momann"), "Michael", "Omann");
-        Message<User> userMessage = vertxRule.sendObservable(UserServiceVerticle.ADDRESS, message, "create");
+        Message<User> userMessage = vertxRule.sendBlocking(UserServiceVerticle.ADDRESS, message, "create");
         User user = userMessage.body();
         assertIsUser(user);
     }

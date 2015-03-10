@@ -9,11 +9,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-class EventBusSender {
+class BlockingEventBus {
     public static final int DEFAULT_TIMEOUT = 300;
     private final Vertx vertx;
 
-    public EventBusSender(Vertx vertx) {
+    public BlockingEventBus(Vertx vertx) {
         this.vertx = vertx;
     }
 
