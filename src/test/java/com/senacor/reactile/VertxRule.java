@@ -1,6 +1,12 @@
 package com.senacor.reactile;
 
-import com.senacor.reactile.account.*;
+import com.senacor.reactile.account.Account;
+import com.senacor.reactile.account.AccountId;
+import com.senacor.reactile.account.CreditCard;
+import com.senacor.reactile.account.CreditCardId;
+import com.senacor.reactile.account.Currency;
+import com.senacor.reactile.account.Transaction;
+import com.senacor.reactile.account.TransactionId;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
@@ -11,17 +17,22 @@ import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.Verticle;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.EventBus;
+import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.rules.ExternalResource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 public class VertxRule extends ExternalResource {
 
     private final Vertx vertx = Vertx.vertx();
+    private final EventBusSender eventBusSender = new EventBusSender(vertx);
     private final VerticleDeployer verticleDeployer = new VerticleDeployer(vertx);
 
 
@@ -63,7 +74,6 @@ public class VertxRule extends ExternalResource {
     protected void before() throws Throwable {
         registerDomainObjectCodec();
         verticleDeployer.deployVerticles(10_000);
-
     }
 
 
@@ -72,7 +82,6 @@ public class VertxRule extends ExternalResource {
         verticleDeployer.stopVerticles(10_000);
         vertx.close();
     }
-
 
 
     private void registerDomainObjectCodec() {
@@ -95,6 +104,22 @@ public class VertxRule extends ExternalResource {
                 ArrayList.class
         )
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
+    }
+
+    public <T> Message<T> sendObservable(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {
+        return eventBusSender.sendObservable(address, message);
+    }
+
+    public <T> Message<T> sendObservable(String address, Object message, String action) throws InterruptedException, ExecutionException, TimeoutException {
+        return eventBusSender.sendObservable(address, message, action);
+    }
+
+    public <T> Message<T> sendObservable(String address, Object message, String action, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
+        return eventBusSender.sendObservable(address, message, action, timeout);
+    }
+
+    public <T> Message<T> sendObservable(String address, Object message, DeliveryOptions options, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
+        return eventBusSender.sendObservable(address, message, options, timeout);
     }
 
 }

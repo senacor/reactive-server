@@ -39,6 +39,7 @@ public class MongoBootstrap extends AbstractVerticle {
 
         Customer customer = CustomerFixtures.defaultCustomer();
 
+
         ObservableFuture<String> custObservable = RxHelper.observableFuture();
         service.insert("customers", customer.toJson(), custObservable.toHandler());
 

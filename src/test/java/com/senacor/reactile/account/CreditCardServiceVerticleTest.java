@@ -1,6 +1,5 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.ApplicationStartup;
@@ -19,9 +18,6 @@ public class CreditCardServiceVerticleTest {
     {
         vertxRule.deployVerticle(Services.CreditCardService);
     }
-
-    @Rule
-    public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
 
     @Test
     public void thatVerticleLaunches() throws InterruptedException, ExecutionException, TimeoutException {

@@ -7,7 +7,7 @@ import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.Vertx;
 import org.junit.After;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class VerticleDeployer {
 
 
-    private final Set<String> notStarted = new HashSet<>();
-    private final Set<String> started = new HashSet<>();
+    private final Set<String> notStarted = new LinkedHashSet<>();
+    private final Set<String> started = new LinkedHashSet<>();
     private final Vertx vertx;
 
     public VerticleDeployer(Vertx vertx) {

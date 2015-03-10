@@ -1,6 +1,5 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.ApplicationStartup;
@@ -29,14 +28,11 @@ public class AccountServiceVerticleTest {
         vertxRule.deployVerticle(Services.AccountService);
     }
 
-    @Rule
-    public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
-
     @Test
     public void thatMultipleAccountsAreReturned() throws InterruptedException, ExecutionException, TimeoutException {
         CustomerId customerId = new CustomerId("08-cust-15");
 
-        Message<List<Account>> accsMsg = eventBusRule.sendObservable(AccountServiceVerticle.ADDRESS, customerId, "getAccountsForCustomer");
+        Message<List<Account>> accsMsg = vertxRule.sendObservable(AccountServiceVerticle.ADDRESS, customerId, "getAccountsForCustomer");
         for (Account acc : accsMsg.body()) {
             System.out.println("ACCOUNT: " + acc);
         }
@@ -48,7 +44,7 @@ public class AccountServiceVerticleTest {
     public void thatSpecificAccountIsReturned() throws InterruptedException, ExecutionException, TimeoutException {
         AccountId accountId = new AccountId("08-cust-15-ac-2");
 
-        Message<Account> accMsg = eventBusRule.sendObservable(AccountServiceVerticle.ADDRESS, accountId, "getAccount");
+        Message<Account> accMsg = vertxRule.sendObservable(AccountServiceVerticle.ADDRESS, accountId, "getAccount");
         System.out.println("ACCOUNT: " + accMsg.body());
 
         assertThat(accMsg.body().getBalance(), is(equalTo(new BigDecimal("20773"))));

@@ -24,11 +24,12 @@ public class EmbeddedMongoVerticle extends AbstractVerticle {
 
         try {
             embeddedMongo.start(port);
+            startFuture.complete();
         } catch (Throwable throwable) {
             logger.error(throwable);
             startFuture.fail(throwable);
+
         }
-        startFuture.complete();
     }
 
     @Override

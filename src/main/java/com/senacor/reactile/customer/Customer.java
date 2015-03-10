@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshal;
 
@@ -67,6 +68,7 @@ public class Customer {
     }
 
     public static Customer fromJson(JsonObject jsonObject) {
+        checkArgument(jsonObject != null);
         System.out.println("jsonObject.encodePrettily() = " + jsonObject.encodePrettily());
 
         return Customer.newBuilder()

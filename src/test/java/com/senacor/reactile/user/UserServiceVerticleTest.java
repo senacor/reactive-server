@@ -1,6 +1,5 @@
 package com.senacor.reactile.user;
 
-import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import io.vertx.rxjava.core.eventbus.Message;
@@ -19,19 +18,17 @@ public class UserServiceVerticleTest {
 
     @Rule
     public final VertxRule vertxRule = new VertxRule(Services.UserConnector, Services.UserService);
-    @Rule
-    public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
 
     @Test
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {
-        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
+        Message<User> userMessage = vertxRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "get");
         User user = userMessage.body();
         assertIsUser(user);
     }
 
     @Test
     public void thatUserCanBeLoggedIn() throws ExecutionException, InterruptedException, TimeoutException {
-        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "login");
+        Message<User> userMessage = vertxRule.sendObservable(UserServiceVerticle.ADDRESS, new UserId("momann"), "login");
         User user = userMessage.body();
         assertIsUser(user);
     }
@@ -39,7 +36,7 @@ public class UserServiceVerticleTest {
     @Test
     public void thatUserCanBeCreated() throws ExecutionException, InterruptedException, TimeoutException {
         User message = new User(new UserId("momann"), "Michael", "Omann");
-        Message<User> userMessage = eventBusRule.sendObservable(UserServiceVerticle.ADDRESS, message, "create");
+        Message<User> userMessage = vertxRule.sendObservable(UserServiceVerticle.ADDRESS, message, "create");
         User user = userMessage.body();
         assertIsUser(user);
     }

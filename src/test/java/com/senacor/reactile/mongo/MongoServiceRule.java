@@ -1,7 +1,5 @@
 package com.senacor.reactile.mongo;
 
-import com.senacor.reactile.Services;
-import com.senacor.reactile.VerticleDeployer;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -18,26 +16,21 @@ import org.junit.rules.ExternalResource;
 import java.util.List;
 
 
-public class EmbeddedMongoRule extends ExternalResource implements ObservableMongoService {
+public class MongoServiceRule extends ExternalResource implements ObservableMongoService {
 
-    private final VerticleDeployer verticleDeployer;
     private final MongoService service;
 
-    public EmbeddedMongoRule(Vertx vertx) {
-        verticleDeployer = new VerticleDeployer(vertx);
-        verticleDeployer.addService(Services.EmbeddedMongo);
+    public MongoServiceRule(Vertx vertx) {
         service = MongoService.createEventBusProxy(getVertxDelegate(vertx), "vertx.mongo");
     }
 
     @Override
     public void before() throws Throwable {
         service.start();
-        verticleDeployer.deployVerticles(60 * 1000);
     }
 
     @Override
     public void after() {
-        verticleDeployer.stopVerticles(60 * 1000);
         service.stop();
     }
 
