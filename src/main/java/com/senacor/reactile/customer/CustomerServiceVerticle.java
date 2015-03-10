@@ -1,13 +1,12 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.gateway.GatewayVerticle;
+import com.senacor.reactile.mongo.ObservableMongoService;
 import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
-import io.vertx.rx.java.ObservableFuture;
-import io.vertx.rx.java.RxHelper;
 import rx.Observable;
 
 import static com.senacor.reactile.customer.Address.anAddress;
@@ -16,25 +15,22 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
 
     public static final String ADDRESS = "CustomerServiceVerticle";
 
-    private MongoService mongoService;
+    private ObservableMongoService mongoService;
 
     @Override
     public void start() throws Exception {
         super.start();
-        mongoService = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
-
+        //TODO configuration and guice injection
+        MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
+        mongoService = ObservableMongoService.from(eventBusProxy);
         vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
 
 
     @Action
     public Observable<Customer> getCustomer(CustomerId id) {
-        ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
-
         JsonObject query = new JsonObject().put("id", id.toValue());
-        mongoService.findOne("customers", query, null, observable.toHandler());
-
-        return observable.map(Customer::fromJson);
+        return mongoService.findOne("customers", query).map(Customer::fromJson);
     }
 
     private CustomerAddressChangedEvt newCustomerChangedEvent() {
