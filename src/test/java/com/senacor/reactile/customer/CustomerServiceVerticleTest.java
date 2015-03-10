@@ -3,7 +3,7 @@ package com.senacor.reactile.customer;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.MongoBootstrap;
-import com.senacor.reactile.mongo.MongoServiceRule;
+import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,8 +24,7 @@ public class CustomerServiceVerticleTest {
         vertxRule.deployVerticle(MongoBootstrap.class);
     }
 
-    @Rule
-    public final MongoServiceRule mongoService = new MongoServiceRule(vertxRule.vertx());
+    private final ObservableMongoService mongoService = ObservableMongoService.from(vertxRule.vertx());
 
     private final CustomerMongoInitializer initializer = new CustomerMongoInitializer(mongoService);
 

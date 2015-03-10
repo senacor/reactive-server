@@ -11,27 +11,16 @@ import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.Vertx;
-import org.junit.rules.ExternalResource;
 
 import java.util.List;
 
 
-public class MongoServiceRule extends ExternalResource implements ObservableMongoService {
+class ObservableMongoServiceImpl implements ObservableMongoService {
 
     private final MongoService service;
 
-    public MongoServiceRule(Vertx vertx) {
-        service = MongoService.createEventBusProxy(getVertxDelegate(vertx), "vertx.mongo");
-    }
-
-    @Override
-    public void before() throws Throwable {
-        service.start();
-    }
-
-    @Override
-    public void after() {
-        service.stop();
+    ObservableMongoServiceImpl(MongoService service) {
+        this.service = service;
     }
 
     @Override

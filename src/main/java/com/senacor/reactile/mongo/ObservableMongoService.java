@@ -1,5 +1,6 @@
 package com.senacor.reactile.mongo;
 
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.ObservableFuture;
@@ -25,5 +26,17 @@ public interface ObservableMongoService extends MongoService {
     ObservableFuture<Void> dropCollection(String collection);
 
     ObservableFuture<JsonObject> runCommand(JsonObject command);
+
+    static ObservableMongoService from(MongoService mongoService) {
+        return new ObservableMongoServiceImpl(mongoService);
+    }
+
+    static ObservableMongoService from(Vertx vertx) {
+        return new ObservableMongoServiceImpl(MongoService.createEventBusProxy(vertx, "vertx.mongo"));
+    }
+
+    static ObservableMongoService from(io.vertx.rxjava.core.Vertx vertx) {
+        return from((Vertx) vertx.getDelegate());
+    }
 
 }
