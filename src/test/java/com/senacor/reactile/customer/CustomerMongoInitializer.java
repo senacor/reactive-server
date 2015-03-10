@@ -10,6 +10,7 @@ import io.vertx.ext.mongo.MongoService;
 import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
+import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func3;
@@ -29,6 +30,10 @@ public class CustomerMongoInitializer {
 
     public CustomerMongoInitializer(ObservableMongoService mongoService) {
         this.mongoService = mongoService;
+    }
+
+    public CustomerMongoInitializer(Vertx vertx) {
+        this.mongoService = ObservableMongoService.from(vertx);
     }
 
     public void writeBlocking(Customer customer) {
