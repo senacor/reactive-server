@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -37,7 +38,7 @@ public class AccountServiceVerticleTest {
             System.out.println("ACCOUNT: " + acc);
         }
 
-        assertThat(accsMsg.body().size(), is(equalTo(2)));
+        assertThat(accsMsg.body(), hasSize(2));
     }
 
     @Test

@@ -6,6 +6,7 @@ import rx.functions.Func5;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import static de.flapdoodle.embed.process.collections.Collections.newArrayList;
 
@@ -17,8 +18,16 @@ public final class CustomerFixtures {
     }
 
     public static Customer defaultCustomer() {
+        return newCustomer("08-cust-15");
+    }
+
+    public static Customer randomCustomer() {
+        return newCustomer(UUID.randomUUID().toString());
+    }
+
+    public static Customer newCustomer(String id) {
         return Customer.newBuilder()
-                .withId(new CustomerId("08-cust-15"))
+                .withId(new CustomerId(id))
                 .withFirstname("Hans")
                 .withLastname("Dampf")
                 .withAddresses(newArrayList(Address.anAddress()

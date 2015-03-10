@@ -5,6 +5,7 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.mongo.ObservableMongoService;
+import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,16 +45,14 @@ public class CustomerServiceVerticleTest {
 
     @Test
     public void thatCustomerCanBeWritten() throws InterruptedException, ExecutionException, TimeoutException {
-        CustomerId customerId = new CustomerId("08-cust-15");
-        Message<Customer> customer = vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customerId, "add");
-        assertThat(customer.body().getId(), is(equalTo(customerId)));
-    }
+        Customer customer = CustomerFixtures.randomCustomer();
+        vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customer, "add");
+        Customer fromMongo = mongoService.findOne("customers", new JsonObject().put("id", customer.getId().toValue()))
+                .map(Customer::fromJson)
+                .toBlocking()
+                .first();
 
-    @Test
-    public void thatCustomerCanBeUpdated() throws InterruptedException, ExecutionException, TimeoutException {
-        CustomerId customerId = new CustomerId("08-cust-15");
-        Message<Customer> customer = vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customerId, "getCustomer");
-        assertThat(customer.body().getId(), is(equalTo(customerId)));
+        assertThat(fromMongo.getId(), is(equalTo(customer.getId())));
     }
 
     @Test(timeout = 5000)
