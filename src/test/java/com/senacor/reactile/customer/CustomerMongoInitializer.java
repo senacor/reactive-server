@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CustomerMongoInitializer {
 
@@ -40,28 +39,6 @@ public class CustomerMongoInitializer {
 
     public ObservableFuture<String> write(Customer customer) {
         return mongoService.insert(COLLECTION, customer.toJson().put("_id", customer.getId().toValue()));
-    }
-
-    public void writeBlocking(int count) {
-        AtomicInteger written = new AtomicInteger(0);
-        Observable
-                .zip(addressNumber(count), firstName(), lastName(), streetName(), streetType(),
-                zipToCustomer())
-                .flatMap(this::insertCustomer)
-                .toBlocking()
-                .forEach(id -> System.out.println("Inserted customer nr. " + written.incrementAndGet()));
-    }
-
-    public Observable<String> write(int count) {
-        return Observable
-                .zip(addressNumber(count), firstName(), lastName(), streetName(), streetType(),
-                        zipToCustomer())
-                .flatMap(this::insertCustomer);
-
-    }
-
-    private Observable<String> insertCustomer(Customer customer) {
-        return mongoService.insert("customers", customer.toJson().put("_id", customer.getId().toValue()));
     }
 
     private Func1<Customer, Observable<? extends String>> insertCustomerWithAccounts(MongoService service) {

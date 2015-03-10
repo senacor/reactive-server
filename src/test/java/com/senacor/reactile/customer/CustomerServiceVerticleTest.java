@@ -42,6 +42,20 @@ public class CustomerServiceVerticleTest {
         assertThat(customer.body().getId(), is(equalTo(customerId)));
     }
 
+    @Test
+    public void thatCustomerCanBeWritten() throws InterruptedException, ExecutionException, TimeoutException {
+        CustomerId customerId = new CustomerId("08-cust-15");
+        Message<Customer> customer = vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customerId, "add");
+        assertThat(customer.body().getId(), is(equalTo(customerId)));
+    }
+
+    @Test
+    public void thatCustomerCanBeUpdated() throws InterruptedException, ExecutionException, TimeoutException {
+        CustomerId customerId = new CustomerId("08-cust-15");
+        Message<Customer> customer = vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customerId, "getCustomer");
+        assertThat(customer.body().getId(), is(equalTo(customerId)));
+    }
+
     @Test(timeout = 5000)
     public void writeManyCustomers() throws InterruptedException {
         Stopwatch stopwatch = Stopwatch.createStarted();

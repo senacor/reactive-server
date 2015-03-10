@@ -16,6 +16,7 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "CustomerServiceVerticle";
 
     private ObservableMongoService mongoService;
+    private String collection;
 
     @Override
     public void start() throws Exception {
@@ -23,20 +24,24 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
         //TODO configuration and guice injection
         MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
         mongoService = ObservableMongoService.from(eventBusProxy);
+
+        collection = config().getString("collection");
+
         vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
+
 
 
     @Action
     public Observable<Customer> getCustomer(CustomerId id) {
         JsonObject query = new JsonObject().put("id", id.toValue());
-        return mongoService.findOne("customers", query).map(Customer::fromJson);
+        return mongoService.findOne(collection, query).map(Customer::fromJson);
     }
 
     @Action("add")
     public Observable<Customer> addCustomer(Customer customer) {
         JsonObject customerJson = customer.toJson().put("_id", customer.getId().toValue());
-        return mongoService.insert("customers", customerJson).flatMap(id -> Observable.just(customer));
+        return mongoService.insert(collection, customerJson).flatMap(id -> Observable.just(customer));
     }
 
     private CustomerAddressChangedEvt newCustomerChangedEvent() {
