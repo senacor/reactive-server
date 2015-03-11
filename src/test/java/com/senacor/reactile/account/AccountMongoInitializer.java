@@ -4,13 +4,10 @@ import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rxjava.core.Vertx;
 
-import java.util.Random;
-
 public class AccountMongoInitializer {
 
     public static final String COLLECTION = "accounts";
     private final ObservableMongoService mongoService;
-    private final Random rd = new Random();
 
     public AccountMongoInitializer(ObservableMongoService mongoService) {
         this.mongoService = mongoService;
