@@ -73,19 +73,19 @@ public class Transaction implements Jsonizable {
     }
 
     public JsonObject toJson() {
-        JsonObject retval = new JsonObject();
+        JsonObject json = new JsonObject();
 
-        retval.put("id", id.getId());
-        retval.put("customerId", customerId.getId());
+        json.put("id", id.getId());
+        json.put("customerId", customerId.getId());
         if (accountId != null) {
-            retval.put("accountId", accountId.getId());
+            json.put("accountId", accountId.getId());
         } else {
-            retval.put("creditCardId", creditCardId.getId());
+            json.put("creditCardId", creditCardId.getId());
         }
-        retval.put("amount", amount.toString());
-        retval.put("currency", currency.getCurrency());
+        json.put("amount", amount.toString());
+        json.put("currency", currency.getCurrency());
 
-        return retval;
+        return json;
     }
     public static final class Builder {
         private TransactionId id;
@@ -93,7 +93,7 @@ public class Transaction implements Jsonizable {
         private AccountId accountId;
         private CreditCardId creditCardId;
         private BigDecimal amount;
-        private Currency currency;
+        private Currency currency = new Currency("EUR");
 
         private Builder() {
         }

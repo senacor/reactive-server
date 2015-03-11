@@ -34,7 +34,6 @@ public class DomainObjectMessageCodec<T> implements MessageCodec<T, T> {
         return new DomainObjectMessageCodec<>(clazz);
     }
 
-
     @Override
     public void encodeToWire(Buffer buffer, T o) {
         try {
