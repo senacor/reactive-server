@@ -13,7 +13,7 @@ public class ServiceMetadata {
     }
 
     boolean hasAction(String action){
-        return action.contains(action);
+        return actions.containsKey(action);
     }
 
     Method getAction(String action) {
