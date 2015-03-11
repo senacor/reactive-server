@@ -3,7 +3,8 @@
 
   "options": {
     "config": {
-      "address": "CustomerServiceVerticle"
+      "address": "CustomerServiceVerticle",
+      "collection": "customers"
     }
   }
 }

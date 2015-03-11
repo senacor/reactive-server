@@ -8,7 +8,7 @@ public enum Services implements ServiceIdProvider {
     AccountService("com.senacor:reactile-account-service:1.0.0"),
     CreditCardService("com.senacor:reactile-creditcard-service:1.0.0"),
     TransactionService("com.senacor:reactile-transaction-service:1.0.0"),
-    MongoConnector("io.vertx:vertx-mongo-embedded-db");
+    EmbeddedMongo("com.senacor:reactile-embedded-mongo");
 
     private final String serviceName;
 

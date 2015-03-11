@@ -84,6 +84,11 @@ public class Account {
             return this;
         }
 
+        public Builder withId(AccountId id) {
+            this.id = id;
+            return this;
+        }
+
         public Builder withCustomerId(CustomerId customerId) {
             this.customerId = customerId;
             return this;

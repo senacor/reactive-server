@@ -1,11 +1,16 @@
 package com.senacor.reactile.customer;
 
-import com.senacor.reactile.account.*;
-import io.vertx.core.Vertx;
+import com.senacor.reactile.account.Account;
+import com.senacor.reactile.account.AccountId;
+import com.senacor.reactile.account.CreditCard;
+import com.senacor.reactile.account.CreditCardId;
+import com.senacor.reactile.account.Transaction;
+import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.ext.mongo.WriteOption;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
+import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func3;
@@ -19,39 +24,26 @@ import java.util.Random;
 
 public class CustomerMongoInitializer {
 
-    private final io.vertx.rxjava.core.Vertx vertx;
+    public static final String COLLECTION = "customers";
+    private final ObservableMongoService mongoService;
     private final Random rd = new Random();
 
-    public CustomerMongoInitializer(io.vertx.rxjava.core.Vertx vertx) {
-        this.vertx = vertx;
+    public CustomerMongoInitializer(ObservableMongoService mongoService) {
+        this.mongoService = mongoService;
     }
 
-    public void write(int count) {
-        MongoService service = MongoService.createEventBusProxy((Vertx) vertx.getDelegate(), "vertx.mongo");
-
-        Observable<Customer> testCustomers = Observable.zip(
-                addressNumber(count),
-                firstName(),
-                lastName(),
-                streetName(),
-                streetType(), zipToCustomer()
-        );
-
-        testCustomers.flatMap(insertCustomerWithAccounts(service)).subscribe(
-                outcome -> {
-//                        System.out.println("outcome = " + outcome);
-                    },
-                    Throwable::printStackTrace,
-                    () -> System.out.println("done!")
-                );
+    public CustomerMongoInitializer(Vertx vertx) {
+        this.mongoService = ObservableMongoService.from(vertx);
     }
 
-    private Func1<Customer, Observable<? extends String>> insertCustomer(MongoService service) {
-        return customer -> {
-            ObservableFuture<String> newOne = RxHelper.observableFuture();
-            service.insertWithOptions("customers", customer.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
-            return newOne;
-        };
+    public void writeBlocking(Customer customer) {
+        write(customer)
+                .toBlocking()
+                .single();
+    }
+
+    public ObservableFuture<String> write(Customer customer) {
+        return mongoService.insert(COLLECTION, customer.toJson().put("_id", customer.getId().toValue()));
     }
 
     private Func1<Customer, Observable<? extends String>> insertCustomerWithAccounts(MongoService service) {
@@ -82,7 +74,7 @@ public class CustomerMongoInitializer {
         return account -> {
             ObservableFuture<String> newOne = RxHelper.observableFuture();
 //            System.err.println(">> inserting acc "+account.getId());
-            service.insertWithOptions("accounts", account.toJson(), WriteOption.UNACKNOWLEDGED, newOne.toHandler());
+            service.insert("accounts", account.toJson(), newOne.toHandler());
 
             Observable<Transaction> testAccTransactions = Observable.zip(
                     transactionId(account.getId()),
@@ -172,15 +164,11 @@ public class CustomerMongoInitializer {
     // ========
 
     private Observable<String> accountId(CustomerId customerId) {
-        return Observable.range(1, rd.nextInt(4)+1).map(accId -> {
-            return customerId.getId()+"-ac-"+accId;
-        });
+        return Observable.range(1, rd.nextInt(4) + 1).map(accId -> customerId.getId() + "-ac-" + accId);
     }
 
     private Observable<String> creditCardId(CustomerId customerId) {
-        return Observable.range(1, rd.nextInt(4)+1).map(ccId -> {
-            return customerId.getId()+"-cc-"+ccId;
-        });
+        return Observable.range(1, rd.nextInt(4) + 1).map(ccId -> customerId.getId() + "-cc-" + ccId);
     }
 
     private Observable<BigDecimal> balance() {
@@ -188,14 +176,12 @@ public class CustomerMongoInitializer {
     }
 
     private Func3<String, CustomerId, BigDecimal, Account> zipToAccount() {
-        return (accountId, customerId, amount) -> {
-            return Account.anAccount()
-                    .withId(accountId)
-                    .withCustomerId(customerId)
-                    .withBalance(amount)
-                    .withCurrency("EUR")
-                    .build();
-        };
+        return (accountId, customerId, amount) -> Account.anAccount()
+                .withId(accountId)
+                .withCustomerId(customerId)
+                .withBalance(amount)
+                .withCurrency("EUR")
+                .build();
     }
 
     private Func3<String, CustomerId, BigDecimal, CreditCard> zipToCreditCard() {
@@ -212,14 +198,14 @@ public class CustomerMongoInitializer {
     // ========
 
     private Observable<String> transactionId(AccountId accountId) {
-        return Observable.range(1, rd.nextInt(30)+1).map(txId -> {
-            return accountId.getId()+"-tx-"+txId;
+        return Observable.range(1, rd.nextInt(30) + 1).map(txId -> {
+            return accountId.getId() + "-tx-" + txId;
         });
     }
 
     private Observable<String> transactionId(CreditCardId creditCardId) {
-        return Observable.range(1, rd.nextInt(30)+1).map(txId -> {
-            return creditCardId.getId()+"-tx-"+txId;
+        return Observable.range(1, rd.nextInt(30) + 1).map(txId -> {
+            return creditCardId.getId() + "-tx-" + txId;
         });
     }
 

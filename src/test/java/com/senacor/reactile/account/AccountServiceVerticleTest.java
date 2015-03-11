@@ -1,12 +1,12 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.EventBusRule;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.bootstrap.ApplicationStartup;
+import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.customer.CustomerId;
 import io.vertx.rxjava.core.eventbus.Message;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import static com.senacor.reactile.account.AccountFixtures.newAccount1;
+import static com.senacor.reactile.account.AccountFixtures.newAccount2;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -22,35 +25,33 @@ import static org.junit.Assert.assertThat;
  * Created by rwinzing on 03.03.15.
  */
 public class AccountServiceVerticleTest {
-    @Rule
-    public final VertxRule vertxRule = new VertxRule(ApplicationStartup.class);
+    @ClassRule
+    public static final VertxRule vertxRule = new VertxRule();
 
-    {
-        vertxRule.deployVerticle(Services.AccountService);
+    static {
+        vertxRule.deployVerticle(Services.EmbeddedMongo, Services.AccountService);
+        vertxRule.deployVerticle(MongoBootstrap.class);
     }
 
-    @Rule
-    public final EventBusRule eventBusRule = new EventBusRule(vertxRule.vertx());
+    private static final AccountMongoInitializer initializer = new AccountMongoInitializer(vertxRule.vertx());
+
+    @BeforeClass
+    public static void init() {
+     initializer.writeBlocking(newAccount1());
+     initializer.writeBlocking(newAccount2());
+    }
 
     @Test
     public void thatMultipleAccountsAreReturned() throws InterruptedException, ExecutionException, TimeoutException {
-        CustomerId customerId = new CustomerId("08-cust-15");
-
-        Message<List<Account>> accsMsg = eventBusRule.sendObservable(AccountServiceVerticle.ADDRESS, customerId, "getAccountsForCustomer");
-        for (Account acc : accsMsg.body()) {
-            System.out.println("ACCOUNT: " + acc);
-        }
-
-        assertThat(accsMsg.body().size(), is(equalTo(2)));
+        CustomerId customerId = newAccount1().getCustomerId();
+        Message<List<Account>> accounts = vertxRule.sendBlocking(AccountServiceVerticle.ADDRESS, customerId, "getAccountsForCustomer");
+        assertThat(accounts.body(), hasSize(2));
     }
 
     @Test
     public void thatSpecificAccountIsReturned() throws InterruptedException, ExecutionException, TimeoutException {
-        AccountId accountId = new AccountId("08-cust-15-ac-2");
-
-        Message<Account> accMsg = eventBusRule.sendObservable(AccountServiceVerticle.ADDRESS, accountId, "getAccount");
-        System.out.println("ACCOUNT: " + accMsg.body());
-
-        assertThat(accMsg.body().getBalance(), is(equalTo(new BigDecimal("20773"))));
+        AccountId accountId = newAccount2().getId();
+        Account account = vertxRule.<Account>sendBlocking(AccountServiceVerticle.ADDRESS, accountId, "get").body();
+        assertThat(account.getBalance(), is(equalTo(new BigDecimal("20773"))));
     }
 }

@@ -84,6 +84,11 @@ public class CreditCard {
             return this;
         }
 
+        public Builder withId(CreditCardId id) {
+            this.id = id;
+            return this;
+        }
+
         public Builder withCustomerId(CustomerId customerId) {
             this.customerId = customerId;
             return this;

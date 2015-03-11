@@ -1,0 +1,9 @@
+{
+  "main": "com.senacor.reactile.mongo.EmbeddedMongoVerticle",
+  "options": {
+    "worker": true,
+    "config": {
+      "port": 27017
+    }
+  }
+}

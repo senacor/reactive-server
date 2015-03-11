@@ -9,10 +9,6 @@ import io.vertx.rxjava.core.AbstractVerticle;
 public class ApplicationStartup extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        vertx.deployVerticleObservable(MongoBootstrap.class.getName()).subscribe(
-                outcome -> System.out.println("all verticles started and dummy-data written"),
-                startFuture::fail,
-                startFuture::complete);
 
     }
 }

@@ -41,6 +41,7 @@ dependencies {
     compile libraries.guava
 
     testCompile libraries.junit
+    testCompile libraries.embeddedMongo
     testCompile group: 'io.vertx', name: 'vertx-unit', version: vertxVersion
 
 
@@ -51,7 +52,6 @@ dependencies {
     testCompile group: 'io.vertx', name: 'vertx-service-factory', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-service-proxy', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-mongo-service', classifier: 'sources', version: vertxVersion
-    testCompile group: 'io.vertx', name: 'vertx-mongo-embedded-db', classifier: 'sources', version: vertxVersion
 }
 
 shadowJar {

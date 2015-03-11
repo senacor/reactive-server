@@ -3,18 +3,17 @@ package com.senacor.reactile;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
-import org.junit.rules.ExternalResource;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class EventBusRule extends ExternalResource {
+class BlockingEventBus {
     public static final int DEFAULT_TIMEOUT = 300;
     private final Vertx vertx;
 
-    public EventBusRule(Vertx vertx) {
+    public BlockingEventBus(Vertx vertx) {
         this.vertx = vertx;
     }
 

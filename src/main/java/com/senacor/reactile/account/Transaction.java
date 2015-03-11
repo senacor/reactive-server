@@ -102,8 +102,18 @@ public class Transaction {
             return this;
         }
 
+        public Builder withId(TransactionId id) {
+            this.id = id;
+            return this;
+        }
+
         public Builder withCustomerId(String customerId) {
             this.customerId = new CustomerId(customerId);
+            return this;
+        }
+
+        public Builder withCustomerId(CustomerId customerId) {
+            this.customerId = customerId;
             return this;
         }
 
