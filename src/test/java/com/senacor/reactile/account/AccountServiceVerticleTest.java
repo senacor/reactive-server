@@ -4,6 +4,7 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.mongo.MongoInitializer;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -26,14 +27,13 @@ import static org.junit.Assert.assertThat;
  */
 public class AccountServiceVerticleTest {
     @ClassRule
-    public static final VertxRule vertxRule = new VertxRule();
+    public static final VertxRule vertxRule = new VertxRule(Services.EmbeddedMongo, Services.AccountService);
 
     static {
-        vertxRule.deployVerticle(Services.EmbeddedMongo, Services.AccountService);
         vertxRule.deployVerticle(MongoBootstrap.class);
     }
 
-    private static final AccountMongoInitializer initializer = new AccountMongoInitializer(vertxRule.vertx());
+    private static final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), "accounts");
 
     @BeforeClass
     public static void init() {
