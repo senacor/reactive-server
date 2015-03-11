@@ -35,9 +35,9 @@ public class CreditCardServiceVerticleTest {
 
     @Test
     public void thatMultipleCreditCardsAreReturned() throws InterruptedException, ExecutionException, TimeoutException {
-        CreditCard creditCard1 = newCreditCardWithCustomer("cust-0815");
-        CreditCard creditCard2 = newCreditCardWithCustomer("cust-0815");
-        CreditCard creditCard3 = newCreditCardWithCustomer("cust-0815");
+        CreditCard creditCard1 = newCreditCardWithCustomer("cust-0816");
+        CreditCard creditCard2 = newCreditCardWithCustomer("cust-0816");
+        CreditCard creditCard3 = newCreditCardWithCustomer("cust-0816");
         initializer.writeBlocking(creditCard1, creditCard2, creditCard3);
         CustomerId customerId = new CustomerId("cust-0815");
         Message<List<CreditCard>> written = vertxRule.sendBlocking(CreditCardServiceVerticle.ADDRESS, customerId, "getCreditCardsForCustomer");
