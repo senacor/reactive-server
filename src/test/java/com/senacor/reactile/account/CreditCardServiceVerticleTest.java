@@ -39,14 +39,14 @@ public class CreditCardServiceVerticleTest {
         CreditCard creditCard2 = newCreditCardWithCustomer("cust-0816");
         CreditCard creditCard3 = newCreditCardWithCustomer("cust-0816");
         initializer.writeBlocking(creditCard1, creditCard2, creditCard3);
-        CustomerId customerId = new CustomerId("cust-0815");
+        CustomerId customerId = new CustomerId("cust-0816");
         Message<List<CreditCard>> written = vertxRule.sendBlocking(CreditCardServiceVerticle.ADDRESS, customerId, "getCreditCardsForCustomer");
         assertThat(written.body(), hasSize(3));
     }
 
     @Test
     public void thatSpecificCreditCardIsReturned() throws InterruptedException, ExecutionException, TimeoutException {
-        CreditCard creditCard = CreditCardFixtures.defaultCreditCard().withBalance(BigDecimal.TEN).build();
+        CreditCard creditCard = CreditCardFixtures.defaultCreditCard().withId("ASDFGH").withBalance(BigDecimal.TEN).build();
         initializer.writeBlocking(creditCard);
         CreditCard card = vertxRule.<CreditCard>sendBlocking(CreditCardServiceVerticle.ADDRESS, creditCard.getId(), "get").body();
         assertThat(card.getBalance(), is(equalTo(BigDecimal.TEN)));
