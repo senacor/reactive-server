@@ -6,6 +6,7 @@ import rx.functions.Func3;
 
 import java.math.BigDecimal;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.senacor.reactile.account.Transaction.aTransaction;
 import static rx.Observable.just;
@@ -16,6 +17,33 @@ public final class TransactionFixtures {
 
     private TransactionFixtures() {
     }
+
+    public static Transaction newAccTransaction(String customerId, String accountId) {
+        return newTransaction(true)
+                .withCustomerId(customerId)
+                .withAccountId(accountId)
+                .build();
+    }
+
+    public static Transaction newCCTransaction(String customerId, String creditCardId) {
+        return newTransaction(false)
+                .withCustomerId(customerId)
+                .withCreditCardId(creditCardId)
+                .build();
+    }
+
+    public static Transaction.Builder newTransaction(boolean forAccount) {
+        Transaction.Builder builder = Transaction.aTransaction()
+                .withId("transaction-" + rnd())
+                .withCustomerId("cust-" + rnd())
+                .withAmount(BigDecimal.valueOf(rd.nextInt(1000)));
+        return forAccount ? builder.withAccountId("acc-" + rnd()) : builder.withCreditCardId("cc-" + rnd());
+    }
+
+    private static String rnd() {
+        return UUID.randomUUID().toString();
+    }
+
 
     public static Observable<Transaction> randomTransactions(int count) {
         return randomTransactions(customerId(count));

@@ -31,9 +31,8 @@ public class AccountServiceVerticle extends AbstractServiceVerticle implements A
 
     @Override
     public void start() throws Exception {
-        MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
         super.start();
-        //TODO configuration and guice injection
+        MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
         mongoService = ObservableMongoService.from(eventBusProxy);
     }
 
