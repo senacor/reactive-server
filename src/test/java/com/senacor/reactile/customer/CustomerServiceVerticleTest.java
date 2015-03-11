@@ -7,7 +7,7 @@ import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.eventbus.Message;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ import static org.junit.Assert.assertThat;
 
 public class CustomerServiceVerticleTest {
 
-    @Rule
-    public final VertxRule vertxRule = new VertxRule();
+    @ClassRule
+    public static final VertxRule vertxRule = new VertxRule();
 
-    {
+    static {
         vertxRule.deployVerticle(Services.EmbeddedMongo, Services.CustomerService);
         vertxRule.deployVerticle(MongoBootstrap.class);
     }
