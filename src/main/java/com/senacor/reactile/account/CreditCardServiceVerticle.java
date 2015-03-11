@@ -1,16 +1,18 @@
 package com.senacor.reactile.account;
 
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.mongo.ObservableMongoService;
 import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoService;
-import io.vertx.rx.java.ObservableFuture;
-import io.vertx.rx.java.RxHelper;
 import rx.Observable;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by rwinzing on 03.03.15.
@@ -18,36 +20,33 @@ import java.util.List;
 public class CreditCardServiceVerticle extends AbstractServiceVerticle implements CreditCardService {
     public static final String ADDRESS = "CreditCardServiceVerticle";
 
-    private MongoService mongoService;
+    private ObservableMongoService mongoService;
+    private String collection;
+
+    @Override
+    public void init(Vertx vertx, Context context) {
+        super.init(vertx, context);
+        collection = context.config().getString("collection");
+    }
 
     @Override
     public void start() throws Exception {
         super.start();
-        mongoService = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
+        MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
+        mongoService = ObservableMongoService.from(eventBusProxy);
+
     }
 
     @Action
     public Observable<List<CreditCard>> getCreditCardsForCustomer(CustomerId customerId) {
-        ObservableFuture<List<JsonObject>> observable = RxHelper.observableFuture();
-
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
-        mongoService.find("creditcards", query, observable.toHandler());
-
-        return observable.map(list -> {
-            List<CreditCard> ccs = new ArrayList<CreditCard>();
-            list.forEach(item -> ccs.add(CreditCard.fromJson(item)));
-            return ccs;
-        });
-        // return observable.flatMap(Observable::from).map(Account::fromJson);
+        return mongoService.find(collection, query)
+                .map(list -> list.stream().map(CreditCard::fromJson).collect(toList()));
     }
 
-    @Action
+    @Action("get")
     public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
-        ObservableFuture<JsonObject> observable = RxHelper.observableFuture();
-
         JsonObject query = new JsonObject().put("id", creditCardId.getId());
-        mongoService.findOne("creditcards", query, null, observable.toHandler());
-
-        return observable.map(CreditCard::fromJson);
+        return mongoService.findOne("creditcards", query).map(CreditCard::fromJson);
     }
 }

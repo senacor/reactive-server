@@ -3,7 +3,8 @@
 
   "options": {
     "config": {
-      "address": "CreditCardServiceVerticle"
+      "address": "CreditCardServiceVerticle",
+      "collection": "creditcards"
     }
   }
 }

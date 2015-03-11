@@ -1,8 +1,13 @@
 package com.senacor.reactile.mongo;
 
 import com.senacor.reactile.domain.Jsonizable;
-import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rxjava.core.Vertx;
+import rx.Observable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static rx.Observable.just;
 
 public class MongoInitializer {
 
@@ -18,14 +23,19 @@ public class MongoInitializer {
         this(ObservableMongoService.from(vertx), collection);
     }
 
-    public void writeBlocking(Jsonizable account) {
-        write(account)
+    public List<String> writeBlocking(Jsonizable object, Jsonizable... objects) {
+        List<String> ids = new ArrayList<>();
+        write(object, objects)
                 .toBlocking()
-                .single();
+                .forEach(ids::add);
+        return ids;
     }
 
-    public ObservableFuture<String> write(Jsonizable account) {
-        return mongoService.insert(collection, account.toJson());
+    public Observable<String> write(Jsonizable object, Jsonizable... objects) {
+        return Observable.from(objects)
+                .concatWith(just(object))
+                .map(o -> o.toJson())
+                .flatMap(json -> mongoService.insert(collection, json));
     }
 
 

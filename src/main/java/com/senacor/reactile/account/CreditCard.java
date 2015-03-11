@@ -95,6 +95,11 @@ public class CreditCard implements Jsonizable {
             return this;
         }
 
+        public Builder withCustomerId(String customerId) {
+            this.customerId = new CustomerId(customerId);
+            return this;
+        }
+
         public Builder withBalance(BigDecimal balance) {
             this.balance = balance;
             return this;

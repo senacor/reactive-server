@@ -43,26 +43,12 @@ public final class AccountFixtures {
                 .flatMap(customerId -> zip(accountId(customerId), balance(), zipToAccount(customerId)));
     }
 
-    public static Observable<CreditCard> randomCreditCards(int count) {
-        return randomCreditCards(customerId(count));
-    }
-
-    public static Observable<CreditCard> randomCreditCards(Observable<CustomerId> customers) {
-        return customers
-                .flatMap(customerId -> zip(creditCardId(customerId), balance(), zipToCreditCard(customerId)));
-    }
-
     private static Observable<CustomerId> customerId(int count) {
         return Observable.range(500_000_000, count).map(i -> new CustomerId("" + i));
     }
 
     private static Observable<AccountId> accountId(CustomerId customerId) {
         return random(4).map(accId -> new AccountId(customerId.getId() + "-ac-" + accId));
-    }
-
-
-    private static Observable<CreditCardId> creditCardId(CustomerId customerId) {
-        return random(4).map(ccId -> new CreditCardId(customerId.getId() + "-cc-" + ccId));
     }
 
     private static Observable<BigDecimal> balance() {
@@ -72,15 +58,6 @@ public final class AccountFixtures {
     private static Func2<AccountId, BigDecimal, Account> zipToAccount(CustomerId customerId) {
         return (accountId, amount) -> Account.anAccount()
                 .withId(accountId)
-                .withCustomerId(customerId)
-                .withBalance(amount)
-                .withCurrency("EUR")
-                .build();
-    }
-
-    private static Func2<CreditCardId, BigDecimal, CreditCard> zipToCreditCard(CustomerId customerId) {
-        return (ccId, amount) -> CreditCard.aCreditCard()
-                .withId(ccId)
                 .withCustomerId(customerId)
                 .withBalance(amount)
                 .withCurrency("EUR")

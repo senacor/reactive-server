@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static de.flapdoodle.embed.process.collections.Collections.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 
 public final class CustomerFixtures {
 
