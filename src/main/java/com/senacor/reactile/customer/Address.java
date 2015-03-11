@@ -1,8 +1,9 @@
 package com.senacor.reactile.customer;
 
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
-public class Address {
+public class Address implements Jsonizable {
 
     private final String coHint;
     private final String street;

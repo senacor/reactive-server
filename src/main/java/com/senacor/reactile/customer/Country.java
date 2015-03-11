@@ -1,8 +1,9 @@
 package com.senacor.reactile.customer;
 
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
-public class Country {
+public class Country implements Jsonizable {
 
     private final String name;
     private final String code;
