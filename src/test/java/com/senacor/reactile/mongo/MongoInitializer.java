@@ -1,30 +1,31 @@
 package com.senacor.reactile.mongo;
 
-import com.senacor.reactile.account.Account;
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rxjava.core.Vertx;
 
 public class MongoInitializer {
 
-    public static final String COLLECTION = "accounts";
     private final ObservableMongoService mongoService;
+    private final String collection;
 
-    public MongoInitializer(ObservableMongoService mongoService) {
+    public MongoInitializer(ObservableMongoService mongoService, String collection) {
         this.mongoService = mongoService;
+        this.collection = collection;
     }
 
-    public MongoInitializer(Vertx vertx) {
-        this.mongoService = ObservableMongoService.from(vertx);
+    public MongoInitializer(Vertx vertx, String collection) {
+        this(ObservableMongoService.from(vertx), collection);
     }
 
-    public void writeBlocking(Account account) {
+    public void writeBlocking(Jsonizable account) {
         write(account)
                 .toBlocking()
                 .single();
     }
 
-    public ObservableFuture<String> write(Account account) {
-        return mongoService.insert(COLLECTION, account.toJson().put("_id", account.getId().toValue()));
+    public ObservableFuture<String> write(Jsonizable account) {
+        return mongoService.insert(collection, account.toJson());
     }
 
 
