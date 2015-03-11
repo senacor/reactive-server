@@ -2,11 +2,12 @@ package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
-public class Account {
+public class Account implements Jsonizable {
     private final AccountId id;
     private final CustomerId customerId;
     private final BigDecimal balance;

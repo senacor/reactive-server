@@ -36,8 +36,6 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
         vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
 
-
-
     @Action
     public Observable<Customer> getCustomer(CustomerId id) {
         JsonObject query = new JsonObject().put("id", id.toValue());
@@ -46,8 +44,7 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
 
     @Action("add")
     public Observable<Customer> addCustomer(Customer customer) {
-        JsonObject customerJson = customer.toJson().put("_id", customer.getId().toValue());
-        return mongoService.insert(collection, customerJson).flatMap(id -> Observable.just(customer));
+        return mongoService.insert(collection, customer.toJson()).flatMap(id -> Observable.just(customer));
     }
 
     private CustomerAddressChangedEvt newCustomerChangedEvent() {

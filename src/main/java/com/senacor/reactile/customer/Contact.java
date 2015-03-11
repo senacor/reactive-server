@@ -1,8 +1,9 @@
 package com.senacor.reactile.customer;
 
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
-public class Contact {
+public class Contact implements Jsonizable {
     public JsonObject toJson() {
         return new JsonObject();
     }

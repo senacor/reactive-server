@@ -4,10 +4,11 @@ import com.google.common.base.Stopwatch;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.MongoBootstrap;
+import com.senacor.reactile.mongo.MongoInitializer;
 import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.eventbus.Message;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,31 +24,34 @@ import static org.junit.Assert.assertThat;
 
 public class CustomerServiceVerticleTest {
 
-    @Rule
-    public final VertxRule vertxRule = new VertxRule();
+    @ClassRule
+    public static final VertxRule vertxRule = new VertxRule();
 
-    {
+    static {
         vertxRule.deployVerticle(Services.EmbeddedMongo, Services.CustomerService);
         vertxRule.deployVerticle(MongoBootstrap.class);
     }
 
+    public static final String COLLECTION = "customers";
+
     private final ObservableMongoService mongoService = ObservableMongoService.from(vertxRule.vertx());
 
-    private final CustomerMongoInitializer initializer = new CustomerMongoInitializer(mongoService);
+    private final MongoInitializer initializer = new MongoInitializer(mongoService, COLLECTION);
 
     @Test
     public void thatVerticleRespondsToMessage() throws InterruptedException, ExecutionException, TimeoutException {
-        initializer.writeBlocking(CustomerFixtures.defaultCustomer());
-        CustomerId customerId = new CustomerId("08-cust-15");
-        Message<Customer> customer = vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customerId, "getCustomer");
-        assertThat(customer.body().getId(), is(equalTo(customerId)));
+        Customer customer = CustomerFixtures.defaultCustomer();
+        initializer.writeBlocking(customer);
+        CustomerId customerId = customer.getId();
+        Message<Customer> returnedCustomer = vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customerId, "getCustomer");
+        assertThat(returnedCustomer.body().getId(), is(equalTo(customerId)));
     }
 
     @Test
     public void thatCustomerCanBeWritten() throws InterruptedException, ExecutionException, TimeoutException {
         Customer customer = CustomerFixtures.randomCustomer();
         vertxRule.sendBlocking(CustomerServiceVerticle.ADDRESS, customer, "add");
-        Customer fromMongo = mongoService.findOne("customers", new JsonObject().put("id", customer.getId().toValue()))
+        Customer fromMongo = mongoService.findOne(COLLECTION, new JsonObject().put("id", customer.getId().toValue()))
                 .map(Customer::fromJson)
                 .toBlocking()
                 .first();

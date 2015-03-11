@@ -2,11 +2,12 @@ package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
-public class CreditCard {
+public class CreditCard implements Jsonizable {
     private final CreditCardId id;
     private final CustomerId customerId;
     private final BigDecimal balance;
@@ -91,6 +92,11 @@ public class CreditCard {
 
         public Builder withCustomerId(CustomerId customerId) {
             this.customerId = customerId;
+            return this;
+        }
+
+        public Builder withCustomerId(String customerId) {
+            this.customerId = new CustomerId(customerId);
             return this;
         }
 

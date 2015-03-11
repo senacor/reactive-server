@@ -2,6 +2,7 @@ package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Created by rwinzing on 02.03.15.
  */
-public class Transaction {
+public class Transaction implements Jsonizable {
     private final TransactionId id;
     private final CustomerId customerId;
     private final AccountId accountId;
