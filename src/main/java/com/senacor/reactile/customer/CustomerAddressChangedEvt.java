@@ -1,30 +1,27 @@
 package com.senacor.reactile.customer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.event.Event;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.json.JsonObject;
 
-public class CustomerAddressChangedEvt {
+public class CustomerAddressChangedEvt implements Event<CustomerId> {
+    private final CustomerId id;
     private final UserId userId;
-    private final CustomerId customerId;
     private final Address newAddress;
 
     public CustomerAddressChangedEvt(
             @JsonProperty("userId") UserId userId,
-            @JsonProperty("customerId") CustomerId customerId,
+            @JsonProperty("id") CustomerId id,
             @JsonProperty("newAddress") Address newAddress) {
         this.userId = userId;
-        this.customerId = customerId;
+        this.id = id;
         this.newAddress = newAddress;
     }
 
     public UserId getUserId() {
         return userId;
-    }
-
-    public CustomerId getCustomerId() {
-        return customerId;
     }
 
     public Address getNewAddress() {
@@ -34,7 +31,7 @@ public class CustomerAddressChangedEvt {
     public JsonObject toJson() {
         return new JsonObject()
                 .put("userId", userId.getId())
-                .put("customerId", customerId.getId())
+                .put("id", id.getId())
                 .put("address", newAddress.toJson());
     }
 
@@ -42,5 +39,10 @@ public class CustomerAddressChangedEvt {
         JsonObject res = toJson().put("user", user.toJson());
         res.remove("userId");
         return res;
+    }
+
+    @Override
+    public CustomerId getId() {
+        return id;
     }
 }
