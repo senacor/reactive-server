@@ -32,7 +32,7 @@ public class EmbeddedMongo {
         start(DEFAULT_MONGO_PORT);
     }
 
-    public void start(Integer port) throws Throwable {
+    public void start(Integer port) throws Exception {
         this.port = port;
         checkArgument(port != null);
         checkArgument(port > 1);

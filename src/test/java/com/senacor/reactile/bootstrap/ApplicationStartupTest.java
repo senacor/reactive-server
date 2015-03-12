@@ -1,7 +1,8 @@
 package com.senacor.reactile.bootstrap;
 
+import com.senacor.reactile.Services;
+import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
-import io.vertx.rxjava.core.Vertx;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -12,17 +13,20 @@ import java.util.Set;
  */
 public class ApplicationStartupTest {
     @Rule
-    public final VertxRule vertxRule = new VertxRule(ApplicationStartup.class);
-    private final Vertx vertx = vertxRule.vertx();
+    public final VertxRule vertxRule = new VertxRule(TestServices.EmbeddedMongo).deployVerticle(ApplicationStartup.class);
 
-    @Test(timeout = 5000)
+    @Test(timeout = 1000)
     public void thatAllNecessaryVerticlesLaunched() throws InterruptedException {
-        Set<String> deployments = vertx.deploymentIDs();
+
+        while(deploymentIDs().size() != Services.values().length + 1){
+            Thread.sleep(30);
+        }
+        Set<String> deployments = deploymentIDs();
         deployments.forEach(deployment -> System.out.println("deployment = " + deployment));
 
-        while(deployments.size() == 3){
-            Thread.sleep(100);
-        }
+    }
 
+    private Set<String> deploymentIDs() {
+        return vertxRule.vertx().deploymentIDs();
     }
 }

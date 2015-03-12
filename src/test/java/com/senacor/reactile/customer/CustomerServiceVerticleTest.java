@@ -2,6 +2,7 @@ package com.senacor.reactile.customer;
 
 import com.google.common.base.Stopwatch;
 import com.senacor.reactile.Services;
+import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.mongo.MongoInitializer;
@@ -25,12 +26,7 @@ import static org.junit.Assert.assertThat;
 public class CustomerServiceVerticleTest {
 
     @ClassRule
-    public static final VertxRule vertxRule = new VertxRule();
-
-    static {
-        vertxRule.deployVerticle(Services.EmbeddedMongo, Services.CustomerService);
-        vertxRule.deployVerticle(MongoBootstrap.class);
-    }
+    public static final VertxRule vertxRule = new VertxRule(TestServices.EmbeddedMongo, Services.CustomerService).deployVerticle(MongoBootstrap.class);
 
     public static final String COLLECTION = "customers";
 
@@ -61,9 +57,9 @@ public class CustomerServiceVerticleTest {
 
     @Test(timeout = 5000)
     public void writeManyCustomers() throws InterruptedException {
-        Stopwatch stopwatch = Stopwatch.createStarted();
         List<Customer> written = new ArrayList<>();
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
         CustomerFixtures.randomCustomers(500)
                 .flatMap(customer -> vertxRule.eventBus().<Customer>sendObservable(CustomerServiceVerticle.ADDRESS, customer, action("add")))
                 .map(Message::body)
