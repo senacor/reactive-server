@@ -18,7 +18,6 @@ public class DomainObjectMessageCodec<T extends Jsonizable> implements MessageCo
         return new DomainObjectMessageCodec<>(clazz);
     }
 
-
     @Override
     public void encodeToWire(Buffer buffer, T o) {
         delegate.encodeToWire(buffer, o.toJson());

@@ -5,9 +5,11 @@ import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import static rx.Observable.just;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
 
 public class MongoInitializer {
 
@@ -24,16 +26,21 @@ public class MongoInitializer {
     }
 
     public List<String> writeBlocking(Jsonizable object, Jsonizable... objects) {
+        LinkedList<Jsonizable> list = newLinkedList(newArrayList(objects));
+        list.add(0, object);
+        return writeBlocking(list);
+    }
+
+    public List<String> writeBlocking(Iterable<? extends Jsonizable> objects) {
         List<String> ids = new ArrayList<>();
-        write(object, objects)
+        write(objects)
                 .toBlocking()
                 .forEach(ids::add);
         return ids;
     }
 
-    public Observable<String> write(Jsonizable object, Jsonizable... objects) {
+    public Observable<String> write(Iterable<? extends Jsonizable> objects) {
         return Observable.from(objects)
-                .concatWith(just(object))
                 .map(o -> o.toJson())
                 .flatMap(json -> mongoService.insert(collection, json));
     }
