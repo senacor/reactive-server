@@ -8,17 +8,15 @@ import org.junit.Test;
 
 import java.util.Set;
 
-/**
- * Created by rwinzing on 24.02.15.
- */
 public class ApplicationStartupTest {
+
     @Rule
     public final VertxRule vertxRule = new VertxRule(TestServices.EmbeddedMongo).deployVerticle(ApplicationStartup.class);
 
     @Test(timeout = 1000)
     public void thatAllNecessaryVerticlesLaunched() throws InterruptedException {
 
-        while(deploymentIDs().size() != Services.values().length + 1){
+        while(deploymentIDs().size() != Services.values().length + 3){
             Thread.sleep(30);
         }
         Set<String> deployments = deploymentIDs();
