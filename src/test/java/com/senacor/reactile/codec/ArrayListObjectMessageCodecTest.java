@@ -1,13 +1,10 @@
 package com.senacor.reactile.codec;
 
-import com.senacor.reactile.account.Account;
 import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.buffer.Buffer;
 import org.junit.Test;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 
 public class ArrayListObjectMessageCodecTest {
@@ -22,11 +19,6 @@ public class ArrayListObjectMessageCodecTest {
         System.out.println("res = " + res);
     }
 
-    @Test
-    public void blabla() {
-        ArrayList<Customer> list = new ArrayList<>();
-        Class listType = (Class) ((ParameterizedType)list.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    }
     private ArrayList<Customer> getArrayListOfDomainObject() {
         ArrayList<Customer> result = new ArrayList<>();
 
