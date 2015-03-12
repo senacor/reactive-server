@@ -7,6 +7,7 @@ import com.senacor.reactile.account.CreditCardId;
 import com.senacor.reactile.account.Currency;
 import com.senacor.reactile.account.Transaction;
 import com.senacor.reactile.account.TransactionId;
+import com.senacor.reactile.bootstrap.VerticleDeployer;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
@@ -47,19 +48,21 @@ public class VertxRule extends ExternalResource {
         Arrays.stream(deployVerticles).forEach(this.verticleDeployer::addVerticle);
     }
 
-    public void deployVerticle(ServiceIdProvider verticle, ServiceIdProvider... moreVerticles) {
+    public VertxRule deployVerticle(ServiceIdProvider verticle, ServiceIdProvider... moreVerticles) {
         verticleDeployer.addService(verticle);
         for (ServiceIdProvider v : moreVerticles) {
             verticleDeployer.addService(v);
         }
+        return this;
 
     }
 
-    public void deployVerticle(Class<? extends Verticle> verticle, Class<? extends Verticle>... moreVerticles) {
+    public VertxRule deployVerticle(Class<? extends Verticle> verticle, Class<? extends Verticle>... moreVerticles) {
         verticleDeployer.addVerticle(verticle);
         for (Class<? extends Verticle> v : moreVerticles) {
             verticleDeployer.addVerticle(v);
         }
+        return this;
     }
 
     public Vertx vertx() {
@@ -73,13 +76,13 @@ public class VertxRule extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         registerDomainObjectCodec();
-        verticleDeployer.deployVerticles(10_000);
+        verticleDeployer.deploy(10_000);
     }
 
 
     @Override
     protected void after() {
-        verticleDeployer.stopVerticles(10_000);
+        verticleDeployer.stop(10_000);
         vertx.close();
     }
 

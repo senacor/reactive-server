@@ -1,0 +1,23 @@
+package com.senacor.reactile.mongo;
+
+import com.senacor.reactile.VertxRule;
+import com.senacor.reactile.bootstrap.MongoBootstrap;
+import org.junit.ClassRule;
+import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
+
+import static com.senacor.reactile.TestServices.EmbeddedMongo;
+
+public class EmbeddedMongoVerticleTest {
+
+    @ClassRule
+    public static final VertxRule vertxRule = new VertxRule(EmbeddedMongo).deployVerticle(MongoBootstrap.class);
+
+    @Test(timeout = 3000)
+    public void thatMongoServiceCanBeDeployed() throws Exception {
+        while(vertxRule.vertx().deploymentIDs().size() != 5) {
+            TimeUnit.MILLISECONDS.sleep(30);
+        }
+    }
+}

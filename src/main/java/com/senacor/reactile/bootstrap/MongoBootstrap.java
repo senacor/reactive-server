@@ -14,10 +14,9 @@ public class MongoBootstrap extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         launchMongoServiceObservable()
                 .subscribe(
-                        outcome -> System.out.println("Value " + outcome + " processed."),
+                        id -> System.out.println("Mongo started with deploymentId " + id),
                         startFuture::fail,
-                        () -> startFuture.complete()
-
+                        startFuture::complete
                 );
     }
 
