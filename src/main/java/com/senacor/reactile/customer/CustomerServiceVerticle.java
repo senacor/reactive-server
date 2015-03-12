@@ -33,7 +33,7 @@ public class CustomerServiceVerticle extends AbstractServiceVerticle {
         MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
         mongoService = ObservableMongoService.from(eventBusProxy);
 
-        vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
+       // vertx.setPeriodic(1000, tick -> vertx.eventBus().publish(GatewayVerticle.PUBLISH_ADDRESS, newCustomerChangedEvent()));
     }
 
     @Action

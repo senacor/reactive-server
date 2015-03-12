@@ -98,6 +98,6 @@ public class ArrayListObjectMessageCodec<E> implements MessageCodec<ArrayList<E>
 
     @Override
     public byte systemCodecID() {
-        return -3;
+        return -1;
     }
 }

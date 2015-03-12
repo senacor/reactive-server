@@ -49,6 +49,6 @@ public class ValueObjectMessageCodec<T extends ValueObject> implements MessageCo
 
     @Override
     public byte systemCodecID() {
-        return -2;
+        return -1;
     }
 }
