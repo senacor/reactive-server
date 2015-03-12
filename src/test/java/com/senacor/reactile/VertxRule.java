@@ -7,7 +7,9 @@ import com.senacor.reactile.account.CreditCardId;
 import com.senacor.reactile.account.Currency;
 import com.senacor.reactile.account.Transaction;
 import com.senacor.reactile.account.TransactionId;
+import com.senacor.reactile.codec.ArrayListObjectMessageCodec;
 import com.senacor.reactile.codec.DomainObjectMessageCodec;
+import com.senacor.reactile.codec.ValueObjectMessageCodec;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Contact;
 import com.senacor.reactile.customer.Country;
@@ -87,23 +89,28 @@ public class VertxRule extends ExternalResource {
     private void registerDomainObjectCodec() {
         Stream.of(
                 User.class,
-                UserId.class,
                 Address.class,
                 Contact.class,
                 Country.class,
                 Customer.class,
-                CustomerId.class,
                 Account.class,
-                AccountId.class,
                 CreditCard.class,
-                CreditCardId.class,
-                Transaction.class,
-                TransactionId.class,
-                Currency.class,
-                CustomerAddressChangedEvt.class,
-                ArrayList.class
+                Transaction.class
         )
                 .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
+        Stream.of(
+                ArrayList.class
+        )
+                .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, new ArrayListObjectMessageCodec()));
+        Stream.of(
+                UserId.class,
+                CustomerId.class,
+                AccountId.class,
+                CreditCardId.class,
+                TransactionId.class,
+                Currency.class
+        )
+                .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, ValueObjectMessageCodec.from(clazz)));
     }
 
     public <T> Message<T> sendBlocking(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {

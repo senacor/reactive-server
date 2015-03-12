@@ -1,6 +1,8 @@
 package com.senacor.reactile.account;
 
-public class Currency {
+import com.senacor.reactile.ValueObject;
+
+public class Currency implements ValueObject {
 
     private final String currency;
 
@@ -9,6 +11,11 @@ public class Currency {
     }
 
     public String getCurrency() {
+        return currency;
+    }
+
+    @Override
+    public String toValue() {
         return currency;
     }
 }

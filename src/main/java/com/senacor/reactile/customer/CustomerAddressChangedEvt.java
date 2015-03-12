@@ -1,11 +1,12 @@
 package com.senacor.reactile.customer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.domain.Jsonizable;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.json.JsonObject;
 
-public class CustomerAddressChangedEvt {
+public class CustomerAddressChangedEvt implements Jsonizable {
     private final UserId userId;
     private final CustomerId customerId;
     private final Address newAddress;
