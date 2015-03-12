@@ -35,7 +35,7 @@ public class CustomerServiceVerticleTest {
     private final MongoInitializer initializer = new MongoInitializer(mongoService, COLLECTION);
 
     @Test
-    public void thatVerticleRespondsToMessage() throws InterruptedException, ExecutionException, TimeoutException {
+    public void thatCustomerCanBeRead() throws InterruptedException, ExecutionException, TimeoutException {
         Customer customer = CustomerFixtures.defaultCustomer();
         initializer.writeBlocking(customer);
         CustomerId customerId = customer.getId();
