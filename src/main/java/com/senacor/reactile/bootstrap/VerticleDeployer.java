@@ -8,11 +8,15 @@ import io.vertx.core.Verticle;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.Vertx;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 public class VerticleDeployer {
 
@@ -107,8 +111,20 @@ public class VerticleDeployer {
     }
 
     public void addService(ServiceIdProvider serviceIdProvider, ServiceIdProvider... more) {
-        notStarted.add(serviceIdProvider.getId());
-        Arrays.stream(more).map(provider -> provider.getId()).forEach(notStarted::add);
+        ArrayList<ServiceIdProvider> merged = newArrayList(serviceIdProvider);
+        merged.addAll(Arrays.asList(more));
+        flattenDependencies(merged).stream().map(provider -> provider.getId()).forEach(notStarted::add);
+    }
+
+    private List<ServiceIdProvider> flattenDependencies(List<ServiceIdProvider> providers) {
+        List<ServiceIdProvider> flattened = new ArrayList<>();
+        for (ServiceIdProvider provider : providers) {
+            flattened.add(provider);
+            if (provider.hasDependencies()) {
+                flattened.addAll(provider.dependsOn());
+            }
+        }
+        return flattened;
     }
 
     public void addVerticle(Class<? extends Verticle> verticleClass, Class<? extends Verticle>... more) {
