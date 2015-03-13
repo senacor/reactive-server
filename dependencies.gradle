@@ -30,6 +30,7 @@ ext.libraries = [
                 [group: 'io.vertx', name: 'vertx-reactive-streams', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-metrics', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-maven-service-factory', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-proxy', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-dependencies', version: vertxVersion]
