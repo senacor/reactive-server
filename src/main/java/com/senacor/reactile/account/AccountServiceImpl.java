@@ -1,16 +1,12 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.customer.CustomerServiceVerticle;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import static com.senacor.reactile.account.Account.anAccount;
 import static com.senacor.reactile.header.Headers.action;
 
 public class AccountServiceImpl implements AccountService {
@@ -20,21 +16,9 @@ public class AccountServiceImpl implements AccountService {
         this.vertx = vertx;
     }
 
-/*
-    @Override
-    public Observable<Account> getAccount(CustomerId customerId) {
-        return Observable.just(anAccount()
-                .withId("333")
-                .withCustomerId(customerId)
-                .withBalance(BigDecimal.TEN)
-                .withCurrency("EUR")
-                .build());
-    }
-*/
-
     @Override
     public Observable<Account> getAccount(AccountId accountId) {
-        return vertx.eventBus().<Account>sendObservable(AccountServiceVerticle.ADDRESS, accountId, action("getAccount")).map(Message::body);
+        return vertx.eventBus().<Account>sendObservable(AccountServiceVerticle.ADDRESS, accountId, action("get")).map(Message::body);
     }
 
     @Override

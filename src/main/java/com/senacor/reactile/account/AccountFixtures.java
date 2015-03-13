@@ -6,6 +6,7 @@ import rx.functions.Func2;
 
 import java.math.BigDecimal;
 import java.util.Random;
+import java.util.UUID;
 
 import static rx.Observable.just;
 import static rx.Observable.zip;
@@ -32,6 +33,31 @@ public final class AccountFixtures {
                 .withBalance(new BigDecimal("18773"))
                 .withCurrency("EUR")
                 .build();
+    }
+
+    public static Account randomAccount(String accountId) {
+        return randomAccount()
+                .withId(accountId)
+                .build();
+    }
+
+    public static Account randomAccount(String accountId, String customerId) {
+        return randomAccount()
+                .withId(accountId)
+                .withCustomerId(customerId)
+                .build();
+    }
+
+    public static Account.Builder randomAccount() {
+        return Account.anAccount()
+                .withId("acc-" + uuid())
+                .withCustomerId("cust-" + uuid())
+                .withBalance(new BigDecimal(rd.nextInt(4000)))
+                .withCurrency("EUR" );
+    }
+
+    private static String uuid() {
+        return UUID.randomUUID().toString();
     }
 
     public static Observable<Account> randomAccounts(int count) {

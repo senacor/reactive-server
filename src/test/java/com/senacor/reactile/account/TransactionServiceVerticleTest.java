@@ -1,9 +1,7 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.Services;
 import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.mongo.MongoInitializer;
 import io.vertx.rxjava.core.eventbus.Message;
@@ -21,7 +19,7 @@ import static org.junit.Assert.assertThat;
 public class TransactionServiceVerticleTest {
 
     @ClassRule
-    public static final VertxRule vertxRule = new VertxRule(TestServices.EmbeddedMongo, Services.TransactionService).deployVerticle(MongoBootstrap.class);
+    public static final VertxRule vertxRule = new VertxRule(TestServices.TransactionService);
 
     private static final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), "transactions");
 
