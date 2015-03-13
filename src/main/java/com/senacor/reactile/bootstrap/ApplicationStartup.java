@@ -38,20 +38,9 @@ public class ApplicationStartup extends AbstractVerticle {
         Codecs.load(getVertx().eventBus());
     }
 
-//    @Override
-//    public void stop(Future<Void> stopFuture) throws Exception {
-//        deployedIds.stream().map(this::stopVerticle).reduce(Observable::concat).get()
-//                .subscribe(
-//                        res -> {
-//                        },
-//                        stopFuture::fail,
-//                        stopFuture::complete
-//                );
-//    }
-
     private Observable<String> startVerticle(String identifier) {
-        logger.info("Starting verticle with identifier " + identifier);
-        return vertx.deployVerticleObservable(identifier);
+        return vertx.deployVerticleObservable(identifier)
+                .doOnNext(id -> logger.info("Starting verticle with identifier " + identifier + " and deploymentId " + id));
     }
 
     private Observable<Void> stopVerticle(String deploymentId) {
