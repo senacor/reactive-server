@@ -1,24 +1,7 @@
 package com.senacor.reactile;
 
-import com.senacor.reactile.account.Account;
-import com.senacor.reactile.account.AccountId;
-import com.senacor.reactile.account.CreditCard;
-import com.senacor.reactile.account.CreditCardId;
-import com.senacor.reactile.account.Currency;
-import com.senacor.reactile.account.Transaction;
-import com.senacor.reactile.account.TransactionId;
-import com.senacor.reactile.codec.ArrayListObjectMessageCodec;
 import com.senacor.reactile.bootstrap.VerticleDeployer;
-import com.senacor.reactile.codec.DomainObjectMessageCodec;
-import com.senacor.reactile.codec.ValueObjectMessageCodec;
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.Contact;
-import com.senacor.reactile.customer.Country;
-import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.customer.CustomerAddressChangedEvt;
-import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.user.User;
-import com.senacor.reactile.user.UserId;
+import com.senacor.reactile.codec.Codecs;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.rxjava.core.Vertx;
@@ -26,11 +9,9 @@ import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.rules.ExternalResource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Stream;
 
 public class VertxRule extends ExternalResource {
 
@@ -90,30 +71,7 @@ public class VertxRule extends ExternalResource {
 
 
     private void registerDomainObjectCodec() {
-        Stream.of(
-                User.class,
-                Address.class,
-                Contact.class,
-                Country.class,
-                Customer.class,
-                Account.class,
-                CreditCard.class,
-                Transaction.class
-        )
-                .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, DomainObjectMessageCodec.from(clazz)));
-        Stream.of(
-                ArrayList.class
-        )
-                .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, new ArrayListObjectMessageCodec()));
-        Stream.of(
-                UserId.class,
-                CustomerId.class,
-                AccountId.class,
-                CreditCardId.class,
-                TransactionId.class,
-                Currency.class
-        )
-                .forEach(clazz -> ((io.vertx.core.eventbus.EventBus) vertx.eventBus().getDelegate()).registerDefaultCodec(clazz, ValueObjectMessageCodec.from(clazz)));
+        Codecs.load((io.vertx.core.eventbus.EventBus) eventBus().getDelegate());
     }
 
     public <T> Message<T> sendBlocking(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {
