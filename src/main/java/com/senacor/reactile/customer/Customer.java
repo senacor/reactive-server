@@ -1,6 +1,7 @@
 package com.senacor.reactile.customer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
@@ -11,7 +12,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshal;
 
-public class Customer implements Jsonizable {
+public class Customer implements Identity<CustomerId>, Jsonizable {
 
     private final CustomerId id;
 

@@ -1,13 +1,25 @@
 package com.senacor.reactile;
 
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
+
 public enum TestServices implements ServiceIdProvider {
 
-    EmbeddedMongo("com.senacor:reactile-embedded-mongo");
+    EmbeddedMongo("com.senacor:reactile-embedded-mongo"),
+    UserConnector("com.senacor:reactile-user-connector:1.0.0"),
+    UserService("com.senacor:reactile-user-service:1.0.0", UserConnector),
+    CustomerService("com.senacor:reactile-customer-service:1.0.0", EmbeddedMongo),
+    AccountService("com.senacor:reactile-account-service:1.0.0", EmbeddedMongo),
+    CreditCardService("com.senacor:reactile-creditcard-service:1.0.0", EmbeddedMongo),
+    TransactionService("com.senacor:reactile-transaction-service:1.0.0", EmbeddedMongo);
 
     private final String serviceName;
+    private final Set<ServiceIdProvider> dependencies;
 
-    TestServices(String serviceName) {
+    TestServices(String serviceName, ServiceIdProvider... services) {
         this.serviceName = serviceName;
+        dependencies = ImmutableSet.copyOf(services);
     }
 
     @Override
@@ -15,5 +27,9 @@ public enum TestServices implements ServiceIdProvider {
         return "service:" + serviceName;
     }
 
+    @Override
+    public Set<? extends ServiceIdProvider> dependsOn() {
+        return dependencies;
+    }
 
 }

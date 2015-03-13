@@ -1,10 +1,8 @@
 package com.senacor.reactile.customer;
 
 import com.google.common.base.Stopwatch;
-import com.senacor.reactile.Services;
 import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.bootstrap.MongoBootstrap;
 import com.senacor.reactile.mongo.MongoInitializer;
 import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.core.json.JsonObject;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertThat;
 public class CustomerServiceVerticleTest {
 
     @ClassRule
-    public static final VertxRule vertxRule = new VertxRule(TestServices.EmbeddedMongo, Services.CustomerService).deployVerticle(MongoBootstrap.class);
+    public static final VertxRule vertxRule = new VertxRule(TestServices.CustomerService);
 
     public static final String COLLECTION = "customers";
 

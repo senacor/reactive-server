@@ -4,9 +4,6 @@ import com.senacor.reactile.IdObject;
 
 import java.util.Objects;
 
-/**
- * Created by rwinzing on 02.03.15.
- */
 public class TransactionId implements IdObject {
     private final String id;
 

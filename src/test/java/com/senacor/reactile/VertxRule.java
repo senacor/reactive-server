@@ -75,18 +75,18 @@ public class VertxRule extends ExternalResource {
     }
 
     public <T> Message<T> sendBlocking(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {
-        return blockingEventBus.sendObservable(address, message);
+        return blockingEventBus.<T>sendObservable(address, message);
     }
 
     public <T> Message<T> sendBlocking(String address, Object message, String action) throws InterruptedException, ExecutionException, TimeoutException {
-        return blockingEventBus.sendObservable(address, message, action);
+        return blockingEventBus.<T>sendObservable(address, message, action);
     }
 
     public <T> Message<T> sendBlocking(String address, Object message, String action, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
-        return blockingEventBus.sendObservable(address, message, action, timeout);
+        return blockingEventBus.<T>sendObservable(address, message, action, timeout);
     }
 
     public <T> Message<T> sendBlocking(String address, Object message, DeliveryOptions options, long timeout) throws InterruptedException, ExecutionException, TimeoutException {
-        return blockingEventBus.sendObservable(address, message, options, timeout);
+        return blockingEventBus.<T>sendObservable(address, message, options, timeout);
     }
 }

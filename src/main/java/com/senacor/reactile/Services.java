@@ -31,6 +31,4 @@ public enum Services implements ServiceIdProvider {
     public Set<? extends ServiceIdProvider> dependsOn() {
         return dependencies;
     }
-
-
 }
