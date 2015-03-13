@@ -41,7 +41,7 @@ public class TransactionServiceTest {
 
     @Test
     public void thatTransactionsAreReturned_forCrediCardId() {
-        List<Transaction> transactions = service.getTransactionsForCreditCard(new CreditCardId("acc-001")).toBlocking().first();
+        List<Transaction> transactions = service.getTransactionsForCreditCard(new CreditCardId("cc-123")).toBlocking().first();
         assertThat(transactions, hasSize(1));
     }
 
