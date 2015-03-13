@@ -3,11 +3,6 @@ buildscript {
         maven {
             url "http://dipsydoodle:8881/nexus/content/groups/reactile"
         }
-        mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/maven2"
-        }
-        jcenter()
 
     }
     dependencies {
@@ -29,14 +24,6 @@ repositories {
     maven {
         url "http://dipsydoodle:8881/nexus/content/groups/reactile"
     }
-//    mavenCentral()
-//    maven {
-//        url "https://oss.sonatype.org/maven2"
-//    }
-//    jcenter()
-//    maven {
-//        url "https://oss.sonatype.org/content/repositories/snapshots"
-//    }
 }
 
 apply from: "dependencies.gradle"
