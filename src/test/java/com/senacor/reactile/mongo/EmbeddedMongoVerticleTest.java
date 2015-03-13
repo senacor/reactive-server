@@ -15,7 +15,7 @@ public class EmbeddedMongoVerticleTest {
 
     @Test(timeout = 1000)
     public void thatMongoServiceCanBeDeployed() throws Exception {
-        while(vertxRule.vertx().deploymentIDs().size() != 1) {
+        while(vertxRule.vertx().deploymentIDs().size() != 2) {
             TimeUnit.MILLISECONDS.sleep(30);
         }
 
