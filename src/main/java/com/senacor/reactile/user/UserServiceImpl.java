@@ -21,4 +21,11 @@ public class UserServiceImpl implements UserService {
                 .map(Message::body);
     }
 
+    @Override
+    public Observable<User> login(UserId userId) {
+        return vertx.eventBus()
+                .<User>sendObservable(UserServiceVerticle.ADDRESS, userId, action("login"))
+                .map(Message::body);
+    }
+
 }

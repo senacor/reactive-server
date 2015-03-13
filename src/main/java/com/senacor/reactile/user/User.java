@@ -1,12 +1,13 @@
 package com.senacor.reactile.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
-public class User implements Jsonizable {
+public class User implements Identity<UserId>, Jsonizable {
 
     private final UserId id;
     private final String firstName;
