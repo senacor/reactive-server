@@ -1,13 +1,14 @@
 package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.Identity;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
-public class CreditCard implements Jsonizable {
+public class CreditCard implements Jsonizable, Identity<CreditCardId> {
     private final CreditCardId id;
     private final CustomerId customerId;
     private final BigDecimal balance;
