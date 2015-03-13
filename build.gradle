@@ -90,4 +90,17 @@ publishing {
 
         }
     }
+    repositories {
+        maven {
+            credentials {
+                username "jenkins"
+                password "jenkins"
+            }
+            if (project.version.endsWith("-SNAPSHOT")) {
+                url "http://dipsydoodle:8881/nexus/content/repositories/snapshots/"
+            } else {
+                url "http://dipsydoodle:8881/nexus/content/repositories/releases/"
+            }
+        }
+    }
 }
