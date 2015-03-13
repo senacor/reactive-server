@@ -1,5 +1,8 @@
 buildscript {
     repositories {
+        maven {
+            url "http://dipsydoodle:8881/nexus/content/groups/reactile"
+        }
         mavenCentral()
         maven {
             url "https://oss.sonatype.org/maven2"
@@ -23,14 +26,17 @@ sourceCompatibility = 1.8
 
 
 repositories {
-    mavenCentral()
     maven {
-        url "https://oss.sonatype.org/maven2"
+        url "http://dipsydoodle:8881/nexus/content/groups/reactile"
     }
-    jcenter()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
+//    mavenCentral()
+//    maven {
+//        url "https://oss.sonatype.org/maven2"
+//    }
+//    jcenter()
+//    maven {
+//        url "https://oss.sonatype.org/content/repositories/snapshots"
+//    }
 }
 
 apply from: "dependencies.gradle"
