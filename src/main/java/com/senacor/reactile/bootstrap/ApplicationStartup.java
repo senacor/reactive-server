@@ -1,6 +1,7 @@
 package com.senacor.reactile.bootstrap;
 
 import com.senacor.reactile.Services;
+import com.senacor.reactile.codec.Codecs;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -19,6 +20,9 @@ public class ApplicationStartup extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
+
+        registerCodecs();
+
         Observable<String> mongoBootstrapObservable = startVerticle(MongoBootstrap.class.getName());
         services().map(service -> startVerticle(service.getId()))
                 .reduce(Observable::concat).get()
@@ -28,6 +32,10 @@ public class ApplicationStartup extends AbstractVerticle {
                         startFuture::fail,
                         startFuture::complete
                 );
+    }
+
+    private void registerCodecs() {
+        Codecs.load(getVertx().eventBus());
     }
 
 //    @Override
