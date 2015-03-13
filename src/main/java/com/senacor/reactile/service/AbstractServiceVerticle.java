@@ -60,6 +60,7 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle implement
 
         try {
             Method serviceMethod = actions.getAction(action);
+            @SuppressWarnings("unchecked")
             Observable<Object> serviceResult = (Observable<Object>) serviceMethod.invoke(this, payload);
             serviceResult.subscribe(
                     message::reply,
