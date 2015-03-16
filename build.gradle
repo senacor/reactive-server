@@ -3,7 +3,7 @@ buildscript {
         maven {
             url "http://dipsydoodle:8881/nexus/content/groups/reactile"
         }
-
+        jcenter()
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
@@ -28,6 +28,14 @@ repositories {
 
 apply from: "dependencies.gradle"
 
+sourceSets {
+    generated {
+        java {
+            srcDirs = ['src/main/generated']
+        }
+    }
+}
+
 dependencies {
 
     compile libraries.vertx
@@ -36,7 +44,6 @@ dependencies {
     testCompile libraries.junit
     testCompile libraries.embeddedMongo
     testCompile group: 'io.vertx', name: 'vertx-unit', version: vertxVersion
-
 
     testCompile group: 'io.vertx', name: 'vertx-core', classifier: 'sources', version: vertxVersion
     testCompile group: 'io.vertx', name: 'vertx-rx-java', classifier: 'sources', version: vertxVersion
@@ -57,6 +64,27 @@ shadowJar {
     mergeServiceFiles {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
     }
+}
+
+task generateServiceProxy(type: JavaCompile, description: 'Generates EBServiceProxies') {
+    source = sourceSets.main.java
+    classpath = configurations.compile
+    destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "io.vertx.codegen.CodeGenProcessor",
+            "-AoutputDirectory=$destinationDir"
+    ]
+}
+
+compileJava {
+    source sourceSets.main.java + sourceSets.generated.java
+}
+compileJava.dependsOn generateServiceProxy
+
+
+clean {
+    delete += sourceSets.generated.java.srcDirs
 }
 
 test {
@@ -96,5 +124,12 @@ publishing {
                 url "http://dipsydoodle:8881/nexus/content/repositories/releases/"
             }
         }
+    }
+}
+
+
+idea {
+    module {
+        sourceDirs += file('src/main/generated')
     }
 }
