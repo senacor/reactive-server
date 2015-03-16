@@ -22,10 +22,11 @@ public class TransactionServiceTest {
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(TestServices.TransactionService);
-    private final TransactionService service = new TransactionServiceImpl(vertxRule.vertx());
 
     @Rule
     public final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), "transactions");
+
+    private final TransactionService service = new TransactionServiceImpl(vertxRule.vertx());
 
     @Before
     public void init() {
