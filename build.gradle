@@ -109,6 +109,7 @@ publishing {
 
             artifact sourcesJar
             artifact javadocJar
+            artifact shadowJar
 
         }
     }
