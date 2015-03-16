@@ -13,6 +13,11 @@ import static com.google.common.collect.Lists.newArrayList;
 public final class CustomerFixtures {
 
     private static final Random rd = new Random();
+    public static final List STREETS = Arrays.asList("Winter", "Frühling", "Sommer", "Herbst", "Amsel", "Drossel", "Fink", "Star");
+    public static final List STREET_TYPES = Arrays.asList("strasse", "weg", "pfad");
+    public static final List FIRST_NAMES = Arrays.asList("Adam", "Anneliese", "Berthold", "Berta", "Christopher", "Charlotte", "Dennis", "Dorothea");
+    public static final List LAST_NAMES = Arrays.asList("Kugler", "Lurchig", "Monheim", "Naaber", "Peine", "Quaid", "Rastatt");
+    public static final List CITIES = Arrays.asList("München", "Stuttgart", "Poppenhausen", "Bonn", "Berlin", "Hamburg", "Mainz", "Leibzig", "Hintertuxing");
 
     private CustomerFixtures() {
     }
@@ -22,23 +27,44 @@ public final class CustomerFixtures {
     }
 
     public static Customer randomCustomer() {
+        return randomCustomerBuilder().build();
+    }
+    public static Customer randomCustomer(String customerId) {
+        return randomCustomer(new CustomerId(customerId));
+    }
+
+    public static Customer randomCustomer(CustomerId customerId) {
         return newCustomer(UUID.randomUUID().toString());
     }
 
     public static Customer newCustomer(String id) {
-        return Customer.newBuilder()
+        return randomCustomerBuilder()
                 .withId(new CustomerId(id))
-                .withFirstname("Hans")
-                .withLastname("Dampf")
+                .build();
+    }
+
+    private static final Customer.Builder randomCustomerBuilder() {
+        return Customer.newBuilder()
+                .withId("cust-" + uuid())
+                .withFirstname(pickRandom(FIRST_NAMES))
+                .withLastname(pickRandom(LAST_NAMES))
                 .withAddresses(newArrayList(Address.anAddress()
-                        .withAddressNumber("1")
-                        .withCoHint("c/o Mustermann")
-                        .withStreet("Winterstrasse")
-                        .withCity("Sommerdorf")
-                        .withZipCode("12345")
-                        .withCountry(new Country("Deutschland", "DE")).build()))
-                .withTaxCountry(new Country("England", "EN"))
-                .withTaxNumber("47-tax-11").build();
+                        .withAddressNumber("" + rd.nextInt(99))
+                        .withStreet(pickRandom(STREETS))
+                        .withCity(pickRandom(CITIES))
+                        .withZipCode("" + rd.nextInt(90000) + 10000)
+                        .withCountry(new Country("Deutschland", "DE"))
+                        .build()))
+                .withTaxCountry(rd.nextBoolean() ? new Country("England", "EN") : new Country("Deutschland", "DE"))
+                .withTaxNumber("" + rd.nextInt(99) + "-tax-" + rd.nextInt(99));
+    }
+
+    private static String pickRandom(List<String> source) {
+        return source.get(rd.nextInt(source.size()));
+    }
+
+    private static String uuid() {
+        return UUID.randomUUID().toString();
     }
 
     public static Observable<Customer> randomCustomers(int count) {
@@ -73,23 +99,19 @@ public final class CustomerFixtures {
     }
 
     private static Observable<String> streetName() {
-        List streets = Arrays.asList("Winter", "Frühling", "Sommer", "Herbst", "Amsel", "Drossel", "Fink", "Star");
-        return Observable.from(streets).repeat();
+        return Observable.from(STREETS).repeat();
     }
 
     private static Observable<String> streetType() {
-        List streets = Arrays.asList("strasse", "weg", "pfad");
-        return Observable.from(streets).repeat();
+        return Observable.from(STREET_TYPES).repeat();
     }
 
     private static Observable<String> firstName() {
-        List streets = Arrays.asList("Adam", "Anneliese", "Berthold", "Berta", "Christopher", "Charlotte", "Dennis", "Dorothea");
-        return Observable.from(streets).repeat();
+        return Observable.from(FIRST_NAMES).repeat();
     }
 
     private static Observable<String> lastName() {
-        List streets = Arrays.asList("Kugler", "Lurchig", "Monheim", "Naaber", "Peine", "Quaid", "Rastatt");
-        return Observable.from(streets).repeat();
+        return Observable.from(LAST_NAMES).repeat();
     }
 
 }

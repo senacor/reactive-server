@@ -3,6 +3,7 @@ package com.senacor.reactile.customer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshal;
 
+@DataObject
 public class Customer implements Identity<CustomerId>, Jsonizable {
 
     private final CustomerId id;
@@ -71,8 +73,6 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
 
     public static Customer fromJson(JsonObject jsonObject) {
         checkArgument(jsonObject != null);
-        System.out.println("jsonObject.encodePrettily() = " + jsonObject.encodePrettily());
-
         return Customer.newBuilder()
                 .withId(jsonObject.getString("id"))
                 .withFirstname(jsonObject.getString("firstname"))

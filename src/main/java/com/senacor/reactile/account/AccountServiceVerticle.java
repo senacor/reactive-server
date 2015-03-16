@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by rwinzing on 03.03.15.
  */
-public class AccountServiceVerticle extends AbstractServiceVerticle implements AccountService {
+public class AccountServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "AccountServiceVerticle";
 
     private ObservableMongoService mongoService;

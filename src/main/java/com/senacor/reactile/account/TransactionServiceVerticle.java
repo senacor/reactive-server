@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by rwinzing on 03.03.15.
  */
-public class TransactionServiceVerticle extends AbstractServiceVerticle implements TransactionService{
+public class TransactionServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "TransactionServiceVerticle";
 
     private ObservableMongoService mongoService;

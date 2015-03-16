@@ -41,6 +41,13 @@ public final class AccountFixtures {
                 .build();
     }
 
+
+    public static Account randomAccount(CustomerId customerId) {
+        return randomAccount()
+                .withCustomerId(customerId)
+                .build();
+    }
+
     public static Account randomAccount(String accountId, String customerId) {
         return randomAccount()
                 .withId(accountId)
@@ -93,4 +100,5 @@ public final class AccountFixtures {
     private static Observable<Integer> random(int bound) {
         return Observable.range(1, rd.nextInt(bound) + 1);
     }
+
 }

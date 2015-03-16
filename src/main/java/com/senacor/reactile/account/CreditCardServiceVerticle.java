@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by rwinzing on 03.03.15.
  */
-public class CreditCardServiceVerticle extends AbstractServiceVerticle implements CreditCardService {
+public class CreditCardServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "CreditCardServiceVerticle";
 
     private ObservableMongoService mongoService;

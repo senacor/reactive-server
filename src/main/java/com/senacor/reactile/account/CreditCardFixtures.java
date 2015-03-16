@@ -29,6 +29,10 @@ public final class CreditCardFixtures {
                 .build();
     }
 
+    public static CreditCard randomCreditCard(CustomerId customerId) {
+        return randomCreditCard(customerId.getId());
+    }
+
     public static CreditCard randomCreditCard(String customerId) {
         return defaultCreditCard()
                 .withId(UUID.randomUUID().toString())

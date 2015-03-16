@@ -20,5 +20,12 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(Message::body);
     }
 
+    @Override
+    public Observable<Customer> createCustomer(Customer customer) {
+        return vertx.eventBus()
+                .<Customer>sendObservable(CustomerServiceVerticle.ADDRESS, customer, action("add"))
+                .map(Message::body);
+    }
+
 
 }

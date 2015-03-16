@@ -9,4 +9,6 @@ public interface CreditCardService {
 
     Observable<CreditCard> getCreditCard(CreditCardId creditCardId);
     Observable<List<CreditCard>> getCreditCardsForCustomer(CustomerId customerId);
+
+    Observable<CreditCard> createCreditCard(CreditCard creditCard);
 }

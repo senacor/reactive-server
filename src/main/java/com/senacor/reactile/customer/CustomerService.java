@@ -6,4 +6,5 @@ public interface CustomerService {
 
     Observable<Customer> getCustomer(CustomerId customerId);
 
+    Observable<Customer> createCustomer(Customer customer);
 }
