@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class HttpClientRule extends ExternalResource {
-    public static final int DEFAULT_TIMEOUT = 500;
+    public static final int DEFAULT_TIMEOUT = 1500;
     private final Vertx vertx;
     private final HttpClientOptions httpClientOptions;
     private HttpClient client;
