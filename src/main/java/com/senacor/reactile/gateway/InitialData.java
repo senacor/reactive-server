@@ -1,4 +1,4 @@
-package com.senacor.reactile.customer;
+package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.AccountFixtures;
@@ -8,6 +8,9 @@ import com.senacor.reactile.account.CreditCardFixtures;
 import com.senacor.reactile.account.CreditCardService;
 import com.senacor.reactile.account.TransactionFixtures;
 import com.senacor.reactile.account.TransactionService;
+import com.senacor.reactile.customer.CustomerFixtures;
+import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.customer.CustomerService;
 import io.vertx.rxjava.core.RxHelper;
 import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
