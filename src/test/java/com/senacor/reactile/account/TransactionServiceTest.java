@@ -4,8 +4,9 @@ import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.mongo.MongoInitializer;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.List;
@@ -23,10 +24,11 @@ public class TransactionServiceTest {
     public final static VertxRule vertxRule = new VertxRule(TestServices.TransactionService);
     private final TransactionService service = new TransactionServiceImpl(vertxRule.vertx());
 
-    private static final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), "transactions");
+    @Rule
+    public final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), "transactions");
 
-    @BeforeClass
-    public static void init() {
+    @Before
+    public void init() {
         initializer.writeBlocking(
                 newCCTransaction("cust-5678", "cc-1234567890"),
                 newCCTransaction("cust-5678", "cc-123"),
