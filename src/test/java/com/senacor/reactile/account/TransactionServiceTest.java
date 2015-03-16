@@ -12,6 +12,8 @@ import java.util.List;
 
 import static com.senacor.reactile.account.TransactionFixtures.newAccTransaction;
 import static com.senacor.reactile.account.TransactionFixtures.newCCTransaction;
+import static com.senacor.reactile.domain.JsonizableMatchers.hasProperty;
+import static com.senacor.reactile.domain.JsonizableMatchers.hasValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -49,6 +51,19 @@ public class TransactionServiceTest {
     public void thatTransactionsAreReturned_forCustomerId() {
         List<Transaction> transactions = service.getTransactionsForCustomer(new CustomerId("cust-5678")).toBlocking().first();
         assertThat(transactions, hasSize(3));
+    }
+
+    @Test
+    public void thatTransactionsCanBeCreated() {
+        Transaction accTransaction = service.createTransaction(newAccTransaction("cust-456", "acc-555")).toBlocking().first();
+        assertThat(accTransaction, hasProperty("id"));
+        assertThat(accTransaction, hasValue("customerId", "cust-456"));
+        assertThat(accTransaction, hasValue("accountId", "acc-555"));
+        Transaction ccTransaction = service.createTransaction(newCCTransaction("cust-456", "cc-555")).toBlocking().first();
+        assertThat(ccTransaction, hasProperty("id"));
+        assertThat(ccTransaction, hasValue("customerId", "cust-456"));
+        assertThat(ccTransaction, hasValue("creditCardId", "cc-555"));
+
     }
 
 }
