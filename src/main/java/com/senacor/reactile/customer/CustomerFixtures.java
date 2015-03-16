@@ -34,7 +34,8 @@ public final class CustomerFixtures {
     }
 
     public static Customer randomCustomer(CustomerId customerId) {
-        return newCustomer(UUID.randomUUID().toString());
+        return randomCustomerBuilder()
+                .withId(customerId).build();
     }
 
     public static Customer newCustomer(String id) {
@@ -50,6 +51,7 @@ public final class CustomerFixtures {
                 .withLastname(pickRandom(LAST_NAMES))
                 .withAddresses(newArrayList(Address.anAddress()
                         .withAddressNumber("" + rd.nextInt(99))
+                        .withCoHint("c/o Ramstein")
                         .withStreet(pickRandom(STREETS))
                         .withCity(pickRandom(CITIES))
                         .withZipCode("" + rd.nextInt(90000) + 10000)

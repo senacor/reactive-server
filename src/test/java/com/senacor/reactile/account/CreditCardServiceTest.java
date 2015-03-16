@@ -23,8 +23,7 @@ public class CreditCardServiceTest {
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(TestServices.CreditCardService);
-    private final CreditCardService service = new CreditCardServiceImpl(vertxRule.vertx()) {
-    };
+    private final CreditCardService service = new CreditCardServiceImpl(vertxRule.vertx());
 
     private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "creditcards");
 

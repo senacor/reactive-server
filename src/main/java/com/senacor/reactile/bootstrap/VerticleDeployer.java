@@ -10,7 +10,9 @@ import io.vertx.rxjava.core.Vertx;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +22,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class VerticleDeployer {
 
-    private final static long DEFAULT_TIMEOUT = 10_000;
+    private final static long DEFAULT_TIMEOUT = 5_000;
 
     private final Set<String> notStarted = new LinkedHashSet<>();
     private final Set<String> started = new LinkedHashSet<>();
@@ -60,11 +62,11 @@ public class VerticleDeployer {
 
 
     public void stop(long timeoutInMillis) {
-        started.stream().map(this::stopVerticle).forEach(future -> waitForCompletion(future, timeoutInMillis));
+        reverseStarted().stream().map(this::stopVerticle).forEach(future -> waitForCompletion(future, timeoutInMillis));
     }
 
     public void stop(Future<Void> stopFuture) {
-        started.stream()
+        reverseStarted().stream()
                 .map(this::stopVerticle)
                 .map(future -> future.handle((String id, Throwable ex) -> {
                             if (ex != null) {
@@ -77,6 +79,12 @@ public class VerticleDeployer {
                             return future;
                         }
                 )).forEach(future -> waitForCompletion(future, DEFAULT_TIMEOUT));
+    }
+
+    private LinkedList<String> reverseStarted() {
+        LinkedList<String> reverseStartOrderedList = new LinkedList<>(started);
+        Collections.reverse(reverseStartOrderedList);
+        return reverseStartOrderedList;
     }
 
     private CompletableFuture<String> startVerticle(String identifier, DeploymentOptions options) {

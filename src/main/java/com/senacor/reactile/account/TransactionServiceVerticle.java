@@ -15,9 +15,6 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- * Created by rwinzing on 03.03.15.
- */
 public class TransactionServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "TransactionServiceVerticle";
 
@@ -54,6 +51,12 @@ public class TransactionServiceVerticle extends AbstractServiceVerticle {
     public Observable<List<Transaction>> getTransactionsForCreditCard(CreditCardId creditCardId) {
         JsonObject query = new JsonObject().put("creditCardId", creditCardId.getId());
         return executeQuery(query);
+    }
+
+
+    @Action("create")
+    public Observable<Transaction> addTransaction(Transaction transaction) {
+        return mongoService.insert(collection, transaction.toJson()).flatMap(id -> Observable.just(transaction));
     }
 
     private Observable<List<Transaction>> executeQuery(JsonObject query) {

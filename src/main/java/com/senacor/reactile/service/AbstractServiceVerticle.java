@@ -64,7 +64,9 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle implement
             Observable<Object> serviceResult = (Observable<Object>) serviceMethod.invoke(this, payload);
             serviceResult.subscribe(
                     message::reply,
-                    Throwable::printStackTrace
+                    throwable -> {
+                        log().error("Error invoking service method " + serviceMethod, throwable);
+                    }
             );
         } catch (RuntimeException e) {
             throw e;

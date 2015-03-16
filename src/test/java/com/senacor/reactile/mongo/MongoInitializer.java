@@ -2,6 +2,7 @@ package com.senacor.reactile.mongo;
 
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.rxjava.core.Vertx;
+import org.junit.rules.ExternalResource;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 
-public class MongoInitializer {
+public class MongoInitializer extends ExternalResource{
 
     private final ObservableMongoService mongoService;
     private final String collection;
@@ -45,5 +46,8 @@ public class MongoInitializer {
                 .flatMap(json -> mongoService.insert(collection, json));
     }
 
-
+    @Override
+    protected void after() {
+        mongoService.dropCollection(collection).subscribe();
+    }
 }
