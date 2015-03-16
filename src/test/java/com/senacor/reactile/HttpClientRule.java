@@ -32,7 +32,7 @@ public class HttpClientRule extends ExternalResource {
     }
 
     public HttpClientRequest request(HttpMethod method, String requestURI) {
-        return request(method, 8080, "localhost", requestURI);
+        return request(method, 8081, "localhost", requestURI);
 
     }
 
