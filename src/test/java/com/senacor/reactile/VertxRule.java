@@ -59,13 +59,13 @@ public class VertxRule extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         registerDomainObjectCodec();
-        verticleDeployer.deploy(5_000);
+        verticleDeployer.deploy(15_000);
     }
 
 
     @Override
     protected void after() {
-        verticleDeployer.stop(5_000);
+        verticleDeployer.stop(15_000);
         vertx.close();
     }
 
