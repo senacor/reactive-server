@@ -5,7 +5,7 @@ import com.senacor.reactile.VertxRule;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import static com.senacor.reactile.domain.IdentityMatcher.hasId;
+import static com.senacor.reactile.domain.IdentityMatchers.hasId;
 import static org.junit.Assert.assertThat;
 
 public class UserServiceTest {

@@ -48,4 +48,9 @@ public class AccountServiceVerticle extends AbstractServiceVerticle {
         JsonObject query = new JsonObject().put("id", id.toValue());
         return mongoService.findOne(collection, query).map(Account::fromJson);
     }
+
+    @Action("create")
+    public Observable<Account> addAccount(Account account) {
+        return mongoService.insert(collection, account.toJson()).flatMap(id -> Observable.just(account));
+    }
 }
