@@ -19,7 +19,7 @@ public class GatewayVerticleTest {
 
     @Test
     public void thatRequestsAreHandled() throws InterruptedException {
-        HttpClientRequest request = httpClient.request(HttpMethod.GET, 8080, "localhost", "/start?user=momann&customerId=cust-100000");
+        HttpClientRequest request = httpClient.request(HttpMethod.GET, 8081, "localhost", "/start?user=momann&customerId=cust-100000");
         String content = httpClient.readBody(request);
         System.out.println(new JsonObject(content).encodePrettily());
 

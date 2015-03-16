@@ -145,7 +145,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private static HttpServerOptions newServerConfig() {
         return new HttpServerOptions()
                 .setHost("localhost")
-                .setPort(8080)
+                .setPort(8081)
                 ;
     }
 
