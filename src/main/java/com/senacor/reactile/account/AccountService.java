@@ -9,4 +9,6 @@ public interface AccountService {
 
     Observable<Account> getAccount(AccountId accountId);
     Observable<List<Account>> getAccountsForCustomer(CustomerId customerId);
+
+    Observable<Account> createAccount(Account account);
 }

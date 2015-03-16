@@ -8,6 +8,8 @@ import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class CreditCard implements Jsonizable, Identity<CreditCardId> {
     private final CreditCardId id;
     private final CustomerId customerId;
@@ -26,6 +28,7 @@ public class CreditCard implements Jsonizable, Identity<CreditCardId> {
     }
 
     public static CreditCard fromJson(JsonObject jsonObject) {
+        checkArgument(jsonObject != null);
         return aCreditCard()
                 .withId(jsonObject.getString("id"))
                 .withCustomerId(new CustomerId(jsonObject.getString("customerId")))

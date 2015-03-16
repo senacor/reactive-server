@@ -25,4 +25,9 @@ public class AccountServiceImpl implements AccountService {
     public Observable<List<Account>> getAccountsForCustomer(CustomerId customerId) {
         return vertx.eventBus().<List<Account>>sendObservable(AccountServiceVerticle.ADDRESS, customerId, action("getAccountsForCustomer")).map(Message::body);
     }
+
+    @Override
+    public Observable<Account> createAccount(Account account) {
+        return vertx.eventBus().<Account>sendObservable(AccountServiceVerticle.ADDRESS, account, action("create")).map(Message::body);
+    }
 }

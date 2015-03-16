@@ -49,6 +49,14 @@ public final class TransactionFixtures {
         return randomTransactions(customerId(count));
     }
 
+    public static Observable<Transaction> randomTransactions(CustomerId customerId, AccountId accountId, int count) {
+        return Observable.just(newAccTransaction(customerId.getId(), accountId.getId())).repeat(count);
+    }
+
+    public static Observable<Transaction> randomTransactions(CustomerId customerId, CreditCardId creditCardId, int count) {
+        return Observable.just(newCCTransaction(customerId.getId(), creditCardId.getId())).repeat(count);
+    }
+
     public static Observable<Transaction> randomTransactions(Observable<CustomerId> customers) {
         return customers.flatMap(customerId -> {
             Observable<Transaction> accountTransactions = accountId(customerId).flatMap(accountId -> zip(transactionId(accountId), just(customerId), balance(), zipToAccTransaction(accountId)));

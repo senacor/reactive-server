@@ -7,7 +7,7 @@ import org.hamcrest.Matcher;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class IdentityMatcher {
+public class IdentityMatchers {
 
 
     public static Matcher<Identity<?>> hasId(final String id) {

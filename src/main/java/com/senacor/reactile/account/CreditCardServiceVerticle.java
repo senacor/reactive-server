@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by rwinzing on 03.03.15.
  */
-public class CreditCardServiceVerticle extends AbstractServiceVerticle implements CreditCardService {
+public class CreditCardServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "CreditCardServiceVerticle";
 
     private ObservableMongoService mongoService;
@@ -47,6 +47,12 @@ public class CreditCardServiceVerticle extends AbstractServiceVerticle implement
     @Action("get")
     public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
         JsonObject query = new JsonObject().put("id", creditCardId.getId());
-        return mongoService.findOne("creditcards", query).map(CreditCard::fromJson);
+        return mongoService.findOne(collection, query).map(CreditCard::fromJson);
+    }
+
+
+    @Action("create")
+    public Observable<CreditCard> addCreditCard(CreditCard creditCard) {
+        return mongoService.insert(collection, creditCard.toJson()).flatMap(id -> Observable.just(creditCard));
     }
 }

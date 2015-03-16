@@ -1,6 +1,5 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.IdObject;
 import com.senacor.reactile.customer.CustomerId;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
@@ -32,7 +31,12 @@ public class TransactionServiceImpl implements TransactionService {
         return send(creditCardId, "getTransactionsForCreditCard");
     }
 
-    private Observable<List<Transaction>> send(IdObject id, String action) {
-        return vertx.eventBus().<List<Transaction>>sendObservable(TransactionServiceVerticle.ADDRESS, id, action(action)).map(Message::body);
+    @Override
+    public Observable<Transaction> createTransaction(Transaction transaction) {
+        return send(transaction, "create");
+    }
+
+    private <T> Observable<T> send(Object message, String action) {
+        return vertx.eventBus().<T>sendObservable(TransactionServiceVerticle.ADDRESS, message, action(action)).map(Message::body);
     }
 }

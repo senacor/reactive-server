@@ -24,18 +24,21 @@ public final class CreditCardFixtures {
     }
 
     public static CreditCard newCreditCard(String id) {
-        return defaultCreditCard()
-                .withId("id")
+        return randomCreditCardBuilder()
+                .withId(id)
                 .build();
     }
 
-    public static CreditCard randomCreditCard(String customerId) {
-        return defaultCreditCard()
-                .withId(UUID.randomUUID().toString())
-                .withCustomerId(customerId)
-                .withBalance(BigDecimal.valueOf(rd.nextDouble()))
-                .withCurrency("EUR")
-                .build();
+    public static CreditCard randomCreditCard(CustomerId customerId) {
+        return randomCreditCardBuilder().withCustomerId(customerId).build();
+    }
+
+    public static CreditCard randomCreditCard(CreditCardId id, CustomerId customerId) {
+        return randomCreditCardBuilder().withCustomerId(customerId).withId(id).build();
+    }
+
+    public static CreditCard randomCreditCard(String id, String customerId) {
+        return randomCreditCard(new CreditCardId(id), new CustomerId(customerId));
     }
 
     public static CreditCard.Builder defaultCreditCard() {
@@ -44,6 +47,18 @@ public final class CreditCardFixtures {
                 .withCustomerId("cust-0815")
                 .withBalance(new BigDecimal("-1000"))
                 .withCurrency("EUR");
+    }
+
+    private static CreditCard.Builder randomCreditCardBuilder() {
+        return defaultCreditCard()
+                .withId("cc-" + uuid())
+                .withCustomerId("cust-" + uuid())
+                .withBalance(BigDecimal.valueOf(rd.nextDouble()))
+                .withCurrency("EUR");
+    }
+
+    private static String uuid() {
+        return UUID.randomUUID().toString();
     }
 
     public static Observable<CreditCard> randomCreditCards(Observable<CustomerId> customers) {
