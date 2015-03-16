@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.buffer.Buffer;
 
 public class JsonMarshaller {
     private final static ObjectMapper om = new ObjectMapper();
 
-    {
+    static {
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         om.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
         om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -20,7 +21,7 @@ public class JsonMarshaller {
         om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-    public byte[] toJson(Object object) {
+    public static byte[] toJson(Object object) {
         try {
             return om.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
@@ -28,7 +29,11 @@ public class JsonMarshaller {
         }
     }
 
-    public String toJsonString(Object object) {
+    public static JsonObject toJsonObject(Object object) {
+        return new JsonObject(toJsonString(object));
+    }
+
+    public static String toJsonString(Object object) {
         try {
             return om.writeValueAsString(object);
         } catch (JsonProcessingException e) {
@@ -36,7 +41,7 @@ public class JsonMarshaller {
         }
     }
 
-    public Buffer toBuffer(Object object) {
+    public static Buffer toBuffer(Object object) {
         return Buffer.buffer(toJsonString(object));
     }
 }
