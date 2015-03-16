@@ -47,6 +47,12 @@ public class CreditCardServiceVerticle extends AbstractServiceVerticle {
     @Action("get")
     public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
         JsonObject query = new JsonObject().put("id", creditCardId.getId());
-        return mongoService.findOne("creditcards", query).map(CreditCard::fromJson);
+        return mongoService.findOne(collection, query).map(CreditCard::fromJson);
+    }
+
+
+    @Action("create")
+    public Observable<CreditCard> addCreditCard(CreditCard creditCard) {
+        return mongoService.insert(collection, creditCard.toJson()).flatMap(id -> Observable.just(creditCard));
     }
 }

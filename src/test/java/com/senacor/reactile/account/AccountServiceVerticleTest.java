@@ -21,9 +21,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by rwinzing on 03.03.15.
- */
 public class AccountServiceVerticleTest {
     @ClassRule
     public static final VertxRule vertxRule = new VertxRule(TestServices.AccountService);

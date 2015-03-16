@@ -18,7 +18,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     @Override
     public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
-        return vertx.eventBus().<CreditCard>sendObservable(CreditCardServiceVerticle.ADDRESS, creditCardId, action("getCreditCard")).map(Message::body);
+        return vertx.eventBus().<CreditCard>sendObservable(CreditCardServiceVerticle.ADDRESS, creditCardId, action("get")).map(Message::body);
     }
 
     @Override
