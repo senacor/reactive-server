@@ -137,8 +137,8 @@ public class VerticleDeployer {
     }
 
     public void addVerticle(Class<? extends Verticle> verticleClass, Class<? extends Verticle>... more) {
-        notStarted.add(verticleClass.getName());
-        Arrays.stream(more).map(clazz -> clazz.getName()).forEach(notStarted::add);
+        notStarted.add("guice:" + verticleClass.getName());
+        Arrays.stream(more).map(clazz -> "guice:" + clazz.getName()).forEach(notStarted::add);
     }
 
 }

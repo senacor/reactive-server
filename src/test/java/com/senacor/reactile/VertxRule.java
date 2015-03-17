@@ -41,10 +41,7 @@ public class VertxRule extends ExternalResource {
     }
 
     public VertxRule deployVerticle(Class<? extends Verticle> verticle, Class<? extends Verticle>... moreVerticles) {
-        verticleDeployer.addVerticle(verticle);
-        for (Class<? extends Verticle> v : moreVerticles) {
-            verticleDeployer.addVerticle(v);
-        }
+        verticleDeployer.addVerticle(verticle, moreVerticles);
         return this;
     }
 

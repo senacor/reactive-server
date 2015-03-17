@@ -1,5 +1,5 @@
 {
-  "main": "com.senacor.reactile.user.UserConnectorVerticle",
+  "main": "guice:com.senacor.reactile.user.UserConnectorVerticle",
 
 
   "options": {

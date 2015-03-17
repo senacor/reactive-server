@@ -1,5 +1,5 @@
 {
-  "main": "com.senacor.reactile.gateway.GatewayVerticle",
+  "main": "guice:com.senacor.reactile.gateway.GatewayVerticle",
 
   "options": {
     "config": {

@@ -7,10 +7,10 @@ import com.senacor.reactile.service.Action;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoService;
 import rx.Observable;
 import rx.functions.Func1;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -18,22 +18,19 @@ import static java.util.stream.Collectors.toList;
 public class TransactionServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "TransactionServiceVerticle";
 
-    private ObservableMongoService mongoService;
+    private final ObservableMongoService mongoService;
     private String collection;
+
+    @Inject
+    public TransactionServiceVerticle(ObservableMongoService mongoService) {
+        this.mongoService = mongoService;
+    }
 
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
         collection = context.config().getString("collection");
     }
-
-    @Override
-    public void start() throws Exception {
-        super.start();
-        MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
-        mongoService = ObservableMongoService.from(eventBusProxy);
-    }
-
 
     @Action
     public Observable<List<Transaction>> getTransactionsForCustomer(CustomerId customerId) {

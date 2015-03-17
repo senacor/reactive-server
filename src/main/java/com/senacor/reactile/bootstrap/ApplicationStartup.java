@@ -49,7 +49,7 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
     private void initializeData(Future<Void> startFuture) {
-        startVerticle(InitialDataVerticle.class.getName())
+        startVerticle("guice:" + InitialDataVerticle.class.getName())
                 .subscribe(
                         deployedIds::add,
                         startFuture::fail,

@@ -3,25 +3,18 @@ package com.senacor.reactile.gateway;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.AccountService;
-import com.senacor.reactile.account.AccountServiceImpl;
 import com.senacor.reactile.account.CreditCard;
 import com.senacor.reactile.account.CreditCardService;
-import com.senacor.reactile.account.CreditCardServiceImpl;
 import com.senacor.reactile.account.Transaction;
 import com.senacor.reactile.account.TransactionService;
-import com.senacor.reactile.account.TransactionServiceImpl;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.customer.CustomerService;
-import com.senacor.reactile.customer.CustomerServiceImpl;
 import com.senacor.reactile.json.JsonMarshaller;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
-import com.senacor.reactile.user.UserServiceImpl;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -36,6 +29,7 @@ import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import rx.Observable;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class GatewayVerticle extends AbstractVerticle {
@@ -43,21 +37,26 @@ public class GatewayVerticle extends AbstractVerticle {
     public static final String PUBLISH_ADDRESS = "EventPump";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JsonMarshaller jsonMarshaller = new JsonMarshaller();
-    private UserService userService;
-    private CustomerService customerService;
-    private AccountService accountService;
-    private CreditCardService creditCardService;
-    private TransactionService transactionService;
+    private final UserService userService;
+    private final CustomerService customerService;
+    private final AccountService accountService;
+    private final CreditCardService creditCardService;
+    private final TransactionService transactionService;
 
-    @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-        userService = new UserServiceImpl(super.vertx);
-        customerService = new CustomerServiceImpl(super.vertx);
-        accountService = new AccountServiceImpl(super.vertx);
-        creditCardService = new CreditCardServiceImpl(super.vertx);
-        transactionService = new TransactionServiceImpl(super.vertx);
+    @Inject
+    public GatewayVerticle(
+            UserService userService,
+            CustomerService customerService,
+            AccountService accountService,
+            CreditCardService creditCardService,
+            TransactionService transactionService) {
+        this.userService = userService;
+        this.customerService = customerService;
+        this.accountService = accountService;
+        this.creditCardService = creditCardService;
+        this.transactionService = transactionService;
     }
+
 
     @Override
     public void start() {

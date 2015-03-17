@@ -1,5 +1,5 @@
 {
-  "main": "com.senacor.reactile.customer.CustomerServiceVerticle",
+  "main": "guice:com.senacor.reactile.customer.CustomerServiceVerticle",
 
   "options": {
     "config": {
