@@ -10,7 +10,6 @@ import rx.Observable;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public class ApplicationStartup extends AbstractVerticle {
 
@@ -24,8 +23,8 @@ public class ApplicationStartup extends AbstractVerticle {
         registerCodecs();
 
         Observable<String> mongoBootstrapObservable = startVerticle(MongoBootstrap.class.getName());
-        services().map(service -> startVerticle(service.getId()))
-                .reduce(Observable::concat).get()
+        services()
+                .flatMap(service -> startVerticle(service.getId()))
                 .concatWith(mongoBootstrapObservable)
                 .subscribe(
                         deployedIds::add,
@@ -49,8 +48,8 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
 
-    private Stream<Services> services() {
-        return Stream.of(
+    private Observable<Services> services() {
+        return Observable.just(
                 Services.CustomerService,
                 Services.AccountService,
                 Services.CreditCardService,
