@@ -12,7 +12,7 @@ import org.junit.Test;
 public class GatewayVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(TestServices.values()).deployVerticle(InitialDataVerticle.class, GatewayVerticle.class);
+    public final VertxRule vertxRule = new VertxRule(TestServices.GatewayService).deployVerticle(InitialDataVerticle.class);
 
     @Rule
     public final HttpClientRule httpClient = new HttpClientRule(vertxRule.vertx());

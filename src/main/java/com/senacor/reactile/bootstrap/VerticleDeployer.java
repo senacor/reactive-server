@@ -1,6 +1,7 @@
 package com.senacor.reactile.bootstrap;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Sets;
 import com.senacor.reactile.ServiceIdProvider;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -8,17 +9,13 @@ import io.vertx.core.Verticle;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.Vertx;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 public class VerticleDeployer {
 
@@ -61,11 +58,11 @@ public class VerticleDeployer {
     }
 
 
-    public void stop(long timeoutInMillis) {
+    public void undeploy(long timeoutInMillis) {
         reverseStarted().stream().map(this::stopVerticle).forEach(future -> waitForCompletion(future, timeoutInMillis));
     }
 
-    public void stop(Future<Void> stopFuture) {
+    public void undeploy(Future<Void> stopFuture) {
         reverseStarted().stream()
                 .map(this::stopVerticle)
                 .map(future -> future.handle((String id, Throwable ex) -> {
@@ -119,17 +116,21 @@ public class VerticleDeployer {
     }
 
     public void addService(ServiceIdProvider serviceIdProvider, ServiceIdProvider... more) {
-        ArrayList<ServiceIdProvider> merged = newArrayList(serviceIdProvider);
+        Set<ServiceIdProvider> merged = Sets.newLinkedHashSet();
+        merged.add(serviceIdProvider);
         merged.addAll(Arrays.asList(more));
-        flattenDependencies(merged).stream().map(provider -> provider.getId()).forEach(notStarted::add);
+        flattenDependencies(merged).stream()
+                .sorted(ServiceIdProvider.comparator())
+                .map(provider -> provider.getId())
+                .forEach(notStarted::add);
     }
 
-    private List<ServiceIdProvider> flattenDependencies(List<ServiceIdProvider> providers) {
-        List<ServiceIdProvider> flattened = new ArrayList<>();
+    private Set<ServiceIdProvider> flattenDependencies(Set<ServiceIdProvider> providers) {
+        Set<ServiceIdProvider> flattened = new LinkedHashSet<>();
         for (ServiceIdProvider provider : providers) {
             flattened.add(provider);
             if (provider.hasDependencies()) {
-                flattened.addAll(provider.dependsOn());
+                flattened.addAll(flattenDependencies(provider.dependsOn()));
             }
         }
         return flattened;

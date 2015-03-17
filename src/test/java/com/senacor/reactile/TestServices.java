@@ -12,7 +12,9 @@ public enum TestServices implements ServiceIdProvider {
     CustomerService("com.senacor:reactile-customer-service:1.0.0", EmbeddedMongo),
     AccountService("com.senacor:reactile-account-service:1.0.0", EmbeddedMongo),
     CreditCardService("com.senacor:reactile-creditcard-service:1.0.0", EmbeddedMongo),
-    TransactionService("com.senacor:reactile-transaction-service:1.0.0", EmbeddedMongo);
+    TransactionService("com.senacor:reactile-transaction-service:1.0.0", EmbeddedMongo),
+    GatewayService("com.senacor:reactile-gateway-service:1.0.0", UserService, CustomerService, AccountService, CreditCardService, TransactionService);
+
 
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;
@@ -28,8 +30,14 @@ public enum TestServices implements ServiceIdProvider {
     }
 
     @Override
-    public Set<? extends ServiceIdProvider> dependsOn() {
+    public Set<ServiceIdProvider> dependsOn() {
         return dependencies;
     }
+
+    @Override
+    public int order() {
+        return ordinal();
+    }
+
 
 }

@@ -1,0 +1,10 @@
+{
+  "main": "com.senacor.reactile.gateway.GatewayVerticle",
+
+  "options": {
+    "config": {
+      "host": "localhost",
+      "port": 8081
+    }
+  }
+}
