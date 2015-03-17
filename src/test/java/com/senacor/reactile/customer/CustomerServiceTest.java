@@ -16,7 +16,7 @@ public class CustomerServiceTest {
     public final static VertxRule vertxRule = new VertxRule(TestServices.CustomerService);
     private final CustomerService service = new CustomerServiceImpl(vertxRule.vertx());
 
-    private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "customers");
+    private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "customers");
 
     @Test
     public void thatCustomerIsReturned() {

@@ -5,6 +5,7 @@ import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
+import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.http.HttpClientRequest;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +16,7 @@ public class GatewayVerticleTest {
     public final VertxRule vertxRule = new VertxRule(TestServices.GatewayService).deployVerticle(InitialDataVerticle.class);
 
     @Rule
-    public final HttpClientRule httpClient = new HttpClientRule(vertxRule.vertx());
+    public final HttpClientRule httpClient = new HttpClientRule(Vertx.vertx());
 
     @Test
     public void thatRequestsAreHandled() throws InterruptedException {

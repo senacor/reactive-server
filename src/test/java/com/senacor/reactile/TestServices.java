@@ -6,14 +6,14 @@ import java.util.Set;
 
 public enum TestServices implements ServiceIdProvider {
 
-    EmbeddedMongo("com.senacor:reactile-embedded-mongo"),
-    UserConnector("com.senacor:reactile-user-connector:1.0.0"),
-    UserService("com.senacor:reactile-user-service:1.0.0", UserConnector),
-    CustomerService("com.senacor:reactile-customer-service:1.0.0", EmbeddedMongo),
-    AccountService("com.senacor:reactile-account-service:1.0.0", EmbeddedMongo),
-    CreditCardService("com.senacor:reactile-creditcard-service:1.0.0", EmbeddedMongo),
-    TransactionService("com.senacor:reactile-transaction-service:1.0.0", EmbeddedMongo),
-    GatewayService("com.senacor:reactile-gateway-service:1.0.0", UserService, CustomerService, AccountService, CreditCardService, TransactionService);
+    EmbeddedMongo("com.senacor.innolab.reactile:embedded-mongo:1.0.0"),
+    UserConnector("com.senacor.innolab.reactile:user-connector:1.0.0"),
+    UserService("com.senacor.innolab.reactile:user-service:1.0.0", UserConnector),
+    CustomerService("com.senacor.innolab.reactile:customer-service:1.0.0", EmbeddedMongo),
+    AccountService("com.senacor.innolab.reactile:account-service:1.0.0", EmbeddedMongo),
+    CreditCardService("com.senacor.innolab.reactile:creditcard-service:1.0.0", EmbeddedMongo),
+    TransactionService("com.senacor.innolab.reactile:transaction-service:1.0.0", EmbeddedMongo),
+    GatewayService("com.senacor.innolab.reactile:gateway-service:1.0.0", UserService, CustomerService, AccountService, CreditCardService, TransactionService);
 
 
     private final String serviceName;
