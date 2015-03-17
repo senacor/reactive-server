@@ -1,6 +1,6 @@
 package com.senacor.reactile.customer;
 
-import com.senacor.reactile.TestServices;
+import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.mongo.MongoInitializer;
 import com.senacor.reactile.mongo.ObservableMongoService;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class CustomerServiceVerticleTest {
 
     @ClassRule
-    public static final VertxRule vertxRule = new VertxRule(TestServices.CustomerService);
+    public static final VertxRule vertxRule = new VertxRule(Services.CustomerService);
 
     public static final String COLLECTION = "customers";
 

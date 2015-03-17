@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;
 
-public enum TestServices implements ServiceIdProvider {
+public enum Services implements ServiceIdProvider {
 
     EmbeddedMongo("com.senacor.innolab.reactile:embedded-mongo:1.0.0"),
     UserConnector("com.senacor.innolab.reactile:user-connector:1.0.0"),
@@ -19,7 +19,7 @@ public enum TestServices implements ServiceIdProvider {
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;
 
-    TestServices(String serviceName, ServiceIdProvider... services) {
+    Services(String serviceName, ServiceIdProvider... services) {
         this.serviceName = serviceName;
         dependencies = ImmutableSet.copyOf(services);
     }

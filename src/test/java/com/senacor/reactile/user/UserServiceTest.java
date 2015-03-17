@@ -1,6 +1,6 @@
 package com.senacor.reactile.user;
 
-import com.senacor.reactile.TestServices;
+import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 public class UserServiceTest {
 
     @ClassRule
-    public final static VertxRule vertxRule = new VertxRule(TestServices.UserService);
+    public final static VertxRule vertxRule = new VertxRule(Services.UserService);
     private final UserService service = new UserServiceImpl(vertxRule.vertx());
 
     @Test

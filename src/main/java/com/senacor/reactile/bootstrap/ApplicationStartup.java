@@ -1,5 +1,6 @@
 package com.senacor.reactile.bootstrap;
 
+import com.senacor.reactile.Services;
 import com.senacor.reactile.codec.Codecs;
 import com.senacor.reactile.gateway.InitialDataVerticle;
 import io.vertx.core.Future;
@@ -8,6 +9,7 @@ import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
 import rx.Observable;
 
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -59,7 +61,7 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
     private Observable<Services> services() {
-        return Observable.from(Services.values());
+        return Observable.from(EnumSet.range(Services.UserConnector, Services.GatewayService));
     }
 
     private void registerCodecs() {
@@ -74,26 +76,5 @@ public class ApplicationStartup extends AbstractVerticle {
     private Observable<Void> stopVerticle(String deploymentId) {
         logger.info("Stopping verticle with deploymentId " + deploymentId);
         return vertx.undeployObservable(deploymentId);
-    }
-
-
-    public static enum Services {
-        UserConnector("com.senacor:reactile-user-connector:1.0.0"),
-        UserService("com.senacor:reactile-user-service:1.0.0"),
-        CustomerService("com.senacor:reactile-customer-service:1.0.0"),
-        AccountService("com.senacor:reactile-account-service:1.0.0"),
-        CreditCardService("com.senacor:reactile-creditcard-service:1.0.0"),
-        TransactionService("com.senacor:reactile-transaction-service:1.0.0"),
-        GatewayService("com.senacor:reactile-gateway-service:1.0.0");
-        private final String identifier;
-
-        Services(String identifier) {
-            this.identifier = identifier;
-        }
-
-        public String getId() {
-            return "service:" + identifier;
-        }
-
     }
 }

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.senacor.reactile.TestServices.EmbeddedMongo;
+import static com.senacor.reactile.Services.EmbeddedMongo;
 
 public class EmbeddedMongoVerticleTest {
 

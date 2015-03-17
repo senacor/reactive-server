@@ -1,6 +1,6 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.TestServices;
+import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.core.json.JsonObject;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 public class InitialDataVerticleTest {
 
     @ClassRule
-    public static final VertxRule vertxRule = new VertxRule(TestServices.values()).deployVerticle(InitialDataVerticle.class);
+    public static final VertxRule vertxRule = new VertxRule(Services.values()).deployVerticle(InitialDataVerticle.class);
 
     private final ObservableMongoService mongoService = ObservableMongoService.from(vertxRule.vertx());
 

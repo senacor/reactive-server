@@ -1,6 +1,6 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.TestServices;
+import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.mongo.MongoInitializer;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 public class AccountServiceTest {
 
     @ClassRule
-    public final static VertxRule vertxRule = new VertxRule(TestServices.AccountService);
+    public final static VertxRule vertxRule = new VertxRule(Services.AccountService);
     private final AccountService service = new AccountServiceImpl(vertxRule.vertx());
 
     private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "accounts");
