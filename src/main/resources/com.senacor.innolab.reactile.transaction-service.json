@@ -1,5 +1,5 @@
 {
-  "main": "com.senacor.reactile.account.TransactionServiceVerticle",
+  "main": "guice:com.senacor.reactile.account.TransactionServiceVerticle",
 
   "options": {
     "config": {

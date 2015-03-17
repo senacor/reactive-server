@@ -6,6 +6,7 @@ import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
+import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 import static com.senacor.reactile.header.Headers.action;
@@ -15,6 +16,7 @@ public class UserConnector {
     private final Vertx vertx;
     private final long latency = 35;
 
+    @Inject
     public UserConnector(Vertx vertx) {
         this.vertx = vertx;
     }

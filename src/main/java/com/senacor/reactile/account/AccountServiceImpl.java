@@ -5,6 +5,7 @@ import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.senacor.reactile.header.Headers.action;
@@ -12,6 +13,7 @@ import static com.senacor.reactile.header.Headers.action;
 public class AccountServiceImpl implements AccountService {
     private final Vertx vertx;
 
+    @Inject
     public AccountServiceImpl(Vertx vertx) {
         this.vertx = vertx;
     }

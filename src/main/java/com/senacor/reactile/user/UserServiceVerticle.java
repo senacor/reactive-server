@@ -2,20 +2,19 @@ package com.senacor.reactile.user;
 
 import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 import rx.Observable;
+
+import javax.inject.Inject;
 
 public class UserServiceVerticle extends AbstractServiceVerticle {
 
     public static final String ADDRESS = "UserServiceVerticle";
 
-    private UserConnector connector;
+    private final UserConnector connector;
 
-    @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-        connector = new UserConnector(super.vertx);
+    @Inject
+    public UserServiceVerticle(UserConnector connector) {
+        this.connector = connector;
     }
 
     @Action

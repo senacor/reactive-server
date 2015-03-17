@@ -7,33 +7,28 @@ import com.senacor.reactile.service.Action;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoService;
 import rx.Observable;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- * Created by rwinzing on 03.03.15.
- */
 public class AccountServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "AccountServiceVerticle";
 
-    private ObservableMongoService mongoService;
+    private final ObservableMongoService mongoService;
     private String collection;
+
+    @Inject
+    public AccountServiceVerticle(ObservableMongoService mongoService) {
+        this.mongoService = mongoService;
+    }
 
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
         collection = context.config().getString("collection");
-    }
-
-    @Override
-    public void start() throws Exception {
-        super.start();
-        MongoService eventBusProxy = MongoService.createEventBusProxy(getVertx(), "vertx.mongo");
-        mongoService = ObservableMongoService.from(eventBusProxy);
     }
 
     @Action

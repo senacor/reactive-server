@@ -17,6 +17,9 @@ ext {
 
     vertxVersion = '3.0.0-SNAPSHOT'
 
+    guiceVersion = '4.0-beta5'
+    vertxguicefactoryVersion = '0.1-SNAPSHOT'
+
 }
 
 
@@ -35,6 +38,8 @@ ext.libraries = [
                 [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-codegen', version: vertxVersion],
         ],
+
+        vertxguicefactory: [group: 'com.deenterprised', name: 'vertx-guice', version: vertxguicefactoryVersion],
 
         embeddedMongo: [group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: embeddedMongoVersion],
 

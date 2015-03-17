@@ -4,11 +4,14 @@ import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
+import javax.inject.Inject;
+
 import static com.senacor.reactile.header.Headers.action;
 
 public class CustomerServiceImpl implements CustomerService {
     private final Vertx vertx;
 
+    @Inject
     public CustomerServiceImpl(Vertx vertx) {
         this.vertx = vertx;
     }

@@ -16,11 +16,10 @@ import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 import rx.Scheduler;
 
+import javax.inject.Inject;
 import java.util.Random;
 
 public class InitialData {
-
-    private final String ADDRESS = "CustomerDataGeneratorVerticle";
 
     private final Vertx vertx;
     private final CustomerService customerService;
@@ -29,6 +28,7 @@ public class InitialData {
     private final TransactionService transactionService;
     private final Random rn = new Random();
 
+    @Inject
     public InitialData(Vertx vertx, CustomerService customerService, AccountService accountService, CreditCardService creditCardService, TransactionService transactionService) {
         this.vertx = vertx;
         this.customerService = customerService;
