@@ -65,7 +65,7 @@ public class VertxRule extends ExternalResource {
 
     @Override
     protected void after() {
-        verticleDeployer.stop(15_000);
+        verticleDeployer.undeploy(15_000);
         vertx.close();
     }
 

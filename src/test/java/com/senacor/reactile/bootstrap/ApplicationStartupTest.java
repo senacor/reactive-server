@@ -1,6 +1,5 @@
 package com.senacor.reactile.bootstrap;
 
-import com.senacor.reactile.Services;
 import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
 import org.junit.Rule;
@@ -16,7 +15,7 @@ public class ApplicationStartupTest {
     @Test(timeout = 1000)
     public void thatAllNecessaryVerticlesLaunched() throws InterruptedException {
 
-        while(deploymentIDs().size() != Services.values().length + 4){
+        while(deploymentIDs().size() != 10){
             Thread.sleep(30);
         }
         Set<String> deployments = deploymentIDs();

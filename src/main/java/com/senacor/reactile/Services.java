@@ -11,7 +11,8 @@ public enum Services implements ServiceIdProvider {
     CustomerService("com.senacor:reactile-customer-service:1.0.0"),
     AccountService("com.senacor:reactile-account-service:1.0.0"),
     CreditCardService("com.senacor:reactile-creditcard-service:1.0.0"),
-    TransactionService("com.senacor:reactile-transaction-service:1.0.0");
+    TransactionService("com.senacor:reactile-transaction-service:1.0.0"),
+    GatewayService("com.senacor:reactile-gateway-service:1.0.0", UserService, CustomerService, CreditCardService, TransactionService);
 
     private final String serviceName;
     private final Set<Services> dependencies;
@@ -28,7 +29,12 @@ public enum Services implements ServiceIdProvider {
     }
 
     @Override
-    public Set<? extends ServiceIdProvider> dependsOn() {
-        return dependencies;
+    public Set<ServiceIdProvider> dependsOn() {
+        return ImmutableSet.copyOf(dependencies);
+    }
+
+    @Override
+    public int order() {
+        return ordinal();
     }
 }
