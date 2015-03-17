@@ -1,6 +1,7 @@
 package com.senacor.reactile.bootstrap;
 
 import com.senacor.reactile.codec.Codecs;
+import com.senacor.reactile.gateway.InitialDataVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -9,8 +10,6 @@ import rx.Observable;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import static rx.Observable.concat;
 
 public class ApplicationStartup extends AbstractVerticle {
 
@@ -22,10 +21,33 @@ public class ApplicationStartup extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
 
         registerCodecs();
-        Observable<String> mongoBootstrapObservable = startVerticle(MongoBootstrap.class.getName());
-        Observable<String> servicesObservable = services().flatMap(service -> startVerticle(service.getId()));
+        startVerticle(MongoBootstrap.class.getName())
+                .subscribe(
+                        deployedIds::add,
+                        startFuture::fail,
+                        () -> {
+                            logger.info(String.format("Deployed %s verticles with the following deploymentIds: %s", deployedIds.size(), deployedIds));
+                            startServices(startFuture);
 
-        concat(mongoBootstrapObservable, servicesObservable)
+                        }
+                );
+    }
+
+    private void startServices(Future<Void> startFuture) {
+        services().flatMap(service -> startVerticle(service.getId()))
+                .subscribe(
+                        deployedIds::add,
+                        startFuture::fail,
+                        () -> {
+                            logger.info(String.format("Deployed %s verticles with the following deploymentIds: %s", deployedIds.size(), deployedIds));
+                            initializeData(startFuture);
+
+                        }
+                );
+    }
+
+    private void initializeData(Future<Void> startFuture) {
+        startVerticle(InitialDataVerticle.class.getName())
                 .subscribe(
                         deployedIds::add,
                         startFuture::fail,
