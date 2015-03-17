@@ -15,7 +15,7 @@ public class ApplicationStartupTest {
     @Test(timeout = 1000)
     public void thatAllNecessaryVerticlesLaunched() throws InterruptedException {
 
-        while(deploymentIDs().size() != 10){
+        while(deploymentIDs().size() != 12){
             Thread.sleep(30);
         }
         Set<String> deployments = deploymentIDs();

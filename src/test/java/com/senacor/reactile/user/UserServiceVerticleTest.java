@@ -1,6 +1,6 @@
 package com.senacor.reactile.user;
 
-import com.senacor.reactile.Services;
+import com.senacor.reactile.TestServices;
 import com.senacor.reactile.VertxRule;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.Rule;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 public class UserServiceVerticleTest {
 
     @Rule
-    public final VertxRule vertxRule = new VertxRule(Services.UserConnector, Services.UserService);
+    public final VertxRule vertxRule = new VertxRule(TestServices.UserService);
 
     @Test
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {

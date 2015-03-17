@@ -1,6 +1,5 @@
 package com.senacor.reactile.bootstrap;
 
-import com.senacor.reactile.Services;
 import com.senacor.reactile.codec.Codecs;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
@@ -10,6 +9,8 @@ import rx.Observable;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import static rx.Observable.concat;
 
 public class ApplicationStartup extends AbstractVerticle {
 
@@ -21,16 +22,22 @@ public class ApplicationStartup extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
 
         registerCodecs();
-
         Observable<String> mongoBootstrapObservable = startVerticle(MongoBootstrap.class.getName());
-        services()
-                .flatMap(service -> startVerticle(service.getId()))
-                .concatWith(mongoBootstrapObservable)
+        Observable<String> servicesObservable = services().flatMap(service -> startVerticle(service.getId()));
+
+        concat(mongoBootstrapObservable, servicesObservable)
                 .subscribe(
                         deployedIds::add,
                         startFuture::fail,
-                        startFuture::complete
+                        () -> {
+                            logger.info(String.format("Deployed %s verticles with the following deploymentIds: %s", deployedIds.size(), deployedIds));
+                            startFuture.complete();
+                        }
                 );
+    }
+
+    private Observable<Services> services() {
+        return Observable.from(Services.values());
     }
 
     private void registerCodecs() {
@@ -48,13 +55,23 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
 
-    private Observable<Services> services() {
-        return Observable.just(
-                Services.CustomerService,
-                Services.AccountService,
-                Services.CreditCardService,
-                Services.TransactionService,
-                Services.UserService
-        );
+    public static enum Services {
+        UserConnector("com.senacor:reactile-user-connector:1.0.0"),
+        UserService("com.senacor:reactile-user-service:1.0.0"),
+        CustomerService("com.senacor:reactile-customer-service:1.0.0"),
+        AccountService("com.senacor:reactile-account-service:1.0.0"),
+        CreditCardService("com.senacor:reactile-creditcard-service:1.0.0"),
+        TransactionService("com.senacor:reactile-transaction-service:1.0.0"),
+        GatewayService("com.senacor:reactile-gateway-service:1.0.0");
+        private final String identifier;
+
+        Services(String identifier) {
+            this.identifier = identifier;
+        }
+
+        public String getId() {
+            return "service:" + identifier;
+        }
+
     }
 }
