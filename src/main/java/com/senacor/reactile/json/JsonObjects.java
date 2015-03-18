@@ -1,5 +1,6 @@
 package com.senacor.reactile.json;
 
+import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -23,5 +24,20 @@ public final class JsonObjects {
 
     public static <T> JsonArray marshal(List<T> objects, Function<T, JsonObject> mapping) {
         return new JsonArray(objects.stream().map(mapping).collect(toList()));
+    }
+
+    public static JsonObject toJson(Jsonizable jsonizable) {
+        return jsonizable.toJson();
+    }
+
+    public static JsonArray toJsonArray(List<? extends Jsonizable> jsonizables) {
+        return new JsonArray(jsonizables.stream().map(JsonObjects::toJson).collect(toList()));
+    }
+
+    public static JsonObject $() {
+        return new JsonObject();
+    }
+    public static JsonObject arr() {
+        return new JsonObject();
     }
 }
