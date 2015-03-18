@@ -1,8 +1,0 @@
-== CustomerId
-
-
-[cols=">25%,^25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|===

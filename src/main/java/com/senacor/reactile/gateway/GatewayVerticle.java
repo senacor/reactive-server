@@ -101,13 +101,12 @@ public class GatewayVerticle extends AbstractVerticle {
     }
 
     private JsonObject mergeIntoResponse(JsonObject cust, JsonArray accounts, JsonArray creditCards, JsonArray transactions) {
-        JsonObject custAll = cust.put("products", $()
-                                                    .put("accounts", accounts)
-                                                    .put("creditCards", creditCards)
-                                                    .put("transactions", transactions)
-        );
         return $()
-                .put("customer", custAll)
+                .put("customer", cust
+                        .put("products", $()
+                                .put("accounts", accounts)
+                                .put("creditCards", creditCards))
+                        .put("transactions", transactions))
                 .put("branch", "empty")
                 .put("appointments", "empty")
                 .put("recommendations", "empty")

@@ -12,7 +12,6 @@ import org.junit.Test;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperty;
 import static org.junit.Assert.assertThat;
 
 public class GatewayVerticleTest {
@@ -34,8 +33,8 @@ public class GatewayVerticleTest {
         
         assertThat(json, hasProperties("customer", "branch", "appointments", "recommendations", "news"));
         JsonObject jsonCustomer = json.getJsonObject("customer");
-        assertThat(jsonCustomer, hasProperty("products"));
-        assertThat(jsonCustomer.getJsonObject("products"), hasProperties("accounts", "creditCards", "transactions"));
+        assertThat(jsonCustomer, hasProperties("products", "transactions"));
+        assertThat(jsonCustomer.getJsonObject("products"), hasProperties("accounts", "creditCards"));
     }
 
 }
