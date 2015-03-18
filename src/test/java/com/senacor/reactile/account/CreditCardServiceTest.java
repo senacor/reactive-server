@@ -3,10 +3,13 @@ package com.senacor.reactile.account;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.senacor.reactile.account.CreditCardFixtures.newCreditCard;
@@ -23,7 +26,13 @@ public class CreditCardServiceTest {
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.CreditCardService);
-    private final CreditCardService service = new CreditCardServiceImpl(vertxRule.vertx());
+
+    @Rule
+    public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
+
+    @Inject
+    private CreditCardService service;
+
 
     private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "creditcards");
 

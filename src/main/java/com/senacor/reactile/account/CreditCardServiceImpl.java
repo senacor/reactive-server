@@ -1,37 +1,37 @@
 package com.senacor.reactile.account;
 
 import com.senacor.reactile.customer.CustomerId;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.eventbus.Message;
-import rx.Observable;
+import com.senacor.reactile.mongo.ObservableMongoService;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.senacor.reactile.header.Headers.action;
-
 public class CreditCardServiceImpl implements CreditCardService {
-    private final Vertx vertx;
+    public static final String COLLECTION = "creditcards";
+    private final ObservableMongoService mongoService;
 
     @Inject
-    public CreditCardServiceImpl(Vertx vertx) {
-        this.vertx = vertx;
+    public CreditCardServiceImpl(ObservableMongoService mongoService) {
+        this.mongoService = mongoService;
     }
 
     @Override
-    public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
-        return vertx.eventBus().<CreditCard>sendObservable(CreditCardServiceVerticle.ADDRESS, creditCardId, action("get")).map(Message::body);
+    public void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<JsonObject>> resultHandler) {
+        mongoService.findOne(COLLECTION, creditCardId.toJson(), null, resultHandler);
     }
 
     @Override
-
-    public Observable<List<CreditCard>> getCreditCardsForCustomer(CustomerId customerId) {
-        return vertx.eventBus().<List<CreditCard>>sendObservable(CreditCardServiceVerticle.ADDRESS, customerId, action("getCreditCardsForCustomer")).map(Message::body);
+    public void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
+        JsonObject query = new JsonObject().put("customerId", customerId.getId());
+        mongoService.find(COLLECTION, query, resultHandler);
     }
 
     @Override
-    public Observable<CreditCard> createCreditCard(CreditCard creditCard) {
-        return vertx.eventBus().<CreditCard>sendObservable(CreditCardServiceVerticle.ADDRESS, creditCard, action("create")).map(Message::body);
-    }
+    public void createCreditCard(CreditCard creditCard, Handler<AsyncResult<String>> resultHandler) {
+        mongoService.insert(COLLECTION, creditCard.toJson(), resultHandler);
 
+    }
 }
