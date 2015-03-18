@@ -3,6 +3,7 @@ package com.senacor.reactile.customer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshal;
 
+@DataObject
 public class Customer implements Identity<CustomerId>, Jsonizable {
 
     private final CustomerId id;
@@ -27,6 +29,10 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
     private final Country taxCountry;
 
     private final String taxNumber;
+
+    public Customer() {
+        this(null, null, null, null, null, null, null);
+    }
 
     public Customer(
             @JsonProperty("id") CustomerId id,
@@ -45,6 +51,21 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
         this.taxCountry = taxCountry;
     }
 
+    public Customer(JsonObject jsonObject) {
+        this(fromJson(jsonObject));
+    }
+
+    public Customer(Customer customer) {
+        this(
+                customer.getId(),
+                customer.getFirstname(),
+                customer.getLastname(),
+                customer.getAddresses(),
+                customer.getContacts(),
+                customer.getTaxNumber(),
+                customer.getTaxCountry());
+    }
+
     public static Builder newBuilder() {
         return new Builder();
     }
@@ -53,9 +74,13 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
         return id;
     }
 
-    public String getFirstname() { return firstname; }
+    public String getFirstname() {
+        return firstname;
+    }
 
-    public String getLastname() { return lastname; }
+    public String getLastname() {
+        return lastname;
+    }
 
     public List<Address> getAddresses() {
         return addresses;
@@ -69,13 +94,17 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
         return taxNumber;
     }
 
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
     public static Customer fromJson(JsonObject jsonObject) {
         checkArgument(jsonObject != null);
         return Customer.newBuilder()
                 .withId(jsonObject.getString("id"))
                 .withFirstname(jsonObject.getString("firstname"))
                 .withLastname(jsonObject.getString("lastname"))
-                .withTaxNumber(jsonObject.getString("taxNumber"))
+                .withTaxNumber(jsonObject.getString("taxnumber"))
                 .withTaxCountry(Country.fromJson(jsonObject.getJsonObject("taxCountry")))
                 .withAddresses(unmarshal(jsonObject.getJsonArray("addresses"), Address::fromJson))
                 .withContacts(unmarshal(jsonObject.getJsonArray("contacts"), Contact::fromJson))
