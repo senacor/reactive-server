@@ -8,9 +8,6 @@ import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
-/**
- * Created by rwinzing on 02.03.15.
- */
 public class Transaction implements Identity<TransactionId>, Jsonizable {
     private final TransactionId id;
     private final CustomerId customerId;

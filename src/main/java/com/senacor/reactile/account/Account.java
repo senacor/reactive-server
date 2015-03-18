@@ -8,7 +8,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
-public class Account implements Jsonizable, Identity<AccountId> {
+public class Account implements Product, Jsonizable, Identity<AccountId> {
     private final AccountId id;
     private final CustomerId customerId;
     private final BigDecimal balance;
@@ -35,6 +35,11 @@ public class Account implements Jsonizable, Identity<AccountId> {
 
     public CustomerId getCustomerId() {
         return customerId;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.ACCOUNT;
     }
 
     public BigDecimal getBalance() {
