@@ -2,11 +2,13 @@ package com.senacor.reactile.bootstrap;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Set;
 
+@Ignore
 public class ApplicationStartupTest {
 
     @Rule
