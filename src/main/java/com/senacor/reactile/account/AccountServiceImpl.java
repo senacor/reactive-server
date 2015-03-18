@@ -1,35 +1,39 @@
 package com.senacor.reactile.account;
 
 import com.senacor.reactile.customer.CustomerId;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.eventbus.Message;
-import rx.Observable;
+import com.senacor.reactile.mongo.ObservableMongoService;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.senacor.reactile.header.Headers.action;
-
 public class AccountServiceImpl implements AccountService {
-    private final Vertx vertx;
+    public static final String COLLECTION = "accounts";
+    private final ObservableMongoService mongoService;
 
     @Inject
-    public AccountServiceImpl(Vertx vertx) {
-        this.vertx = vertx;
+    public AccountServiceImpl(ObservableMongoService mongoService) {
+        this.mongoService = mongoService;
     }
 
     @Override
-    public Observable<Account> getAccount(AccountId accountId) {
-        return vertx.eventBus().<Account>sendObservable(AccountServiceVerticle.ADDRESS, accountId, action("get")).map(Message::body);
+    public void getAccount(AccountId accountId, Handler<AsyncResult<JsonObject>> resultHandler) {
+        mongoService.findOne(COLLECTION, accountId.toJson(), null, resultHandler);
+
     }
 
     @Override
-    public Observable<List<Account>> getAccountsForCustomer(CustomerId customerId) {
-        return vertx.eventBus().<List<Account>>sendObservable(AccountServiceVerticle.ADDRESS, customerId, action("getAccountsForCustomer")).map(Message::body);
+    public void getAccountsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
+        JsonObject query = new JsonObject().put("customerId", customerId.getId());
+        mongoService.find(COLLECTION, query, resultHandler);
     }
 
     @Override
-    public Observable<Account> createAccount(Account account) {
-        return vertx.eventBus().<Account>sendObservable(AccountServiceVerticle.ADDRESS, account, action("create")).map(Message::body);
+    public void createAccount(Account account, Handler<AsyncResult<String>> resultHandler) {
+        JsonObject doc = account.toJson().put("_id", account.getId().toValue());
+        mongoService.insert(COLLECTION, doc, resultHandler);
     }
+
 }

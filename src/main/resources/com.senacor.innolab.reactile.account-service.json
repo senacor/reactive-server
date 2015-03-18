@@ -3,7 +3,7 @@
 
   "options": {
     "config": {
-      "address": "AccountServiceVerticle",
+      "address": "AccountService",
       "collection": "accounts"
     }
   }

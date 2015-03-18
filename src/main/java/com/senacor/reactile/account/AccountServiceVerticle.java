@@ -1,51 +1,35 @@
 package com.senacor.reactile.account;
 
-import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.mongo.ObservableMongoService;
+import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.service.AbstractServiceVerticle;
-import com.senacor.reactile.service.Action;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import rx.Observable;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 public class AccountServiceVerticle extends AbstractServiceVerticle {
-    public static final String ADDRESS = "AccountServiceVerticle";
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final ObservableMongoService mongoService;
-    private String collection;
+    private final AccountService accountService;
 
     @Inject
-    public AccountServiceVerticle(ObservableMongoService mongoService) {
-        this.mongoService = mongoService;
+    public AccountServiceVerticle(@Impl AccountService accountService) {
+        this.accountService = accountService;
     }
 
     @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-        collection = context.config().getString("collection");
+    public void start() throws Exception {
+        log.info("Starting service: " + config().getString("main"));
+        String address = config().getString("address");
+        if (address == null) {
+            throw new IllegalStateException("address field must be specified in config for CustomerService");
+        }
+        ProxyHelper.registerService(AccountService.class, getVertx(), accountService, address);
     }
 
-    @Action
-    public Observable<List<Account>> getAccountsForCustomer(CustomerId id) {
-        JsonObject query = new JsonObject().put("customerId", id.toValue());
-        return mongoService.find(collection, query)
-                .map(list -> list.stream().map(Account::fromJson).collect(toList()));
-    }
-
-    @Action("get")
-    public Observable<Account> getAccount(AccountId id) {
-        JsonObject query = new JsonObject().put("id", id.toValue());
-        return mongoService.findOne(collection, query).map(Account::fromJson);
-    }
-
-    @Action("create")
-    public Observable<Account> addAccount(Account account) {
-        return mongoService.insert(collection, account.toJson()).flatMap(id -> Observable.just(account));
+    @Override
+    public void stop() throws Exception {
+        log.info("Stopping service: " + config().getString("main"));
     }
 }

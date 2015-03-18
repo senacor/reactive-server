@@ -3,10 +3,13 @@ package com.senacor.reactile.account;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.senacor.reactile.account.AccountFixtures.randomAccount;
@@ -21,9 +24,13 @@ public class AccountServiceTest {
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.AccountService);
-    private final AccountService service = new AccountServiceImpl(vertxRule.vertx());
+    @Rule
+    public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
-    private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "accounts");
+    @Inject
+    private AccountService service;
+
+    private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), AccountServiceImpl.COLLECTION);
 
     @Test
     public void thatSingleAccountIsReturned_forAccountId() {
