@@ -6,10 +6,10 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.account.AccountServiceImpl;
-import com.senacor.reactile.creditcard.CreditCardService;
-import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.account.TransactionServiceImpl;
+import com.senacor.reactile.creditcard.CreditCardService;
+import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.customer.CustomerServiceImpl;
 import com.senacor.reactile.guice.Impl;
@@ -37,7 +37,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         @Override
         protected void configure() {
             bind(UserService.class).to(UserServiceImpl.class);
-            bind(AccountService.class).to(AccountServiceImpl.class);
+            bind(AccountService.class).annotatedWith(Impl.class).to(AccountServiceImpl.class);
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
@@ -62,6 +62,11 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         @Provides
         CreditCardService provideCreditCardService(Vertx vertx) {
             return ProxyHelper.createProxy(CreditCardService.class, vertx, CreditCardService.ADDRESS);
+        }
+
+        @Provides
+        AccountService provideAccountService(Vertx vertx) {
+            return ProxyHelper.createProxy(AccountService.class, vertx, AccountService.ADDRESS);
         }
     }
 }

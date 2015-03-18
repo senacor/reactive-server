@@ -31,7 +31,8 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     @Override
     public void createCreditCard(CreditCard creditCard, Handler<AsyncResult<String>> resultHandler) {
-        mongoService.insert(COLLECTION, creditCard.toJson(), resultHandler);
+        JsonObject doc = creditCard.toJson().put("_id", creditCard.getId().toValue());
+        mongoService.insert(COLLECTION, doc, resultHandler);
 
     }
 }

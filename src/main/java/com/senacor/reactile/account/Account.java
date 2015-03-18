@@ -5,14 +5,20 @@ import com.senacor.reactile.Identity;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.domain.Amount;
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
+@DataObject
 public class Account implements Product, Jsonizable, Identity<AccountId> {
     private final AccountId id;
     private final CustomerId customerId;
     private final Amount balance;
+
+    public Account() {
+        this(null, null, null);
+    }
 
     public Account(
             @JsonProperty("id") AccountId id,
@@ -21,6 +27,18 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
         this.id = id;
         this.customerId = customerId;
         this.balance = balance;
+    }
+
+    public Account(Account account) {
+        this(account.getId(), account.getCustomerId(), account.getBalance());
+    }
+
+    public Account(JsonObject jsonObject) {
+        this(
+                new AccountId(jsonObject.getString("id")),
+                new CustomerId(jsonObject.getString("customerId")),
+                Amount.fromJson(jsonObject.getJsonObject("balance"))
+        );
     }
 
     public static Builder anAccount() {

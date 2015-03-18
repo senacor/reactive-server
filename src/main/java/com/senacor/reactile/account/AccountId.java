@@ -1,20 +1,41 @@
 package com.senacor.reactile.account;
 
 import com.senacor.reactile.IdObject;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
+@DataObject
 public class AccountId implements IdObject {
 
     private final String id;
+
+    public AccountId() {
+        this((String)null);
+    }
 
     public AccountId(String id) {
         this.id = id;
     }
 
+    public AccountId(AccountId accountId) {
+        this(accountId.getId());
+    }
+
+    public AccountId(JsonObject jsonObject) {
+        this(jsonObject.getString("id"));
+    }
+
     @Override
     public String getId() {
         return id;
+    }
+
+
+    @Override
+    public JsonObject toJson() {
+        return new JsonObject().put("id", toValue());
     }
 
     @Override
