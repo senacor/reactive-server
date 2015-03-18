@@ -6,8 +6,10 @@ import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.allOf;
@@ -33,7 +35,7 @@ public class JsonObjectMatchers {
                 boolean matches = item.containsKey(property);
                 if (!matches) {
                     mismatchDescription.appendText(
-                            "property " + "'" + property + "'" + " was not present. The following keys are present: " + item.fieldNames());
+                            "property " + "'" + property + "'" + " was not present. The following keys are present: " + quoteEntries(item.fieldNames()));
                 }
                 return matches;
             }
@@ -55,7 +57,8 @@ public class JsonObjectMatchers {
                 boolean matches = missing.isEmpty();
                 if (!matches) {
                     mismatchDescription.appendText(
-                            "Expected properties " + missing + " were not present. The following properties are present: " + item.fieldNames());
+                            "Expected properties " + missing + " were not present. The following properties are present: "
+                                    + quoteEntries(item.fieldNames()));
                 }
                 return matches;
             }
@@ -72,6 +75,14 @@ public class JsonObjectMatchers {
                 return required;
             }
         };
+    }
+
+    private static String quoteEntries(Collection<? extends Object> entries) {
+        return "[" +
+                entries.stream()
+                        .map(property -> "\"" + property.toString() + "\"")
+                        .collect(Collectors.joining(", ")) +
+                "]";
     }
 
 
