@@ -15,7 +15,7 @@ ext {
 
     embeddedMongoVersion = '1.46.4'
 
-    vertxVersion = '3.0.0-SNAPSHOT'
+    vertxVersion = '3.0.0-milestone3'
 
     guiceVersion = '4.0-beta5'
     vertxguicefactoryVersion = '0.1-SNAPSHOT'
