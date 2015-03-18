@@ -12,7 +12,7 @@ public class ApplicationStartupTest {
     @Rule
     public final VertxRule vertxRule = new VertxRule(Services.EmbeddedMongo).deployVerticle(ApplicationStartup.class);
 
-    @Test(timeout = 1000)
+    @Test(timeout = 8000)
     public void thatAllNecessaryVerticlesLaunched() throws InterruptedException {
 
         while(deploymentIDs().size() != 13){

@@ -1,29 +1,41 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.HttpClientRule;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import io.vertx.core.http.HttpMethod;
+import com.senacor.reactile.http.HttpResponse;
+import com.senacor.reactile.http.HttpTestClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.http.HttpClientRequest;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
+import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperty;
+import static org.junit.Assert.assertThat;
 
 public class GatewayVerticleTest {
 
     @Rule
     public final VertxRule vertxRule = new VertxRule(Services.GatewayService).deployVerticle(InitialDataVerticle.class);
 
-    @Rule
-    public final HttpClientRule httpClient = new HttpClientRule(Vertx.vertx());
+    private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
 
     @Test
-    public void thatRequestsAreHandled() throws InterruptedException {
-        HttpClientRequest request = httpClient.request(HttpMethod.GET, "/start?user=momann&customerId=cust-100000");
-        String content = httpClient.readBody(request);
-        System.out.println(new JsonObject(content).encodePrettily());
+    public void thatRequestsAreHandled() throws Exception {
+        HttpResponse response = httpClient.get("/start?user=momann&customerId=cust-100000");
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("content-length"));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
 
+        JsonObject json = response.asJson();
+        System.out.println(json.encodePrettily());
+        
+        assertThat(json, hasProperties("customer", "branch", "appointments", "recommendations", "news"));
+        JsonObject jsonCustomer = json.getJsonObject("customer");
+        assertThat(jsonCustomer, hasProperty("products"));
+        assertThat(jsonCustomer.getJsonObject("products"), hasProperties("accounts", "creditCards", "transactions"));
     }
 
 }

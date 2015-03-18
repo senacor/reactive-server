@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class CreditCard implements Jsonizable, Identity<CreditCardId> {
+public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
     private final CreditCardId id;
     private final CustomerId customerId;
     private final BigDecimal balance;
@@ -55,6 +55,11 @@ public class CreditCard implements Jsonizable, Identity<CreditCardId> {
 
     public CustomerId getCustomerId() {
         return customerId;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.CREDITCARD;
     }
 
     public BigDecimal getBalance() {

@@ -90,7 +90,11 @@ clean {
 }
 
 test {
-    testLogging.showStandardStreams = true
+    outputs.upToDateWhen { false }
+    testLogging {
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
 }
 
 
@@ -129,7 +133,6 @@ publishing {
         }
     }
 }
-
 
 idea {
     module {
