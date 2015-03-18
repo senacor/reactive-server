@@ -1,4 +1,4 @@
-package com.senacor.reactile.account;
+package com.senacor.reactile.creditcard;
 
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.service.AbstractServiceVerticle;

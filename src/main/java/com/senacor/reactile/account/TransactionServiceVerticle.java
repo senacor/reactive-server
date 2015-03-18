@@ -1,5 +1,6 @@
 package com.senacor.reactile.account;
 
+import com.senacor.reactile.creditcard.CreditCardId;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.mongo.ObservableMongoService;
 import com.senacor.reactile.service.AbstractServiceVerticle;

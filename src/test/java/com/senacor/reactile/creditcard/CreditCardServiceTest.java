@@ -1,4 +1,4 @@
-package com.senacor.reactile.account;
+package com.senacor.reactile.creditcard;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
@@ -12,8 +12,8 @@ import org.junit.Test;
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.senacor.reactile.account.CreditCardFixtures.newCreditCard;
-import static com.senacor.reactile.account.CreditCardFixtures.randomCreditCard;
+import static com.senacor.reactile.creditcard.CreditCardFixtures.newCreditCard;
+import static com.senacor.reactile.creditcard.CreditCardFixtures.randomCreditCard;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperty;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasValue;

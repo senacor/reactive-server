@@ -1,7 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.account.AccountService;
-import com.senacor.reactile.account.CreditCardService;
+import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.customer.CustomerService;

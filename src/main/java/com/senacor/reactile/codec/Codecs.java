@@ -2,8 +2,8 @@ package com.senacor.reactile.codec;
 
 import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.AccountId;
-import com.senacor.reactile.account.CreditCard;
-import com.senacor.reactile.account.CreditCardId;
+import com.senacor.reactile.creditcard.CreditCard;
+import com.senacor.reactile.creditcard.CreditCardId;
 import com.senacor.reactile.account.Currency;
 import com.senacor.reactile.account.Transaction;
 import com.senacor.reactile.account.TransactionId;

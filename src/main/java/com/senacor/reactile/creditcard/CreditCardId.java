@@ -1,4 +1,4 @@
-package com.senacor.reactile.account;
+package com.senacor.reactile.creditcard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.IdObject;
