@@ -22,7 +22,6 @@ public final class AccountFixtures {
                 .withId("08-cust-15-ac-2")
                 .withCustomerId(new CustomerId("08-cust-15"))
                 .withBalance(new BigDecimal("20773"))
-                .withCurrency("EUR")
                 .build();
     }
 
@@ -31,7 +30,6 @@ public final class AccountFixtures {
                 .withId("08-cust-15-ac-1")
                 .withCustomerId(new CustomerId("08-cust-15"))
                 .withBalance(new BigDecimal("18773"))
-                .withCurrency("EUR")
                 .build();
     }
 
@@ -59,8 +57,7 @@ public final class AccountFixtures {
         return Account.anAccount()
                 .withId("acc-" + uuid())
                 .withCustomerId("cust-" + uuid())
-                .withBalance(new BigDecimal(rd.nextInt(4000)))
-                .withCurrency("EUR" );
+                .withBalance(new BigDecimal(rd.nextInt(4000)));
     }
 
     private static String uuid() {
@@ -93,7 +90,6 @@ public final class AccountFixtures {
                 .withId(accountId)
                 .withCustomerId(customerId)
                 .withBalance(amount)
-                .withCurrency("EUR")
                 .build();
     }
 

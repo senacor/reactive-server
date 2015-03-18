@@ -1,39 +1,59 @@
-package com.senacor.reactile.account;
+package com.senacor.reactile.creditcard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.Identity;
+import com.senacor.reactile.account.Product;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Amount;
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@DataObject
 public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
     private final CreditCardId id;
     private final CustomerId customerId;
-    private final BigDecimal balance;
-    private final Currency currency;
+    private final Amount balance;
+
+    public CreditCard() {
+        this(null, null, null);
+    }
 
     public CreditCard(
             @JsonProperty("id") CreditCardId id,
             @JsonProperty("customerId") CustomerId customerId,
-            @JsonProperty("balance") BigDecimal balance,
-            @JsonProperty("currency") Currency currency) {
+            @JsonProperty("balance") Amount balance) {
         this.id = id;
         this.customerId = customerId;
         this.balance = balance;
-        this.currency = currency;
     }
+
+
+    public CreditCard(CreditCard creditCard) {
+        this(creditCard.getId(), creditCard.getCustomerId(), creditCard.getBalance());
+    }
+
+
+    public CreditCard(JsonObject jsonObject) {
+        this(
+                new CreditCardId(jsonObject.getString("id")),
+                new CustomerId(jsonObject.getString("customerId")),
+                Amount.fromJson(jsonObject.getJsonObject("balance"))
+        );
+    }
+
 
     public static CreditCard fromJson(JsonObject jsonObject) {
         checkArgument(jsonObject != null);
         return aCreditCard()
                 .withId(jsonObject.getString("id"))
                 .withCustomerId(new CustomerId(jsonObject.getString("customerId")))
-                .withBalance(new BigDecimal(jsonObject.getString("balance")))
-                .withCurrency(jsonObject.getString("currency"))
+                .withBalance(Amount.fromJson(jsonObject.getJsonObject("balance")))
                 .build();
     }
 
@@ -41,8 +61,7 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
         return new JsonObject()
                 .put("id", id.getId())
                 .put("customerId", customerId.getId())
-                .put("balance", balance.toString())
-                .put("currency", currency.getCurrency());
+                .put("balance", balance.toJson());
     }
 
     public static Builder aCreditCard() {
@@ -62,12 +81,27 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
         return Type.CREDITCARD;
     }
 
-    public BigDecimal getBalance() {
+    public Amount getBalance() {
         return balance;
     }
 
-    public Currency getCurrency() {
-        return currency;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, customerId, balance);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final CreditCard other = (CreditCard) obj;
+        return Objects.equals(this.id, other.id)
+                && Objects.equals(this.customerId, other.customerId)
+                && Objects.equals(this.balance, other.balance);
     }
 
     @Override
@@ -76,15 +110,13 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
                 "id=" + id +
                 ", customerId=" + customerId +
                 ", balance=" + balance +
-                ", currency=" + currency +
                 '}';
     }
 
     public static final class Builder {
         private CreditCardId id;
         private CustomerId customerId;
-        private BigDecimal balance;
-        private Currency currency;
+        private Amount balance;
 
         private Builder() {
         }
@@ -110,17 +142,17 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
         }
 
         public Builder withBalance(BigDecimal balance) {
+            this.balance = new Amount(balance);
+            return this;
+        }
+
+        public Builder withBalance(Amount balance) {
             this.balance = balance;
             return this;
         }
 
-        public Builder withCurrency(String currency) {
-            this.currency = new Currency(currency);
-            return this;
-        }
-
         public CreditCard build() {
-            return new CreditCard(id, customerId, balance, currency);
+            return new CreditCard(id, customerId, balance);
         }
 
     }

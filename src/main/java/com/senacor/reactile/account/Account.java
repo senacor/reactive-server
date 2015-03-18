@@ -3,6 +3,7 @@ package com.senacor.reactile.account;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.Identity;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Amount;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
@@ -11,18 +12,15 @@ import java.math.BigDecimal;
 public class Account implements Product, Jsonizable, Identity<AccountId> {
     private final AccountId id;
     private final CustomerId customerId;
-    private final BigDecimal balance;
-    private final Currency currency;
+    private final Amount balance;
 
     public Account(
             @JsonProperty("id") AccountId id,
             @JsonProperty("customerId") CustomerId customerId,
-            @JsonProperty("balance") BigDecimal balance,
-            @JsonProperty("currency") Currency currency) {
+            @JsonProperty("balance") Amount balance) {
         this.id = id;
         this.customerId = customerId;
         this.balance = balance;
-        this.currency = currency;
     }
 
     public static Builder anAccount() {
@@ -42,12 +40,8 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
         return Type.ACCOUNT;
     }
 
-    public BigDecimal getBalance() {
+    public Amount getBalance() {
         return balance;
-    }
-
-    public Currency getCurrency() {
-        return currency;
     }
 
     @Override
@@ -56,7 +50,6 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
                 "id=" + id +
                 ", customerId=" + customerId +
                 ", balance=" + balance +
-                ", currency=" + currency +
                 '}';
     }
 
@@ -64,8 +57,7 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
         return anAccount()
                 .withId(jsonObject.getString("id"))
                 .withCustomerId(new CustomerId(jsonObject.getString("customerId")))
-                .withBalance(new BigDecimal(jsonObject.getString("balance")))
-                .withCurrency(jsonObject.getString("currency"))
+                .withBalance(Amount.fromJson(jsonObject.getJsonObject("balance")))
                 .build();
     }
 
@@ -73,15 +65,13 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
         return new JsonObject()
                 .put("id", id.getId())
                 .put("customerId", customerId.getId())
-                .put("balance", balance.toString())
-                .put("currency", currency.getCurrency());
+                .put("balance", balance.toJson());
     }
 
     public static final class Builder {
         private AccountId id;
         private CustomerId customerId;
-        private BigDecimal balance;
-        private Currency currency;
+        private Amount balance;
 
         private Builder() {
         }
@@ -106,18 +96,17 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
             return this;
         }
 
-        public Builder withBalance(BigDecimal balance) {
+        public Builder withBalance(Amount balance) {
             this.balance = balance;
             return this;
         }
-
-        public Builder withCurrency(String currency) {
-            this.currency = new Currency(currency);
+        public Builder withBalance(BigDecimal balance) {
+            this.balance = new Amount(balance);
             return this;
         }
 
         public Account build() {
-            return new Account(id, customerId, balance, currency);
+            return new Account(id, customerId, balance);
         }
 
     }

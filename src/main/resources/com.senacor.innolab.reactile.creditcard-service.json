@@ -1,9 +1,9 @@
 {
-  "main": "guice:com.senacor.reactile.account.CreditCardServiceVerticle",
+  "main": "guice:com.senacor.reactile.creditcard.CreditCardServiceVerticle",
 
   "options": {
     "config": {
-      "address": "CreditCardServiceVerticle",
+      "address": "CreditCardService",
       "collection": "creditcards"
     }
   }

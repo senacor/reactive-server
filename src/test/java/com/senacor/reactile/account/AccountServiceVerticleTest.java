@@ -3,6 +3,7 @@ package com.senacor.reactile.account;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Amount;
 import com.senacor.reactile.mongo.MongoInitializer;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.BeforeClass;
@@ -44,6 +45,6 @@ public class AccountServiceVerticleTest {
     public void thatSpecificAccountIsReturned() throws InterruptedException, ExecutionException, TimeoutException {
         AccountId accountId = newAccount2().getId();
         Account account = vertxRule.<Account>sendBlocking(AccountServiceVerticle.ADDRESS, accountId, "get").body();
-        assertThat(account.getBalance(), is(equalTo(new BigDecimal("20773"))));
+        assertThat(account.getBalance(), is(equalTo(new Amount(new BigDecimal(20773)))));
     }
 }
