@@ -1,5 +1,6 @@
 package com.senacor.reactile.mongo;
 
+import com.senacor.reactile.IdObject;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.rxjava.core.Vertx;
 import org.junit.rules.ExternalResource;
@@ -42,7 +43,7 @@ public class MongoInitializer extends ExternalResource{
 
     public Observable<String> write(Iterable<? extends Jsonizable> objects) {
         return Observable.from(objects)
-                .map(o -> o.toJson())
+                .map(o -> o instanceof IdObject ? o.toJson().put("_id", ((IdObject)o).toValue()) : o.toJson())
                 .flatMap(json -> mongoService.insert(collection, json));
     }
 

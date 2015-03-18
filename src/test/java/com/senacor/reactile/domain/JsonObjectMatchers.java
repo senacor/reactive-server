@@ -1,5 +1,6 @@
 package com.senacor.reactile.domain;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.hamcrest.Description;
 import org.hamcrest.FeatureMatcher;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 public class JsonObjectMatchers {
 
@@ -26,6 +28,15 @@ public class JsonObjectMatchers {
             }
         };
         return allOf(hasProperty(property), valueMatcher);
+    }
+
+    public static Matcher<JsonArray> hasSize(int expectedSize) {
+        return new FeatureMatcher<JsonArray, Integer>(is(expectedSize), " a json array with size", "size") {
+            @Override
+            protected Integer featureValueOf(JsonArray actual) {
+                return actual.size();
+            }
+        };
     }
 
     public static Matcher<JsonObject> hasProperty(String property) {

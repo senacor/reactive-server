@@ -3,6 +3,7 @@ package com.senacor.reactile.customer;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.mongo.MongoInitializer;
+import io.vertx.serviceproxy.ProxyHelper;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ public class CustomerServiceTest {
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.CustomerService);
-    private final CustomerService service = new CustomerServiceImpl(vertxRule.vertx());
+    private final CustomerService service = ProxyHelper.createProxy(CustomerService.class, vertxRule.vertxDelegate(), CustomerService.ADDRESS);
 
     private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "customers");
 

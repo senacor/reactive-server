@@ -1,54 +1,38 @@
 package com.senacor.reactile.customer;
 
-import com.senacor.reactile.mongo.ObservableMongoService;
-import com.senacor.reactile.service.AbstractServiceVerticle;
-import com.senacor.reactile.service.Action;
-import com.senacor.reactile.user.UserId;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import rx.Observable;
+import com.senacor.reactile.guice.Impl;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.AbstractVerticle;
+import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
 
-import static com.senacor.reactile.customer.Address.anAddress;
 
+public class CustomerServiceVerticle extends AbstractVerticle {
 
-public class CustomerServiceVerticle extends AbstractServiceVerticle {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public static final String ADDRESS = "CustomerServiceVerticle";
-
-    private final ObservableMongoService mongoService;
-    private String collection;
+    private final CustomerService customerService;
 
     @Inject
-    public CustomerServiceVerticle(ObservableMongoService mongoService) {
-        this.mongoService = mongoService;
+    public CustomerServiceVerticle(@Impl CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-        collection = context.config().getString("collection");
+    public void start() throws Exception {
+        log.info("Starting service: " + config().getString("main"));
+        String address = config().getString("address");
+        if (address == null) {
+            throw new IllegalStateException("address field must be specified in config for CustomerService");
+        }
+        ProxyHelper.registerService(CustomerService.class, getVertx(), customerService, address);
     }
 
-    @Action
-    public Observable<Customer> getCustomer(CustomerId id) {
-        JsonObject query = new JsonObject().put("id", id.toValue());
-        return mongoService.findOne(collection, query).map(Customer::fromJson);
-    }
-
-    @Action("add")
-    public Observable<Customer> addCustomer(Customer customer) {
-        return mongoService.insert(collection, customer.toJson()).flatMap(id -> Observable.just(customer));
-    }
-
-    private CustomerAddressChangedEvt newCustomerChangedEvent() {
-        return new CustomerAddressChangedEvt(new UserId("momann"), new CustomerId("007"), anAddress()
-                .withStreet("Erika-Mann-Straße")
-                .withAddressNumber("55")
-                .withCountry(new Country("DE", "Deutschland"))
-                .build());
+    @Override
+    public void stop() throws Exception {
+        log.info("Stopping service: " + config().getString("main"));
     }
 
 }

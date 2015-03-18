@@ -49,6 +49,10 @@ public class VertxRule extends ExternalResource {
         return vertx;
     }
 
+    public io.vertx.core.Vertx vertxDelegate() {
+        return (io.vertx.core.Vertx) vertx.getDelegate();
+    }
+
     public EventBus eventBus() {
         return vertx.eventBus();
     }
