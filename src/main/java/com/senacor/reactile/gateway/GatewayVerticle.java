@@ -120,6 +120,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private HttpServerResponse writeResponse(HttpServerResponse response, ResponseObject responseObject) {
         Buffer content = jsonMarshaller.toBuffer(responseObject);
         response.headers().set("Content-Length", "" + content.length());
+        response.headers().set("Access-Control-Allow-Origin", "*");
         return response.write(content);
     }
 
