@@ -2,15 +2,35 @@ package com.senacor.reactile.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.IdObject;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
+@DataObject
 public class CreditCardId implements IdObject {
 
     private final String id;
 
+    public CreditCardId() {
+        this((String)null);
+    }
+
     public CreditCardId(@JsonProperty("id") String id) {
         this.id = id;
+    }
+
+    public CreditCardId(JsonObject jsonObject) {
+        this(jsonObject.getString("id"));
+    }
+
+    public CreditCardId(CreditCardId creditCardId) {
+        this(creditCardId.getId());
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return new JsonObject().put("id", toValue());
     }
 
     @Override

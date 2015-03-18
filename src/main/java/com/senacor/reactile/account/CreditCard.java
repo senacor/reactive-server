@@ -5,16 +5,23 @@ import com.senacor.reactile.Identity;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.domain.Amount;
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@DataObject
 public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
     private final CreditCardId id;
     private final CustomerId customerId;
     private final Amount balance;
+
+    public CreditCard() {
+        this(null, null, null);
+    }
 
     public CreditCard(
             @JsonProperty("id") CreditCardId id,
@@ -24,6 +31,21 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
         this.customerId = customerId;
         this.balance = balance;
     }
+
+
+    public CreditCard(CreditCard creditCard) {
+        this(creditCard.getId(), creditCard.getCustomerId(), creditCard.getBalance());
+    }
+
+
+    public CreditCard(JsonObject jsonObject) {
+        this(
+                new CreditCardId(jsonObject.getString("id")),
+                new CustomerId(jsonObject.getString("customerId")),
+                Amount.fromJson(jsonObject.getJsonObject("balance"))
+        );
+    }
+
 
     public static CreditCard fromJson(JsonObject jsonObject) {
         checkArgument(jsonObject != null);
@@ -60,6 +82,25 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
 
     public Amount getBalance() {
         return balance;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, customerId, balance);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final CreditCard other = (CreditCard) obj;
+        return Objects.equals(this.id, other.id)
+                && Objects.equals(this.customerId, other.customerId)
+                && Objects.equals(this.balance, other.balance);
     }
 
     @Override
