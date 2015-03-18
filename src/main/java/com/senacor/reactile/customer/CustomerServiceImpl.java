@@ -36,7 +36,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler) {
         JsonObject cust = customer.toJson().put("_id", customer.getId().toValue());
-        mongoService.insert(COLLECTION, customer.toJson(), result -> {
+        mongoService.insert(COLLECTION, cust, result -> {
             if (result.failed()) {
                 resultHandler.handle(failedFuture(result.cause().getMessage()));
             } else
