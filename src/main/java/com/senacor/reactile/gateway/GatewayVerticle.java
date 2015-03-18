@@ -8,11 +8,9 @@ import com.senacor.reactile.account.CreditCardService;
 import com.senacor.reactile.account.Transaction;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.json.JsonMarshaller;
-import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
 import io.vertx.core.http.HttpServerOptions;
@@ -34,7 +32,6 @@ import java.util.List;
 
 public class GatewayVerticle extends AbstractVerticle {
 
-    public static final String PUBLISH_ADDRESS = "EventPump";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JsonMarshaller jsonMarshaller = new JsonMarshaller();
     private final UserService userService;
@@ -61,7 +58,6 @@ public class GatewayVerticle extends AbstractVerticle {
     @Override
     public void start() {
         createHttpServer();
-        registerEventSubcriber();
     }
 
     private void createHttpServer() {
@@ -82,16 +78,6 @@ public class GatewayVerticle extends AbstractVerticle {
                 server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
                 failure -> log.error("Failed to start")
         );
-    }
-
-    private void registerEventSubcriber() {
-        vertx.eventBus().consumer(PUBLISH_ADDRESS).toObservable()
-                .map(message -> (CustomerAddressChangedEvt) message.body())
-                .flatMap(event -> {
-                    Observable<User> userObservable = userService.getUser(event.getUserId());
-                    return userObservable.map(user -> event.replaceUser(user));
-                })
-                .subscribe(eventWithUser -> log.info("Received event " + eventWithUser));
     }
 
     private void addRequestStreamHooks(HttpServer httpServer) {
