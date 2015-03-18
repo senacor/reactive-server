@@ -3,6 +3,7 @@ package com.senacor.reactile.account;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.domain.Amount;
 import com.senacor.reactile.mongo.MongoInitializer;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.ClassRule;
@@ -19,9 +20,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by rwinzing on 03.03.15.
- */
 public class CreditCardServiceVerticleTest {
     @ClassRule
     public static final VertxRule vertxRule = new VertxRule(Services.CreditCardService);
@@ -43,6 +41,6 @@ public class CreditCardServiceVerticleTest {
         CreditCard creditCard = CreditCardFixtures.defaultCreditCard().withId("ASDFGH").withBalance(BigDecimal.TEN).build();
         initializer.writeBlocking(creditCard);
         CreditCard card = vertxRule.<CreditCard>sendBlocking(CreditCardServiceVerticle.ADDRESS, creditCard.getId(), "get").body();
-        assertThat(card.getBalance(), is(equalTo(BigDecimal.TEN)));
+        assertThat(card.getBalance(), is(equalTo(new Amount(BigDecimal.TEN))));
     }
 }

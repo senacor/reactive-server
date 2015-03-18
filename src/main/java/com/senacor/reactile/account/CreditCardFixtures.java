@@ -45,16 +45,14 @@ public final class CreditCardFixtures {
         return CreditCard.aCreditCard()
                 .withId("000000000000456")
                 .withCustomerId("cust-0815")
-                .withBalance(new BigDecimal("-1000"))
-                .withCurrency("EUR");
+                .withBalance(new BigDecimal("-1000"));
     }
 
     private static CreditCard.Builder randomCreditCardBuilder() {
         return defaultCreditCard()
                 .withId("cc-" + uuid())
                 .withCustomerId("cust-" + uuid())
-                .withBalance(BigDecimal.valueOf(rd.nextDouble()))
-                .withCurrency("EUR");
+                .withBalance(BigDecimal.valueOf(rd.nextInt(5000)));
     }
 
     private static String uuid() {
@@ -88,7 +86,6 @@ public final class CreditCardFixtures {
                 .withId(ccId)
                 .withCustomerId(customerId)
                 .withBalance(amount)
-                .withCurrency("EUR")
                 .build();
     }
 
