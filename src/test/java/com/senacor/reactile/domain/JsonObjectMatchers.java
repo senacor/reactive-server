@@ -6,6 +6,10 @@ import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -40,5 +44,35 @@ public class JsonObjectMatchers {
             }
         };
     }
+
+    public static Matcher<JsonObject> hasProperties(String aProperty, String anotherProperty, String... moreProprties) {
+        return new TypeSafeDiagnosingMatcher<JsonObject>() {
+            @Override
+            protected boolean matchesSafely(JsonObject item, Description mismatchDescription) {
+                Set<String> required = required();
+                HashSet<String> missing = newHashSet(required);
+                missing.removeAll(item.fieldNames());
+                boolean matches = missing.isEmpty();
+                if (!matches) {
+                    mismatchDescription.appendText(
+                            "Expected properties " + missing + " were not present. The following properties are present: " + item.fieldNames());
+                }
+                return matches;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("a JsonObject with properties " + required());
+            }
+
+            private Set<String> required() {
+                Set<String> required = newHashSet(moreProprties);
+                required.add(anotherProperty);
+                required.add(aProperty);
+                return required;
+            }
+        };
+    }
+
 
 }

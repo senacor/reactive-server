@@ -2,8 +2,8 @@ package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.http.HttpTestClient;
 import com.senacor.reactile.http.HttpResponse;
+import com.senacor.reactile.http.HttpTestClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import org.junit.Rule;
@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperty;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static org.junit.Assert.assertThat;
 
 public class GatewayVerticleTest {
@@ -30,9 +30,7 @@ public class GatewayVerticleTest {
 
         JsonObject json = response.asJson();
         System.out.println(json.encodePrettily());
-        assertThat(json, hasProperty("customer"));
-
-
+        assertThat(json, hasProperties("customer", "accounts", "creditCards", "transactions"));
     }
 
 }
