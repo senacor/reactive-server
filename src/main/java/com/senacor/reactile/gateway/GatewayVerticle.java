@@ -1,19 +1,16 @@
 package com.senacor.reactile.gateway;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.AccountService;
-import com.senacor.reactile.account.CreditCard;
 import com.senacor.reactile.account.CreditCardService;
-import com.senacor.reactile.account.Transaction;
 import com.senacor.reactile.account.TransactionService;
-import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.customer.CustomerService;
-import com.senacor.reactile.json.JsonMarshaller;
+import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rx.java.ObservableHandler;
@@ -28,12 +25,12 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.List;
+
+import static com.senacor.reactile.json.JsonObjects.$;
 
 public class GatewayVerticle extends AbstractVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final JsonMarshaller jsonMarshaller = new JsonMarshaller();
     private final UserService userService;
     private final CustomerService customerService;
     private final AccountService accountService;
@@ -53,7 +50,6 @@ public class GatewayVerticle extends AbstractVerticle {
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
     }
-
 
     @Override
     public void start() {
@@ -76,7 +72,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
         httpServer.listenObservable().subscribe(
                 server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
-                failure -> log.error("Failed to start")
+                failure -> log.error("Failed to start: " + failure)
         );
     }
 
@@ -95,16 +91,32 @@ public class GatewayVerticle extends AbstractVerticle {
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 
         return userService.getUser(userId).flatMap(user -> {
-            Observable<Customer> customerObservable = customerService.getCustomer(customerId);
-            Observable<List<Account>> accountObservable = accountService.getAccountsForCustomer(customerId);
-            Observable<List<CreditCard>> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId);
-            Observable<List<Transaction>> transactionObservable = transactionService.getTransactionsForCustomer(customerId);
-            return Observable.zip(customerObservable, accountObservable, creditCardObservable, transactionObservable, (cust, acc, cc, tr) -> new ResponseObject(cust, acc, cc, tr));
-        }).map(responseObject -> writeResponse(response, responseObject));
+            Observable<JsonObject> customerObservable = customerService.getCustomer(customerId).map(JsonObjects::toJson);
+            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomer(customerId).map(JsonObjects::toJsonArray);
+            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
+            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
+            return Observable.zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
+                    (cust, acc, cc, tr) -> mergeIntoResponse(cust, acc, cc, tr));
+        }).map(json -> writeResponse(response, json));
     }
 
-    private HttpServerResponse writeResponse(HttpServerResponse response, ResponseObject responseObject) {
-        Buffer content = jsonMarshaller.toBuffer(responseObject);
+    private JsonObject mergeIntoResponse(JsonObject cust, JsonArray accounts, JsonArray creditCards, JsonArray transactions) {
+        JsonObject custAll = cust.put("products", $()
+                                                    .put("accounts", accounts)
+                                                    .put("creditCards", creditCards)
+                                                    .put("transactions", transactions)
+        );
+        return $()
+                .put("customer", custAll)
+                .put("branch", "empty")
+                .put("appointments", "empty")
+                .put("recommendations", "empty")
+                .put("news", "empty")
+                ;
+    }
+
+    private HttpServerResponse writeResponse(HttpServerResponse response, JsonObject responseJson) {
+        Buffer content = new Buffer(io.vertx.core.buffer.Buffer.buffer(responseJson.encode()));
         response.headers().set("Content-Length", "" + content.length());
         response.headers().set("Access-Control-Allow-Origin", "*");
         return response.write(content);
@@ -133,46 +145,6 @@ public class GatewayVerticle extends AbstractVerticle {
                 .setHost(config().getString("host"))
                 .setPort(config().getInteger("port"))
                 ;
-    }
-
-    private static class ResponseObject {
-
-        private final Customer customer;
-        private final List<Account> accounts;
-        private final List<CreditCard> creditCards;
-        private final List<Transaction> transactions;
-
-        public ResponseObject(
-                @JsonProperty("customer") Customer customer,
-                @JsonProperty("accounts") List<Account> accounts,
-                @JsonProperty("creditCards") List<CreditCard> creditCards,
-                @JsonProperty("transactions") List<Transaction> transactions) {
-
-            this.customer = customer;
-            this.accounts = accounts;
-            this.creditCards = creditCards;
-            this.transactions = transactions;
-        }
-
-        public Buffer toJson() {
-            return JsonMarshaller.toBuffer(this);
-        }
-
-        public Customer getCustomer() {
-            return customer;
-        }
-
-        public List<Account> getAccounts() {
-            return accounts;
-        }
-
-        public List<CreditCard> getCreditCards() {
-            return creditCards;
-        }
-
-        public List<Transaction> getTransactions() {
-            return transactions;
-        }
     }
 
 }
