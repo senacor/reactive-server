@@ -24,6 +24,7 @@ repositories {
     maven {
         url "http://dipsydoodle:8881/nexus/content/groups/reactile"
     }
+    mavenLocal()
 }
 
 apply from: "dependencies.gradle"
