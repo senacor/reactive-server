@@ -51,7 +51,7 @@ public class EmbeddedMongoVerticle extends AbstractVerticle {
         JsonObject config = new JsonObject()
                 .put("db_name", "reactile");
         ObservableFuture<String> observableHandler = RxHelper.observableFuture();
-        getVertx().deployVerticle("service:io.vertx:mongo-service", new DeploymentOptions().setConfig(config), observableHandler.toHandler());
+        getVertx().deployVerticle("service:io.vertx:vertx-mongo-service", new DeploymentOptions().setConfig(config), observableHandler.toHandler());
         return observableHandler;
     }
 }

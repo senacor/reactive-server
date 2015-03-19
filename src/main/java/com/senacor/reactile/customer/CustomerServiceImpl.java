@@ -1,6 +1,7 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.mongo.ObservableMongoService;
+import com.senacor.reactile.rx.Rx;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -25,12 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
-        mongoService.findOne(COLLECTION, customerId.toJson(), null, result -> {
-            if (result.failed()) {
-                resultHandler.handle(failedFuture(result.cause()));
-            } else
-                resultHandler.handle(succeededFuture(Customer.fromJson(result.result())));
-        });
+        Rx.bridgeHandler(mongoService.findOne(COLLECTION, customerId.toJson(), null).map(Customer::fromJson), resultHandler);
     }
 
     @Override
