@@ -17,6 +17,10 @@ public interface CustomerService {
 
     void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler);
 
+    void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler);
+
+    void updateContact(CustomerId customerId, Contact address, Handler<AsyncResult<Customer>> resultHandler);
+
     @GenIgnore
     default Observable<Customer> getCustomer(CustomerId customerId) {
         ObservableFuture<Customer> observableFuture = RxHelper.observableFuture();
@@ -31,4 +35,17 @@ public interface CustomerService {
         return observableFuture;
     }
 
+    @GenIgnore
+    default Observable<Customer> updateAddress(CustomerId customerId, Address address) {
+        ObservableFuture<Customer> observableFuture = RxHelper.observableFuture();
+        updateAddress(customerId, address, observableFuture.toHandler());
+        return observableFuture;
+    }
+
+    @GenIgnore
+    default Observable<Customer> updateContact(CustomerId customerId, Contact contact) {
+        ObservableFuture<Customer> observableFuture = RxHelper.observableFuture();
+        updateContact(customerId, contact, observableFuture.toHandler());
+        return observableFuture;
+    }
 }

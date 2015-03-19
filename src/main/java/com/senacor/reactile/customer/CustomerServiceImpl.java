@@ -34,6 +34,16 @@ public class CustomerServiceImpl implements CustomerService {
         Rx.bridgeHandler(mongoService.insertObservable(COLLECTION, cust).flatMap(res -> Observable.just(customer)), resultHandler);
     }
 
+    @Override
+    public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler) {
+        //TODO mmenzel
+    }
+
+    @Override
+    public void updateContact(CustomerId customerId, Contact address, Handler<AsyncResult<Customer>> resultHandler) {
+        //TODO mmenzel
+    }
+
 
     private CustomerAddressChangedEvt newCustomerChangedEvent() {
         return new CustomerAddressChangedEvt(new UserId("momann"), new CustomerId("007"), anAddress()
