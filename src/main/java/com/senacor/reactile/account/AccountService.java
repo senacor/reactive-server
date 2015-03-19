@@ -21,9 +21,9 @@ public interface AccountService {
 
     @GenIgnore
     default Observable<Account> getAccount(AccountId accountId) {
-        ObservableFuture<JsonObject> observableFuture = RxHelper.observableFuture();
+        ObservableFuture<Account> observableFuture = RxHelper.observableFuture();
         getAccount(accountId, observableFuture.toHandler());
-        return observableFuture.map(Account::fromJson);
+        return observableFuture;
     }
 
     @GenIgnore
@@ -40,7 +40,7 @@ public interface AccountService {
         return observableFuture.flatMap(id -> Observable.just(account));
     }
 
-    void getAccount(AccountId accountId, Handler<AsyncResult<JsonObject>> resultHandler);
+    void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler);
 
     void getAccountsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler);
 

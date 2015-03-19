@@ -20,9 +20,9 @@ public interface CreditCardService {
 
     @GenIgnore
     default Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
-        ObservableFuture<JsonObject> observableFuture = RxHelper.observableFuture();
+        ObservableFuture<CreditCard> observableFuture = RxHelper.observableFuture();
         getCreditCard(creditCardId, observableFuture.toHandler());
-        return observableFuture.map(CreditCard::fromJson);
+        return observableFuture;
     }
 
     @GenIgnore
@@ -39,7 +39,7 @@ public interface CreditCardService {
         return observableFuture.flatMap(id -> Observable.just(creditCard));
     }
 
-    void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<JsonObject>> resultHandler);
+    void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<CreditCard>> resultHandler);
 
     void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler);
 

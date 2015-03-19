@@ -13,7 +13,6 @@ import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.customer.CustomerServiceImpl;
 import com.senacor.reactile.guice.Impl;
-import com.senacor.reactile.mongo.ObservableMongoService;
 import com.senacor.reactile.user.UserConnector;
 import com.senacor.reactile.user.UserService;
 import com.senacor.reactile.user.UserServiceImpl;
@@ -50,8 +49,8 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        ObservableMongoService provideMongoService(MongoService mongoService) {
-            return ObservableMongoService.from(mongoService);
+        io.vertx.rxjava.ext.mongo.MongoService provideMongoService(MongoService mongoService) {
+            return new io.vertx.rxjava.ext.mongo.MongoService(mongoService);
         }
 
         @Provides

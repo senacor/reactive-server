@@ -1,11 +1,11 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.mongo.ObservableMongoService;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
+import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 
 import javax.inject.Inject;
@@ -19,10 +19,12 @@ public class InitialDataVerticle extends AbstractVerticle {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;
+    private final MongoService mongoService;
 
     @Inject
-    public InitialDataVerticle(InitialData initialData) {
+    public InitialDataVerticle(InitialData initialData, MongoService mongoService) {
         this.initialData = initialData;
+        this.mongoService = mongoService;
     }
 
     @Override
@@ -44,10 +46,9 @@ public class InitialDataVerticle extends AbstractVerticle {
 
     @Override
     public void stop(Future<Void> stopFuture) throws Exception {
-        ObservableMongoService mongoService = ObservableMongoService.from(vertx);
         Stream
                 .of("customers, accounts, transactions, creditcards")
-                .map(coll -> mongoService.dropCollection(coll).asObservable())
+                .map(coll -> mongoService.dropCollectionObservable(coll).asObservable())
                 .reduce(Observable::concat).get()
                 .subscribeOn(scheduler(vertx))
                 .doOnCompleted(stopFuture::complete)

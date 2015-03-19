@@ -2,12 +2,12 @@ package com.senacor.reactile.account;
 
 import com.senacor.reactile.creditcard.CreditCardId;
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.mongo.ObservableMongoService;
 import com.senacor.reactile.service.AbstractServiceVerticle;
 import com.senacor.reactile.service.Action;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -19,11 +19,11 @@ import static java.util.stream.Collectors.toList;
 public class TransactionServiceVerticle extends AbstractServiceVerticle {
     public static final String ADDRESS = "TransactionServiceVerticle";
 
-    private final ObservableMongoService mongoService;
+    private final MongoService mongoService;
     private String collection;
 
     @Inject
-    public TransactionServiceVerticle(ObservableMongoService mongoService) {
+    public TransactionServiceVerticle(MongoService mongoService) {
         this.mongoService = mongoService;
     }
 
@@ -54,11 +54,11 @@ public class TransactionServiceVerticle extends AbstractServiceVerticle {
 
     @Action("create")
     public Observable<Transaction> addTransaction(Transaction transaction) {
-        return mongoService.insert(collection, transaction.toJson()).flatMap(id -> Observable.just(transaction));
+        return mongoService.insertObservable(collection, transaction.toJson()).flatMap(id -> Observable.just(transaction));
     }
 
     private Observable<List<Transaction>> executeQuery(JsonObject query) {
-        return mongoService.find(collection, query).map(toTransactionList());
+        return mongoService.findObservable(collection, query).map(toTransactionList());
     }
 
     private Func1<List<JsonObject>, List<Transaction>> toTransactionList() {
