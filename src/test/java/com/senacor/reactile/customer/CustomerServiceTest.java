@@ -4,6 +4,7 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
+import io.vertx.core.json.JsonObject;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +13,8 @@ import javax.inject.Inject;
 
 import static com.senacor.reactile.customer.CustomerFixtures.randomCustomer;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class CustomerServiceTest {
@@ -38,6 +41,19 @@ public class CustomerServiceTest {
     public void thatCustomerCanBeCreated() {
         Customer customer = service.createCustomer(randomCustomer("cust-254")).toBlocking().first();
         assertThat(customer, hasId("cust-254"));
+    }
+
+    @Test
+    public void thatCustomerCanBeUpdated() throws Exception {
+        Customer customer = CustomerFixtures.randomCustomer();
+        mongoInitializer.writeBlocking(customer);
+
+        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", null);
+        service.updateAddress(customer.getId(),newAddress).toBlocking().first();
+
+        Customer customerUpdated = service.getCustomer(customer.getId()).toBlocking().first();
+
+        assertThat(customerUpdated.getAddresses().get(0).getCity(), is(equalTo(newAddress.getCity())));
     }
 
 

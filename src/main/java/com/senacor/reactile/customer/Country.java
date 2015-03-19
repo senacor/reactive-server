@@ -8,6 +8,15 @@ public class Country implements Jsonizable {
     private final String name;
     private final String code;
 
+    public Country() {
+        this.name = "";
+        this.code = "";
+    }
+
+    public Country(Country country) {
+        this(country.name, country.code);
+    }
+
     public Country(String name, String code) {
         this.name = name;
         this.code = code;

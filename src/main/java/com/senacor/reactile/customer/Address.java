@@ -1,8 +1,10 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
+@DataObject
 public class Address implements Jsonizable {
 
     private final String coHint;
@@ -12,6 +14,14 @@ public class Address implements Jsonizable {
     private final String city;
     private final Country country;
 
+    public Address() {
+        this.coHint = "";
+        this.street = "";
+        this.zipCode = "";
+        this.addressNumber = "";
+        this.city = "";
+        this.country = new Country();
+    }
 
     public Address(String coHint, String street, String zipCode, String addressNumber, String city, Country country) {
         this.coHint = coHint;
@@ -20,6 +30,13 @@ public class Address implements Jsonizable {
         this.addressNumber = addressNumber;
         this.city = city;
         this.country = country;
+    }
+
+    public Address(Address address) {
+        this (address.coHint, address.street, address.zipCode, address.addressNumber, address.city, (address.country!=null)?new Country(address.country):new Country());
+    }
+    public Address(JsonObject jsonObject) {
+        this(fromJson(jsonObject));
     }
 
     private Address(Builder builder) {
@@ -34,7 +51,6 @@ public class Address implements Jsonizable {
     public static Builder anAddress() {
         return new Builder();
     }
-
 
     public String getCoHint() {
         return coHint;
