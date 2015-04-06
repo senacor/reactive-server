@@ -10,7 +10,7 @@ import com.senacor.reactile.account.TransactionFixtures;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.customer.CustomerFixtures;
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.customer.CustomerService;
+import com.senacor.reactile.rxjava.customer.CustomerService;
 import io.vertx.rxjava.core.RxHelper;
 import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
@@ -42,7 +42,7 @@ public class InitialData {
         return customerIds
                 .map(CustomerFixtures::randomCustomer)
                 .observeOn(scheduler)
-                .flatMap(customer -> customerService.createCustomer(customer))
+                .flatMap(customer -> customerService.createCustomerObservable(customer))
                 .map(customer -> AccountFixtures.randomAccount(customer.getId()))
                 .flatMap(account -> createAccountWithTransactions(account))
                 .map(account -> CreditCardFixtures.randomCreditCard(account.getCustomerId()))

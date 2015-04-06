@@ -54,8 +54,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        CustomerService provideCustomerService(Vertx vertx) {
-            return ProxyHelper.createProxy(CustomerService.class, vertx, CustomerService.ADDRESS);
+        com.senacor.reactile.rxjava.customer.CustomerService provideCustomerService(Vertx vertx) {
+            CustomerService proxy = ProxyHelper.createProxy(CustomerService.class, vertx, CustomerService.ADDRESS);
+            return new com.senacor.reactile.rxjava.customer.CustomerService(proxy);
         }
 
         @Provides

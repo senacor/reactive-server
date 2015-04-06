@@ -26,20 +26,20 @@ public class CustomerServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private CustomerService service;
+    private com.senacor.reactile.rxjava.customer.CustomerService service;
 
     private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "customers");
 
     @Test
     public void thatCustomerIsReturned() {
         mongoInitializer.writeBlocking(CustomerFixtures.newCustomer("cust-asdfghjk"));
-        Customer customer = service.getCustomer(new CustomerId("cust-asdfghjk")).toBlocking().first();
+        Customer customer = service.getCustomerObservable(new CustomerId("cust-asdfghjk")).toBlocking().first();
         assertThat(customer, hasId("cust-asdfghjk"));
     }
 
     @Test
     public void thatCustomerCanBeCreated() {
-        Customer customer = service.createCustomer(randomCustomer("cust-254")).toBlocking().first();
+        Customer customer = service.createCustomerObservable(randomCustomer("cust-254")).toBlocking().first();
         assertThat(customer, hasId("cust-254"));
     }
 
@@ -49,9 +49,9 @@ public class CustomerServiceTest {
         mongoInitializer.writeBlocking(customer);
 
         Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", null);
-        service.updateAddress(customer.getId(),newAddress).toBlocking().first();
+        service.updateAddressObservable(customer.getId(),newAddress).toBlocking().first();
 
-        Customer customerUpdated = service.getCustomer(customer.getId()).toBlocking().first();
+        Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();
 
         assertThat(customerUpdated.getAddresses().get(0).getCity(), is(equalTo(newAddress.getCity())));
     }
