@@ -1,47 +1,60 @@
 package com.senacor.reactile.customer;
 
-import com.senacor.reactile.mongo.ObservableMongoService;
+import com.senacor.reactile.rx.Rx;
+import com.senacor.reactile.service.Action;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.rxjava.ext.mongo.MongoService;
+import rx.Observable;
 
 import javax.inject.Inject;
 
 import static com.senacor.reactile.customer.Address.anAddress;
-import static io.vertx.core.Future.failedFuture;
-import static io.vertx.core.Future.succeededFuture;
 
 
 public class CustomerServiceImpl implements CustomerService {
 
     public static final String COLLECTION = "customers";
-    private final ObservableMongoService mongoService;
+    private final MongoService mongoService;
 
     @Inject
-    public CustomerServiceImpl(ObservableMongoService mongoService) {
+    public CustomerServiceImpl(MongoService mongoService) {
         this.mongoService = mongoService;
     }
 
     @Override
     public void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
-        mongoService.findOne(COLLECTION, customerId.toJson(), null, result -> {
-            if (result.failed()) {
-                resultHandler.handle(failedFuture(result.cause()));
-            } else
-                resultHandler.handle(succeededFuture(Customer.fromJson(result.result())));
-        });
+        Rx.bridgeHandler(mongoService.findOneObservable(COLLECTION, customerId.toJson(), null).map(Customer::fromJson), resultHandler);
     }
 
     @Override
     public void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler) {
         JsonObject cust = customer.toJson().put("_id", customer.getId().toValue());
-        mongoService.insert(COLLECTION, cust, result -> {
-            if (result.failed()) {
-                resultHandler.handle(failedFuture(result.cause().getMessage()));
-            } else
-                resultHandler.handle(succeededFuture(customer));
-        });
+        Rx.bridgeHandler(mongoService.insertObservable(COLLECTION, cust).flatMap(res -> Observable.just(customer)), resultHandler);
+    }
+/*
+    @Override
+    public void updateCustomerName(String customerId, String newName, Handler<AsyncResult<Void>> resultHandler) {
+        JsonObject query = new JsonObject().put("id", customerId);
+        JsonObject update = new JsonObject().put("$set",
+                new JsonObject().put("lastname", newName));
+        Rx.bridgeHandler(mongoService.updateObservable(COLLECTION, query, update), resultHandler);
+    }*/
+
+    @Override
+    public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Void>> resultHandler) {
+        JsonObject query = new JsonObject().put("id", customerId.getId());
+        JsonObject update = new JsonObject().put("$set",
+                new JsonObject().put("addresses", new JsonArray().add(address.toJson())));
+        Rx.bridgeHandler(mongoService.updateObservable(COLLECTION, query, update), resultHandler);
+    }
+
+    @Override
+    public void updateContact(CustomerId customerId, Contact address, Handler<AsyncResult<Customer>> resultHandler) {
+        //TODO mmenzel
     }
 
 

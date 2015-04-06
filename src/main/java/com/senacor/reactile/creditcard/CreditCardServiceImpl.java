@@ -1,26 +1,27 @@
 package com.senacor.reactile.creditcard;
 
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.mongo.ObservableMongoService;
+import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.rxjava.ext.mongo.MongoService;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class CreditCardServiceImpl implements CreditCardService {
     public static final String COLLECTION = "creditcards";
-    private final ObservableMongoService mongoService;
+    private final MongoService mongoService;
 
     @Inject
-    public CreditCardServiceImpl(ObservableMongoService mongoService) {
+    public CreditCardServiceImpl(MongoService mongoService) {
         this.mongoService = mongoService;
     }
 
     @Override
-    public void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<JsonObject>> resultHandler) {
-        mongoService.findOne(COLLECTION, creditCardId.toJson(), null, resultHandler);
+    public void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<CreditCard>> resultHandler) {
+        Rx.bridgeHandler(mongoService.findOneObservable(COLLECTION, creditCardId.toJson(), null).map(CreditCard::fromJson), resultHandler);
     }
 
     @Override

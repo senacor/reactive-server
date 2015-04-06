@@ -1,27 +1,29 @@
 package com.senacor.reactile.account;
 
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.mongo.ObservableMongoService;
+import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.rxjava.ext.mongo.MongoService;
+import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class AccountServiceImpl implements AccountService {
     public static final String COLLECTION = "accounts";
-    private final ObservableMongoService mongoService;
+    private final MongoService mongoService;
 
     @Inject
-    public AccountServiceImpl(ObservableMongoService mongoService) {
+    public AccountServiceImpl(MongoService mongoService) {
         this.mongoService = mongoService;
     }
 
     @Override
-    public void getAccount(AccountId accountId, Handler<AsyncResult<JsonObject>> resultHandler) {
-        mongoService.findOne(COLLECTION, accountId.toJson(), null, resultHandler);
-
+    public void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler) {
+        Observable<Account> result = mongoService.findOneObservable(COLLECTION, accountId.toJson(), null).map(Account::fromJson);
+        Rx.bridgeHandler(result, resultHandler);
     }
 
     @Override
