@@ -12,13 +12,16 @@ import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.customer.CustomerServiceImpl;
+import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.user.UserConnector;
 import com.senacor.reactile.user.UserService;
 import com.senacor.reactile.user.UserServiceImpl;
 import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoService;
+import io.vertx.rx.java.RxHelper;
 import io.vertx.serviceproxy.ProxyHelper;
+import rx.Scheduler;
 
 public class AppModuleProvider implements BootstrapModuleProvider {
     @Override
@@ -41,6 +44,17 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(TransactionService.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(UserConnector.class);
+        }
+
+        @Provides
+        Scheduler provideRxScheduler(Vertx vertx) {
+            return RxHelper.scheduler(vertx);
+        }
+
+        @Provides
+        @Blocking
+        Scheduler provideBlockingRxScheduler(Vertx vertx) {
+            return RxHelper.blockingScheduler(vertx);
         }
 
         @Provides
