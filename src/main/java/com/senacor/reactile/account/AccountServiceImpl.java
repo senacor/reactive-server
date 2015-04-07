@@ -11,6 +11,8 @@ import rx.Observable;
 import javax.inject.Inject;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 public class AccountServiceImpl implements AccountService {
     public static final String COLLECTION = "accounts";
     private final MongoService mongoService;
@@ -22,20 +24,25 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler) {
-        Observable<Account> result = mongoService.findOneObservable(COLLECTION, accountId.toJson(), null).map(Account::fromJson);
-        Rx.bridgeHandler(result, resultHandler);
+        mongoService.findOneObservable(COLLECTION, accountId.toJson(), null)
+                .map(Account::fromJson)
+                .subscribe(Rx.toSubscriber(resultHandler));
     }
 
     @Override
     public void getAccountsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
-        mongoService.find(COLLECTION, query, resultHandler);
+        mongoService.findObservable(COLLECTION, query)
+                .subscribe(Rx.toSubscriber(resultHandler));
     }
 
     @Override
-    public void createAccount(Account account, Handler<AsyncResult<String>> resultHandler) {
+    public void createAccount(Account account, Handler<AsyncResult<Account>> resultHandler) {
         JsonObject doc = account.toJson().put("_id", account.getId().toValue());
-        mongoService.insert(COLLECTION, doc, resultHandler);
+        mongoService.insertObservable(COLLECTION, doc)
+                .flatMap(id -> Observable.just(account))
+                .subscribe(Rx.toSubscriber(resultHandler))
+        ;
     }
 
 }

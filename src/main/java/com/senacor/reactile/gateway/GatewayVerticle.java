@@ -1,10 +1,10 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.json.JsonObjects;
+import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.customer.CustomerService;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
@@ -96,7 +96,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
         return userService.getUser(userId).flatMap(user -> {
             Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId).map(JsonObjects::toJson);
-            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomer(customerId).map(JsonObjects::toJsonArray);
+            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(list -> new JsonArray(list));
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
             return Observable.zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,

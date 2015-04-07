@@ -2,7 +2,6 @@ package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.account.Account;
 import com.senacor.reactile.account.AccountFixtures;
-import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.creditcard.CreditCard;
 import com.senacor.reactile.creditcard.CreditCardFixtures;
 import com.senacor.reactile.creditcard.CreditCardService;
@@ -10,6 +9,7 @@ import com.senacor.reactile.account.TransactionFixtures;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.customer.CustomerFixtures;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.customer.CustomerService;
 import io.vertx.rxjava.core.RxHelper;
 import io.vertx.rxjava.core.Vertx;
@@ -60,7 +60,7 @@ public class InitialData {
     }
 
     private Observable<Account> createAccountWithTransactions(Account account) {
-        return accountService.createAccount(account)
+        return accountService.createAccountObservable(account)
                 .flatMap(acc -> TransactionFixtures.randomTransactions(acc.getCustomerId(), acc.getId(), rn.nextInt(12) + 3))
                 .flatMap(transaction -> transactionService.createTransaction(transaction))
                 .last()
