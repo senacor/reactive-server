@@ -129,7 +129,3 @@ publishing {
         }
     }
 }
-
-idea.module {
-    excludeDirs -= file(buildDir) //1
-    buildDir.listFiles({d,f->f != 'generated-src'} as FilenameFilter).each {excludeDirs += it}}
