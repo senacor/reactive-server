@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
+import rx.Subscriber;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
         Rx.bridgeHandler(mongoService.findOneObservable(COLLECTION, customerId.toJson(), null).map(Customer::fromJson), resultHandler);
+    }
+
+
+    public void getCustomer_differentApproach(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
+        mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
+                .map(Customer::fromJson)
+                .subscribe(Rx.toSubscriber(resultHandler));
     }
 
     @Override
