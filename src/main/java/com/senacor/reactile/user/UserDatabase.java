@@ -15,6 +15,7 @@ public class UserDatabase {
                 .put(user("momann", "Michael", "Omann"))
                 .put(user("rwinzinger", "Ralph", "Winzinger"))
                 .put(user("mmenzel", "Michael", "Menzel"))
+                .put(user("akeefer", "Andreas", "Keefer"))
                 .put(user("aloch", "Andreas", "Loch"))
                 .put(user("adick", "Andreas", "Dick"))
                 .put(user("cstar", "Cinnamon", "Star"))

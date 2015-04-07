@@ -15,12 +15,7 @@ public class Address implements Jsonizable {
     private final Country country;
 
     public Address() {
-        this.coHint = "";
-        this.street = "";
-        this.zipCode = "";
-        this.addressNumber = "";
-        this.city = "";
-        this.country = new Country();
+        this(null, null, null, null, null, null);
     }
 
     public Address(String coHint, String street, String zipCode, String addressNumber, String city, Country country) {
