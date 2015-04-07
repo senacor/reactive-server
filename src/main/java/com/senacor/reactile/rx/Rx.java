@@ -5,6 +5,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.rx.java.RxHelper;
 import rx.Observable;
+import rx.Scheduler;
+import rx.Subscriber;
 
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
@@ -30,4 +32,23 @@ public final class Rx {
                         throwable -> handler.handle(failedFuture(throwable))
                 );
     }
+
+    public static <T> Subscriber<T> toSubscriber(Handler<AsyncResult<T>> resultHandler) {
+        return new Subscriber<T>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                resultHandler.handle(failedFuture(throwable));
+            }
+
+            @Override
+            public void onNext(T t) {
+                resultHandler.handle(succeededFuture(t));
+            }
+        };
+    }
+
 }
