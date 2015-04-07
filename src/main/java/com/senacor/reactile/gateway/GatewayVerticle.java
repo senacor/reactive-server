@@ -23,6 +23,7 @@ import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import rx.Observable;
+import rx.Scheduler;
 
 import javax.inject.Inject;
 
@@ -36,6 +37,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private final AccountService accountService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
+    private final Scheduler scheduler;
 
     @Inject
     public GatewayVerticle(
@@ -43,12 +45,13 @@ public class GatewayVerticle extends AbstractVerticle {
             CustomerService customerService,
             AccountService accountService,
             CreditCardService creditCardService,
-            TransactionService transactionService) {
+            TransactionService transactionService, Scheduler scheduler) {
         this.userService = userService;
         this.customerService = customerService;
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -63,6 +66,7 @@ public class GatewayVerticle extends AbstractVerticle {
         ObservableHandler<HttpServerRequest> requestHandler = RxHelper.observableHandler();
         requestHandler
                 .flatMap(this::handleRequest)
+                .subscribeOn(scheduler) //make service calls concurrent
                 .subscribe(
                         response -> response.setStatusCode(200).setStatusMessage("vertx is awesome").end(),
                         Throwable::printStackTrace
