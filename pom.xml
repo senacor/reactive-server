@@ -195,105 +195,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>build-helper-maven-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<goals><goal>add-source</goal></goals>-->
-                        <!--<configuration>-->
-                            <!--<sources>-->
-                                <!--<source>${generatedSourcesVertxProxy}</source>-->
-                                <!--<source>${project.build.directory}/generated-sources/apt</source>-->
-                            <!--</sources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<dependencies>-->
-
-                <!--</dependencies>-->
-            <!--</plugin>-->
-
-            <!--<plugin>-->
-                <!--<artifactId>maven-compiler-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>default-compile</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<configuration>-->
-                            <!--<annotationProcessors>-->
-                                <!--<annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>-->
-                            <!--</annotationProcessors>-->
-                            <!--<compilerArgs>-->
-                                <!--<arg>-AoutputDirectory=${generatedSourcesVertxProxy}</arg>-->
-                                <!--<arg>-proc:only</arg>-->
-                            <!--</compilerArgs>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
-            <!--<plugin>-->
-                <!--<groupId>com.mysema.maven</groupId>-->
-                <!--<artifactId>apt-maven-plugin</artifactId>-->
-                <!--<version>1.1.3</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>generate Vertx Proxies</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>process</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<outputDirectory>${generatedSourcesVertxProxy}</outputDirectory>-->
-                            <!--<processor>io.vertx.codegen.CodeGenProcessor</processor>-->
-                            <!--<sourceEncoding>UTF-8</sourceEncoding>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<dependencies>-->
-                    <!--<dependency>-->
-                        <!--<groupId>io.vertx</groupId>-->
-                        <!--<artifactId>vertx-rx-java</artifactId>-->
-                        <!--<version>${vertx.version}</version>-->
-                    <!--</dependency>-->
-                    <!--<dependency>-->
-                        <!--<groupId>javax.inject</groupId>-->
-                        <!--<artifactId>javax.inject</artifactId>-->
-                        <!--<version>1</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-compiler-plugin</artifactId>-->
-                <!--<version>3.3</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>generate sources</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<configuration>-->
-                            <!--<compilerArgs>-->
-                                <!--<arg>-proc:only</arg>-->
-                            <!--</compilerArgs>-->
-                            <!--<compilerArguments>-->
-                                <!--<processor>io.vertx.codegen.CodeGenProcessor</processor>-->
-                                <!--<AoutputDirectory>${generatedSourcesVertxProxy}</AoutputDirectory>-->
-                            <!--</compilerArguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<dependencies>-->
-                    <!--<dependency>-->
-                        <!--<groupId>io.vertx</groupId>-->
-                        <!--<artifactId>vertx-rx-java</artifactId>-->
-                        <!--<version>${vertx.version}</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
-            <!--</plugin>-->
-
-
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
@@ -306,24 +207,17 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <!--<systemProperties>-->
-                                <!--<java.util.logging.SimpleFormatter.format>%4$s: %3$s - %5$s %6$s%n</java.util.logging.SimpleFormatter.format>-->
-                            <!--</systemProperties>-->
                             <processors>
                                 <processor>io.vertx.codegen.CodeGenProcessor</processor>
                             </processors>
                             <optionMap>
                                 <outputDirectory>${generatedSourcesVertxProxy}</outputDirectory>
                             </optionMap>
-                            <!--<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>-->
-                            <!--<sourceDirectory>${generatedSourcesVertxProxy}</sourceDirectory>-->
                             <failOnError>false</failOnError>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
     </build>
 
