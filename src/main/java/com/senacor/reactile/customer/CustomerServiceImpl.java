@@ -35,14 +35,6 @@ public class CustomerServiceImpl implements CustomerService {
         JsonObject cust = customer.toJson().put("_id", customer.getId().toValue());
         Rx.bridgeHandler(mongoService.insertObservable(COLLECTION, cust).flatMap(res -> Observable.just(customer)), resultHandler);
     }
-/*
-    @Override
-    public void updateCustomerName(String customerId, String newName, Handler<AsyncResult<Void>> resultHandler) {
-        JsonObject query = new JsonObject().put("id", customerId);
-        JsonObject update = new JsonObject().put("$set",
-                new JsonObject().put("lastname", newName));
-        Rx.bridgeHandler(mongoService.updateObservable(COLLECTION, query, update), resultHandler);
-    }*/
 
     @Override
     public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Void>> resultHandler) {
