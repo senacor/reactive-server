@@ -90,6 +90,9 @@ public class Address implements Jsonizable {
         return country;
     }
 
+    public Integer getIndex() {
+        return index;
+    }
 
     public JsonObject toJson() {
         return new JsonObject()

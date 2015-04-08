@@ -44,17 +44,28 @@ public class CustomerServiceTest {
     }
 
     @Test
-    public void thatCustomerCanBeUpdated() throws Exception {
+    public void thatCustomerAddressCanBeAdded() throws Exception {
         Customer customer = CustomerFixtures.randomCustomer();
         mongoInitializer.writeBlocking(customer);
 
-        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", new Country("Deutschland", "DE"), 1);
+        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", new Country("Deutschland", "DE"), 2);
         service.updateAddressObservable(customer.getId(),newAddress).toBlocking().first();
 
         Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();
 
-        assertThat(customerUpdated.getAddresses().get(0).getCity(), is(equalTo(newAddress.getCity())));
+        assertThat(customerUpdated.getAddresses().size(), is(equalTo(1 + customer.getAddresses().size())));
     }
 
+    @Test
+    public void thatCustomerAddressCanBeUpdated() throws Exception {
+        Customer customer = CustomerFixtures.randomCustomer();
+        mongoInitializer.writeBlocking(customer);
 
+        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", new Country("Deutschland", "DE"), customer.getAddresses().get(0).getIndex());
+        service.updateAddressObservable(customer.getId(),newAddress).toBlocking().first();
+
+        Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();
+
+        assertThat(customerUpdated.getAddresses().size(), is(equalTo(customer.getAddresses().size())));
+    }
 }
