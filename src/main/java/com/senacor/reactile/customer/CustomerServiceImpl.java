@@ -1,7 +1,6 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.rx.Rx;
-import com.senacor.reactile.service.Action;
 import com.senacor.reactile.user.UserId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -62,7 +61,8 @@ public class CustomerServiceImpl implements CustomerService {
         return new CustomerAddressChangedEvt(new UserId("momann"), new CustomerId("007"), anAddress()
                 .withStreet("Erika-Mann-Straße")
                 .withAddressNumber("55")
-                .withCountry(new Country("DE", "Deutschland"))
+                .withCountry(new Country("Deutschland", "DE"))
+                .withIndex(1)
                 .build());
     }
 

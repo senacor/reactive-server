@@ -118,7 +118,7 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
                 .put("lastname", lastname)
                 .put("addresses", marshal(addresses, Address::toJson))
                 .put("contacts", marshal(contacts, Contact::toJson))
-                .put("taxCountry", taxCountry.toJson())
+                .put("taxCountry", null == taxCountry ? null : taxCountry.toJson())
                 .put("taxnumber", taxNumber);
     }
 

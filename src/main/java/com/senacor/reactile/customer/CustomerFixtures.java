@@ -56,6 +56,7 @@ public final class CustomerFixtures {
                         .withCity(pickRandom(CITIES))
                         .withZipCode("" + rd.nextInt(90000) + 10000)
                         .withCountry(new Country("Deutschland", "DE"))
+                        .withIndex(1)
                         .build()))
                 .withTaxCountry(rd.nextBoolean() ? new Country("England", "EN") : new Country("Deutschland", "DE"))
                 .withTaxNumber("" + rd.nextInt(99) + "-tax-" + rd.nextInt(99));
@@ -83,7 +84,9 @@ public final class CustomerFixtures {
                     .withCoHint("")
                     .withCity("Nürnberg")
                     .withZipCode("12345")
-                    .withCountry(new Country("Deutschland", "DE")).build();
+                    .withCountry(new Country("Deutschland", "DE"))
+                    .withIndex(1)
+                    .build();
 
             return Customer.newBuilder()
                     .withId("cust-" + addrNum)

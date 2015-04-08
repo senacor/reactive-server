@@ -48,7 +48,7 @@ public class CustomerServiceTest {
         Customer customer = CustomerFixtures.randomCustomer();
         mongoInitializer.writeBlocking(customer);
 
-        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", null);
+        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", new Country("Deutschland", "DE"), 1);
         service.updateAddressObservable(customer.getId(),newAddress).toBlocking().first();
 
         Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();

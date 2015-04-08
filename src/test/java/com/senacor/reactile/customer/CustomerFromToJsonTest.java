@@ -39,7 +39,9 @@ public class CustomerFromToJsonTest {
                         .withStreet("Winterstrasse")
                         .withCity("Sommerdorf")
                         .withZipCode("12345")
-                        .withCountry(new Country("Deutschland", "DE")).build()
+                        .withCountry(new Country("Deutschland", "DE"))
+                        .withIndex(1)
+                        .build()
         );
 
         Customer customer = Customer.newBuilder()

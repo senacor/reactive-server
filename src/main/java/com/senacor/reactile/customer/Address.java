@@ -13,23 +13,41 @@ public class Address implements Jsonizable {
     private final String addressNumber;
     private final String city;
     private final Country country;
+    /**
+     * identifier of Address within Customer
+     */
+    private final Integer index;
 
     public Address() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null);
     }
 
-    public Address(String coHint, String street, String zipCode, String addressNumber, String city, Country country) {
+    public Address(String coHint,
+                   String street,
+                   String zipCode,
+                   String addressNumber,
+                   String city,
+                   Country country,
+                   Integer index) {
         this.coHint = coHint;
         this.street = street;
         this.zipCode = zipCode;
         this.addressNumber = addressNumber;
         this.city = city;
         this.country = country;
+        this.index = index;
     }
 
     public Address(Address address) {
-        this (address.coHint, address.street, address.zipCode, address.addressNumber, address.city, (address.country!=null)?new Country(address.country):new Country());
+        this(address.coHint,
+                address.street,
+                address.zipCode,
+                address.addressNumber,
+                address.city,
+                (address.country != null) ? new Country(address.country) : new Country(),
+                address.index);
     }
+
     public Address(JsonObject jsonObject) {
         this(fromJson(jsonObject));
     }
@@ -41,6 +59,7 @@ public class Address implements Jsonizable {
         addressNumber = builder.addressNumber;
         city = builder.city;
         country = builder.country;
+        index = builder.index;
     }
 
     public static Builder anAddress() {
@@ -78,7 +97,9 @@ public class Address implements Jsonizable {
                 .put("street", street)
                 .put("zipCode", zipCode)
                 .put("addressNumber", addressNumber)
-                .put("city", city);
+                .put("city", city)
+                .put("country", null == country ? null : country.toJson())
+                .put("index", index);
     }
 
     public static Address fromJson(JsonObject jsonObject) {
@@ -87,7 +108,10 @@ public class Address implements Jsonizable {
                 .withStreet(jsonObject.getString("street"))
                 .withZipCode(jsonObject.getString("zipCode"))
                 .withAddressNumber(jsonObject.getString("addressNumber"))
-                .withCity(jsonObject.getString("city")).build();
+                .withCity(jsonObject.getString("city"))
+                .withCountry(Country.fromJson(jsonObject.getJsonObject("country")))
+                .withIndex(jsonObject.getInteger("index"))
+                .build();
     }
 
     public static final class Builder {
@@ -97,6 +121,7 @@ public class Address implements Jsonizable {
         private String addressNumber;
         private String city;
         private Country country;
+        private Integer index;
 
         private Builder() {
         }
@@ -131,8 +156,13 @@ public class Address implements Jsonizable {
             return this;
         }
 
+        public Builder withIndex(Integer index) {
+            this.index = index;
+            return this;
+        }
+
         public Address build() {
-            return new Address(coHint, street, zipCode, addressNumber, city, country);
+            return new Address(coHint, street, zipCode, addressNumber, city, country, index);
         }
     }
 }

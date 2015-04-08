@@ -12,9 +12,9 @@ public class CustomerAddressChangedEvt implements Event<CustomerId> {
     private final Address newAddress;
 
     public CustomerAddressChangedEvt(
-            @JsonProperty("userId") UserId userId,
-            @JsonProperty("id") CustomerId id,
-            @JsonProperty("newAddress") Address newAddress) {
+            UserId userId,
+            CustomerId id,
+            Address newAddress) {
         this.userId = userId;
         this.id = id;
         this.newAddress = newAddress;
@@ -35,6 +35,7 @@ public class CustomerAddressChangedEvt implements Event<CustomerId> {
                 .put("address", newAddress.toJson());
     }
 
+    // TODO (ak) sollte man sowas machen?!?
     public JsonObject replaceUser(User user) {
         JsonObject res = toJson().put("user", user.toJson());
         res.remove("userId");

@@ -9,8 +9,7 @@ public class Country implements Jsonizable {
     private final String code;
 
     public Country() {
-        this.name = "";
-        this.code = "";
+        this(null, null);
     }
 
     public Country(Country country) {
