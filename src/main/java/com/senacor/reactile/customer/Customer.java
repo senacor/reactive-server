@@ -1,19 +1,17 @@
 package com.senacor.reactile.customer;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
@@ -109,10 +107,12 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
      * @return new Customer with replaced or added Address
      */
     public static Customer addOrReplaceAddress(Customer customer, Address newAddress) {
-        ArrayList<Address> newAddresses = Lists.newArrayList(newAddress);
-        customer.getAddresses().stream()
-                .filter(address -> !Objects.equals(newAddress.getIndex(), address.getIndex()))
-                .forEach(newAddresses::add);
+        List<Address> newAddresses = customer.getAddresses().stream()
+                .map(address -> Objects.equals(newAddress.getIndex(), address.getIndex()) ? newAddress : address)
+                .collect(Collectors.toList());
+        if (!newAddresses.contains(newAddress)) {
+            newAddresses.add(newAddress);
+        }
         return new Customer(customer.id,
                 customer.firstname,
                 customer.lastname,

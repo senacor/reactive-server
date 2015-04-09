@@ -49,17 +49,20 @@ public final class CustomerFixtures {
                 .withId("cust-" + uuid())
                 .withFirstname(pickRandom(FIRST_NAMES))
                 .withLastname(pickRandom(LAST_NAMES))
-                .withAddresses(newArrayList(Address.anAddress()
-                        .withAddressNumber("" + rd.nextInt(99))
-                        .withCoHint("c/o Ramstein")
-                        .withStreet(pickRandom(STREETS))
-                        .withCity(pickRandom(CITIES))
-                        .withZipCode("" + rd.nextInt(90000) + 10000)
-                        .withCountry(new Country("Deutschland", "DE"))
-                        .withIndex(1)
-                        .build()))
+                .withAddresses(newArrayList(randomAddressBuilder().build()))
                 .withTaxCountry(rd.nextBoolean() ? new Country("England", "EN") : new Country("Deutschland", "DE"))
                 .withTaxNumber("" + rd.nextInt(99) + "-tax-" + rd.nextInt(99));
+    }
+
+    public static Address.Builder randomAddressBuilder() {
+        return Address.anAddress()
+                .withAddressNumber("" + rd.nextInt(99))
+                .withCoHint("c/o Ramstein")
+                .withStreet(pickRandom(STREETS))
+                .withCity(pickRandom(CITIES))
+                .withZipCode("" + rd.nextInt(90000) + 10000)
+                .withCountry(new Country("Deutschland", "DE"))
+                .withIndex(1);
     }
 
     private static String pickRandom(List<String> source) {

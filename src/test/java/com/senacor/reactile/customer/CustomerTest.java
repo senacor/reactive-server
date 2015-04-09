@@ -1,6 +1,5 @@
 package com.senacor.reactile.customer;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import static com.senacor.reactile.customer.Customer.addOrReplaceAddress;
@@ -23,8 +22,7 @@ public class CustomerTest {
         Customer customerWithNewAddress = addOrReplaceAddress(customer, newAddress);
 
         assertThat(customer.getAddresses(), contains(customer.getAddresses().get(0)));
-        assertThat(customerWithNewAddress.getAddresses(), contains(newAddress,
-                customer.getAddresses().get(0)));
+        assertThat(customerWithNewAddress.getAddresses(), contains(customer.getAddresses().get(0), newAddress));
     }
 
     @Test
@@ -43,4 +41,25 @@ public class CustomerTest {
         assertThat(customerWithNewAddress.getAddresses(), contains(newAddress));
     }
 
+    @Test
+    public void testReplaceAddressInList() throws Exception {
+        Customer customer = CustomerFixtures.randomCustomer();
+        assertEquals("addresses count", 1, customer.getAddresses().size());
+        Address address1 = customer.getAddresses().get(0);
+        Address address2 = CustomerFixtures.randomAddressBuilder().withIndex(2).build();
+        customer = addOrReplaceAddress(customer, address2);
+        Address address3 = CustomerFixtures.randomAddressBuilder().withIndex(3).build();
+        customer = addOrReplaceAddress(customer, address3);
+
+
+        Address newAddress = Address.anAddress()
+                .withIndex(address2.getIndex())
+                .withCity("NewCity")
+                .build();
+
+        Customer customerWithNewAddress = addOrReplaceAddress(customer, newAddress);
+
+        assertThat(customer.getAddresses(), contains(address1, address2, address3));
+        assertThat(customerWithNewAddress.getAddresses(), contains(address1, newAddress, address3));
+    }
 }
