@@ -4,18 +4,17 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
-import io.vertx.core.json.JsonObject;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 import static com.senacor.reactile.customer.CustomerFixtures.randomCustomer;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class CustomerServiceTest {
 
@@ -48,12 +47,20 @@ public class CustomerServiceTest {
         Customer customer = CustomerFixtures.randomCustomer();
         mongoInitializer.writeBlocking(customer);
 
-        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", new Country("Deutschland", "DE"), 2);
-        service.updateAddressObservable(customer.getId(),newAddress).toBlocking().first();
+        int newIndex = customer.getAddresses().get(0).getIndex() + 1;
+        Address newAddress = new Address("", "Teststreet", "TestPLZ", "8", "Testcity", new Country("Deutschland", "DE"), newIndex);
+        Customer customerUpdated = service.updateAddressObservable(customer.getId(), newAddress).toBlocking().first();
 
-        Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();
+        assertThat(customerUpdated.getAddresses(), hasSize(1 + customer.getAddresses().size()));
 
-        assertThat(customerUpdated.getAddresses().size(), is(equalTo(1 + customer.getAddresses().size())));
+        Customer customerLoaded = service.getCustomerObservable(customer.getId()).toBlocking().first();
+
+        assertThat(customerLoaded.getAddresses(), hasSize(1 + customer.getAddresses().size()));
+        Optional<Address> newAddressOptional = customerLoaded.getAddresses().stream()
+                .filter(address -> newIndex == address.getIndex())
+                .findFirst();
+        assertTrue("new address not found", newAddressOptional.isPresent());
+        assertEquals("city", newAddress.getCity(), newAddressOptional.get().getCity());
     }
 
     @Test
@@ -61,11 +68,13 @@ public class CustomerServiceTest {
         Customer customer = CustomerFixtures.randomCustomer();
         mongoInitializer.writeBlocking(customer);
 
-        Address newAddress = new Address("","Teststreet","TestPLZ","8", "Testcity", new Country("Deutschland", "DE"), customer.getAddresses().get(0).getIndex());
-        service.updateAddressObservable(customer.getId(),newAddress).toBlocking().first();
+        Address newAddress = new Address("", "Teststreet", "TestPLZ", "8", "Testcity", new Country("Deutschland", "DE"), customer.getAddresses().get(0).getIndex());
+        service.updateAddressObservable(customer.getId(), newAddress).toBlocking().first();
 
         Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();
 
-        assertThat(customerUpdated.getAddresses().size(), is(equalTo(customer.getAddresses().size())));
+        assertThat(customerUpdated.getAddresses(), hasSize(customer.getAddresses().size()));
+        assertEquals("address.index", newAddress.getIndex(), customerUpdated.getAddresses().get(0).getIndex());
+        assertEquals("address.city", newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
     }
 }

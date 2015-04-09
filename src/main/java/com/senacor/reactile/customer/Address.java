@@ -3,6 +3,8 @@ package com.senacor.reactile.customer;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 @DataObject
 public class Address implements Jsonizable {
@@ -115,6 +117,11 @@ public class Address implements Jsonizable {
                 .withCountry(Country.fromJson(jsonObject.getJsonObject("country")))
                 .withIndex(jsonObject.getInteger("index"))
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     public static final class Builder {

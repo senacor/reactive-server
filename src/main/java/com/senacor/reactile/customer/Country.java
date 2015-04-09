@@ -2,6 +2,8 @@ package com.senacor.reactile.customer;
 
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Country implements Jsonizable {
 
@@ -35,5 +37,10 @@ public class Country implements Jsonizable {
 
     public static Country fromJson(JsonObject jsonObject) {
         return new Country(jsonObject.getString("name"), jsonObject.getString("code"));
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

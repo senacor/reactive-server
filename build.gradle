@@ -44,6 +44,7 @@ dependencies {
     compile libraries.vertx
     compile libraries.guava
     compile libraries.vertxguicefactory
+    compile libraries.apachecommons
 
     testCompile libraries.junit
     testCompile libraries.embeddedMongo

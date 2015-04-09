@@ -1,13 +1,19 @@
 package com.senacor.reactile.customer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
@@ -35,18 +41,18 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
     }
 
     public Customer(
-            @JsonProperty("id") CustomerId id,
-            @JsonProperty("firstname") String firstname,
-            @JsonProperty("lastname") String lastname,
-            @JsonProperty("addresses") List<Address> addresses,
-            @JsonProperty("contacts") List<Contact> contacts,
-            @JsonProperty("taxNumber") String taxNumber,
-            @JsonProperty("taxCountry") Country taxCountry) {
+            CustomerId id,
+            String firstname,
+            String lastname,
+            List<Address> addresses,
+            List<Contact> contacts,
+            String taxNumber,
+            Country taxCountry) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.addresses = addresses;
-        this.contacts = contacts;
+        this.addresses = addresses == null ? null : ImmutableList.copyOf(addresses);
+        this.contacts = contacts == null ? null : ImmutableList.copyOf(contacts);
         this.taxNumber = taxNumber;
         this.taxCountry = taxCountry;
     }
@@ -98,6 +104,24 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
         return contacts;
     }
 
+    /**
+     * @param newAddress new Address
+     * @return new Customer with replaced or added Address
+     */
+    public static Customer addOrReplaceAddress(Customer customer, Address newAddress) {
+        ArrayList<Address> newAddresses = Lists.newArrayList(newAddress);
+        customer.getAddresses().stream()
+                .filter(address -> !Objects.equals(newAddress.getIndex(), address.getIndex()))
+                .forEach(newAddresses::add);
+        return new Customer(customer.id,
+                customer.firstname,
+                customer.lastname,
+                newAddresses,
+                customer.contacts,
+                customer.taxNumber,
+                customer.taxCountry);
+    }
+
     public static Customer fromJson(JsonObject jsonObject) {
         checkArgument(jsonObject != null);
         return Customer.newBuilder()
@@ -120,6 +144,11 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
                 .put("contacts", marshal(contacts, Contact::toJson))
                 .put("taxCountry", null == taxCountry ? null : taxCountry.toJson())
                 .put("taxnumber", taxNumber);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     public static final class Builder {

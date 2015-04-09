@@ -15,7 +15,7 @@ public interface CustomerService {
 
     void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler);
 
-    void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Void>> resultHandler);
+    void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler);
 
     void updateContact(CustomerId customerId, Contact address, Handler<AsyncResult<Customer>> resultHandler);
 

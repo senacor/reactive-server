@@ -9,10 +9,9 @@ import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.Objects;
-import java.util.Optional;
 
 import static com.senacor.reactile.customer.Address.anAddress;
+import static com.senacor.reactile.customer.Customer.addOrReplaceAddress;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 
 
@@ -49,34 +48,20 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Void>> resultHandler) {
+    public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler) {
         // 1. load customer from Database
         mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson) // convert json to Objects
                 .map(customer -> addOrReplaceAddress(customer, address))
-                .map(Customer::getAddresses) // get addresses
-                .map(addresses -> marshal(addresses, Address::toJson)) // convert addresses to json
-                .map(addresses -> new JsonObject().put("$set", new JsonObject().put("addresses", addresses))) // create update json
-                .flatMap(update -> {
+                .flatMap(customer -> {
                     // execute mongo update
+                    JsonObject update = new JsonObject().put("$set", new JsonObject().put("addresses",
+                            marshal(customer.getAddresses(), Address::toJson)));
                     JsonObject query = new JsonObject().put("id", customerId.getId());
-                    return mongoService.updateObservable(COLLECTION, query, (JsonObject) update);
+                    return mongoService.updateObservable(COLLECTION, query, update)
+                            .flatMap(res -> Observable.just(customer));
                 })
                 .subscribe(Rx.toSubscriber(resultHandler));
-    }
-
-    /**
-     * @param customer   Customer
-     * @param newAddress new Address
-     * @return Customer with replaced od added Address
-     */
-    private Customer addOrReplaceAddress(Customer customer, Address newAddress) {
-        customer.getAddresses().stream()
-                .filter(address -> Objects.equals(newAddress.getIndex(), address.getIndex()))
-                .findFirst()
-                .map(address -> customer.getAddresses().remove(address));
-        customer.getAddresses().add(newAddress);
-        return customer;
     }
 
     @Override
