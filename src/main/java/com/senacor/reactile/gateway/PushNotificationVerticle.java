@@ -14,6 +14,8 @@ public class PushNotificationVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+
     private final UserService userService;
 
     @Inject
@@ -31,7 +33,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
                 .map(message -> (CustomerAddressChangedEvt) message.body())
                 .flatMap(event -> {
                     Observable<User> userObservable = userService.getUser(event.getUserId());
-                    return userObservable.map(user -> event.replaceUser(user));
+                    return userObservable.map(event::replaceUser);
                 })
                 .subscribe(eventWithUser -> log.info("Received event " + eventWithUser));
     }

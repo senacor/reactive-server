@@ -1,15 +1,32 @@
 package com.senacor.reactile.customer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.domain.Jsonizable;
 import com.senacor.reactile.event.Event;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserId;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class CustomerAddressChangedEvt implements Event<CustomerId> {
+@DataObject
+public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable {
     private final CustomerId id;
+    // TODO (ak) die property wuerde ich entfernen
     private final UserId userId;
     private final Address newAddress;
+
+    public CustomerAddressChangedEvt() {
+        this(null, null, null);
+    }
+
+    public CustomerAddressChangedEvt(CustomerAddressChangedEvt event) {
+        this(event.userId, event.id, event.newAddress);
+    }
+
+    public CustomerAddressChangedEvt(JsonObject jsonObject) {
+        this(fromJson(jsonObject));
+    }
 
     public CustomerAddressChangedEvt(
             UserId userId,
@@ -18,6 +35,14 @@ public class CustomerAddressChangedEvt implements Event<CustomerId> {
         this.userId = userId;
         this.id = id;
         this.newAddress = newAddress;
+    }
+
+    private CustomerAddressChangedEvt(Builder builder) {
+        this(builder.userId, builder.id, builder.newAddress);
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public UserId getUserId() {
@@ -30,9 +55,18 @@ public class CustomerAddressChangedEvt implements Event<CustomerId> {
 
     public JsonObject toJson() {
         return new JsonObject()
-                .put("userId", userId.getId())
-                .put("id", id.getId())
-                .put("address", newAddress.toJson());
+                .put("userId", null == userId ? null : userId.getId())
+                .put("id", null == id ? null : id.getId())
+                .put("address", null == newAddress ? null : newAddress.toJson());
+    }
+
+    public static CustomerAddressChangedEvt fromJson(JsonObject json) {
+        String userId = json.getString("userId");
+        return newBuilder()
+                .withId(new CustomerId(json.getString("id")))
+                .withUserId(null == userId ? null : new UserId(userId))
+                .withNewAddress(Address.fromJson(json.getJsonObject("address")))
+                .build();
     }
 
     // TODO (ak) sollte man sowas machen?!?
@@ -45,5 +79,38 @@ public class CustomerAddressChangedEvt implements Event<CustomerId> {
     @Override
     public CustomerId getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public static final class Builder {
+        private CustomerId id;
+        private UserId userId;
+        private Address newAddress;
+
+        private Builder() {
+        }
+
+        public Builder withId(CustomerId id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder withUserId(UserId userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder withNewAddress(Address newAddress) {
+            this.newAddress = newAddress;
+            return this;
+        }
+
+        public CustomerAddressChangedEvt build() {
+            return new CustomerAddressChangedEvt(this);
+        }
     }
 }

@@ -1,28 +1,34 @@
 package com.senacor.reactile.customer;
 
 import com.senacor.reactile.rx.Rx;
-import com.senacor.reactile.user.UserId;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 
 import javax.inject.Inject;
 
-import static com.senacor.reactile.customer.Address.anAddress;
 import static com.senacor.reactile.customer.Customer.addOrReplaceAddress;
 import static com.senacor.reactile.json.JsonObjects.marshal;
+import static org.apache.commons.lang3.Validate.isTrue;
 
 
 public class CustomerServiceImpl implements CustomerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
+
     public static final String COLLECTION = "customers";
     private final MongoService mongoService;
+    private Vertx vertx;
 
     @Inject
-    public CustomerServiceImpl(MongoService mongoService) {
+    public CustomerServiceImpl(MongoService mongoService, Vertx vertx) {
         this.mongoService = mongoService;
+        this.vertx = vertx;
     }
 
     @Override
@@ -51,16 +57,28 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler) {
         // 1. load customer from Database
         mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
-                .map(Customer::fromJson) // convert json to Objects
+                .map(Customer::fromJson) // 2. convert json to Objects
                 .map(customer -> addOrReplaceAddress(customer, address))
                 .flatMap(customer -> {
-                    // execute mongo update
+                    // 3. execute mongo update
                     JsonObject update = new JsonObject().put("$set", new JsonObject().put("addresses",
                             marshal(customer.getAddresses(), Address::toJson)));
                     JsonObject query = new JsonObject().put("id", customerId.getId());
                     return mongoService.updateObservable(COLLECTION, query, update)
                             .flatMap(res -> Observable.just(customer));
                 })
+                .doOnCompleted(() -> {
+                    String eventAddress = CustomerService.ADDRESS + "#updateAddress";
+                    logger.info("publishing on '" + eventAddress + "'...");
+                    vertx.eventBus().publish(eventAddress, CustomerAddressChangedEvt.newBuilder()
+                            .withId(customerId)
+                            .withNewAddress(address)
+                            .build()
+                            .toJson());
+                    isTrue(true);
+                    logger.info("publishing on '" + eventAddress + "' done");
+                })
+                .doOnError(throwable -> logger.error("updateAddress error", throwable))
                 .subscribe(Rx.toSubscriber(resultHandler));
     }
 
@@ -68,15 +86,4 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateContact(CustomerId customerId, Contact address, Handler<AsyncResult<Customer>> resultHandler) {
         //TODO mmenzel
     }
-
-
-    private CustomerAddressChangedEvt newCustomerChangedEvent() {
-        return new CustomerAddressChangedEvt(new UserId("momann"), new CustomerId("007"), anAddress()
-                .withStreet("Erika-Mann-Straße")
-                .withAddressNumber("55")
-                .withCountry(new Country("Deutschland", "DE"))
-                .withIndex(1)
-                .build());
-    }
-
 }

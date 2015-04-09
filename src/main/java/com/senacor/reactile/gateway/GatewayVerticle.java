@@ -146,8 +146,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private HttpServerOptions newServerConfig() {
         return new HttpServerOptions()
                 .setHost(config().getString("host"))
-                .setPort(config().getInteger("port"))
-                ;
+                .setPort(config().getInteger("port"));
     }
 
 }

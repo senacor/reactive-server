@@ -1,22 +1,31 @@
 package com.senacor.reactile.customer;
 
+import com.google.common.base.Throwables;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import static com.senacor.reactile.customer.CustomerFixtures.randomCustomer;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 
 public class CustomerServiceTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceTest.class);
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.CustomerService);
@@ -76,5 +85,29 @@ public class CustomerServiceTest {
         assertThat(customerUpdated.getAddresses(), hasSize(customer.getAddresses().size()));
         assertEquals("address.index", newAddress.getIndex(), customerUpdated.getAddresses().get(0).getIndex());
         assertEquals("address.city", newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
+    }
+
+    @Test
+    public void testReceiveCustomerAddressChangedEvt() throws Exception {
+        final LinkedBlockingQueue<CustomerAddressChangedEvt> queue = new LinkedBlockingQueue<>();
+
+        // listen to events
+        vertxRule.eventBus().consumer(CustomerService.ADDRESS + "#updateAddress")
+                .toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .map(CustomerAddressChangedEvt::fromJson)
+                .doOnError(throwable -> fail(throwable.getMessage() + Throwables.getStackTraceAsString(throwable)))
+                .subscribe(queue::add);
+
+        // send event ...
+        thatCustomerAddressCanBeUpdated();
+
+        CustomerAddressChangedEvt event = queue.poll(2L, TimeUnit.SECONDS);
+        logger.info("Received Event: " + event);
+        assertNotNull("No Event Received", event);
+        assertNotNull("event.id must not be null", event.getId());
+        assertNotNull("event.newAddress must not be null", event.getNewAddress());
+        assertNull("event.userId must be null", event.getUserId());
     }
 }
