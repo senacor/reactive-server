@@ -67,8 +67,9 @@ public class CustomerServiceImpl implements CustomerService {
                     return mongoService.updateObservable(COLLECTION, query, update)
                             .flatMap(res -> Observable.just(customer));
                 })
-                .doOnCompleted(() -> {
-                    String eventAddress = CustomerService.ADDRESS + "#updateAddress";
+                .doOnNext(customer -> {
+                    // 4. publish 'updateAddress' Event
+                    String eventAddress = CustomerService.ADDRESS_EVENT_UPDATE_ADDRESS;
                     logger.info("publishing on '" + eventAddress + "'...");
                     vertx.eventBus().publish(eventAddress, CustomerAddressChangedEvt.newBuilder()
                             .withId(customerId)

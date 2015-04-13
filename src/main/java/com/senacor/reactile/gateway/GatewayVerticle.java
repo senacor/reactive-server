@@ -1,13 +1,15 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.account.TransactionService;
+import com.senacor.reactile.creditcard.CreditCardService;
+import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.customer.CustomerService;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -22,16 +24,20 @@ import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
+import io.vertx.rxjava.ext.apex.Router;
+import io.vertx.rxjava.ext.apex.RoutingContext;
+import io.vertx.rxjava.ext.apex.handler.BodyHandler;
 import rx.Observable;
 import rx.Scheduler;
 
 import javax.inject.Inject;
 
 import static com.senacor.reactile.json.JsonObjects.$;
+import static rx.Observable.zip;
 
 public class GatewayVerticle extends AbstractVerticle {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
     private final UserService userService;
     private final CustomerService customerService;
     private final AccountService accountService;
@@ -56,28 +62,64 @@ public class GatewayVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        createHttpServer();
+        createRxRouter();
     }
 
-    private void createHttpServer() {
+    private void createRxRouter() {
+        Router router = Router.router(vertx);
+
+        // the request body should only be handled on put and post
+        router.route().method(HttpMethod.POST).method(HttpMethod.PUT)
+                .handler(BodyHandler.create());
+
+        router.put("/customer/:customerId/addresses").handler(this::handleUpdateAddress);
+        router.post("/customer/:customerId/addresses").handler(this::handleUpdateAddress);
+        router.get("/start").handler(routingContext -> serveRequest(routingContext.request(), routingContext.response(), routingContext.request().params())
+                .subscribe(
+                        response -> response.setStatusCode(200).setStatusMessage("vertx is awesome"),
+                        Throwable::printStackTrace));
+
+        // common handler:
+        router.route().handler(this::contentTypeJson)
+                .handler(this::end);
+
         HttpServerOptions options = newServerConfig();
         HttpServer httpServer = vertx.createHttpServer(options);
         addRequestStreamHooks(httpServer);
-        ObservableHandler<HttpServerRequest> requestHandler = RxHelper.observableHandler();
-        requestHandler
-                .flatMap(this::handleRequest)
-                .subscribeOn(scheduler) //make service calls concurrent
-                .subscribe(
-                        response -> response.setStatusCode(200).setStatusMessage("vertx is awesome").end(),
-                        Throwable::printStackTrace
-                );
+        httpServer.requestHandler(router::accept)
+                .listenObservable()
+                .subscribe(server -> logger.info("Router Listening at " + options.getHost() + ":" + options.getPort()),
+                        failure -> logger.error("Router Failed to start: " + failure));
+    }
 
-        httpServer.requestHandler(requestHandler.toHandler());
+    private void contentTypeJson(RoutingContext context) {
+        context.response().putHeader("content-type", "application/json");
+    }
 
-        httpServer.listenObservable().subscribe(
-                server -> log.info("Listening at " + options.getHost() + ":" + options.getPort()),
-                failure -> log.error("Failed to start: " + failure)
-        );
+    private void end(RoutingContext context) {
+        context.response().end();
+    }
+
+    private void handleUpdateAddress(RoutingContext routingContext) {
+        String customerIdString = routingContext.request().getParam("customerId");
+        HttpServerResponse response = routingContext.response();
+        if (customerIdString == null) {
+            logger.warn("Request Param :customerId is null");
+            sendError(400, "missing customerId parameter", response);
+        } else {
+            CustomerId customerId = new CustomerId(customerIdString);
+            logger.info("body: " + routingContext.getBodyAsString());
+            JsonObject newAddressJson = routingContext.getBodyAsJson();
+            if (newAddressJson == null) {
+                logger.warn("body is null");
+                sendError(400, "body is null", response);
+            } else {
+                Address newAddress = Address.fromJson(newAddressJson);
+                customerService.updateAddressObservable(customerId, newAddress)
+                        .map(customer -> writeResponse(response, customer.toJson()))
+                        .subscribe();
+            }
+        }
     }
 
     private void addRequestStreamHooks(HttpServer httpServer) {
@@ -86,21 +128,17 @@ public class GatewayVerticle extends AbstractVerticle {
         requestStream.endHandler(this::handleRequestEnd);
     }
 
-    private Observable<HttpServerResponse> handleRequest(HttpServerRequest request) {
-        return serveRequest(request, request.response(), request.params());
-    }
-
     private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
         UserId userId = new UserId(getParam(params, "user"));
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 
         return userService.getUser(userId).flatMap(user -> {
             Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId).map(JsonObjects::toJson);
-            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(list -> new JsonArray(list));
+            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(JsonArray::new);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
-            return Observable.zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
-                    (cust, acc, cc, tr) -> mergeIntoResponse(cust, acc, cc, tr));
+            return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
+                    this::mergeIntoResponse);
         }).map(json -> writeResponse(response, json));
     }
 
@@ -130,16 +168,16 @@ public class GatewayVerticle extends AbstractVerticle {
     }
 
     private void handleRequestEnd(Void v) {
-        log.debug("request stream has been fully read");
+        logger.debug("request stream has been fully read");
     }
 
     private void handleException(Throwable throwable) {
-        log.error(throwable);
+        logger.error("error in request/response", throwable);
     }
 
     @Override
     public void stop() {
-        log.info("Verticle stopped");
+        logger.info("Verticle stopped");
     }
 
 
@@ -149,4 +187,7 @@ public class GatewayVerticle extends AbstractVerticle {
                 .setPort(config().getInteger("port"));
     }
 
+    private void sendError(int statusCode, String statusMessage, HttpServerResponse response) {
+        response.setStatusCode(statusCode).setStatusMessage(statusMessage);
+    }
 }

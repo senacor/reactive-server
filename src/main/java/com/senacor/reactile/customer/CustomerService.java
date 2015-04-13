@@ -11,6 +11,8 @@ public interface CustomerService {
 
     static final String ADDRESS = "CustomerService";
 
+    static final String ADDRESS_EVENT_UPDATE_ADDRESS = CustomerService.ADDRESS + "#updateAddress";
+
     void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler);
 
     void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler);

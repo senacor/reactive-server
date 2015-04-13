@@ -171,6 +171,18 @@ public class Address implements Jsonizable {
             return this;
         }
 
+        public Builder withAddress(Address address) {
+            withCoHint(address.coHint)
+                    .withStreet(address.street)
+                    .withZipCode(address.zipCode)
+                    .withAddressNumber(address.addressNumber)
+                    .withCity(address.city)
+                    .withCountry(address.country)
+                    .withIndex(address.index);
+
+            return this;
+        }
+
         public Address build() {
             return new Address(coHint, street, zipCode, addressNumber, city, country, index);
         }

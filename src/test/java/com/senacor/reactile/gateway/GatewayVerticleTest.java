@@ -2,24 +2,42 @@ package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
+import com.senacor.reactile.customer.Address;
+import com.senacor.reactile.customer.Customer;
+import com.senacor.reactile.customer.CustomerFixtures;
+import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.Vertx;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.inject.Inject;
 
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class GatewayVerticleTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(GatewayVerticleTest.class);
+
     @Rule
     public final VertxRule vertxRule = new VertxRule(Services.GatewayService).deployVerticle(InitialDataVerticle.class);
+
+    @Rule
+    public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
+
+    @Inject
+    private com.senacor.reactile.rxjava.customer.CustomerService service;
 
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
 
@@ -31,8 +49,8 @@ public class GatewayVerticleTest {
         assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
 
         JsonObject json = response.asJson();
-        System.out.println(json.encodePrettily());
-        
+        logger.info("response json: " + json.encodePrettily());
+
         assertThat(json, hasProperties("customer", "branch", "appointments", "recommendations", "news"));
         JsonObject jsonCustomer = json.getJsonObject("customer");
         assertThat(jsonCustomer, hasProperties("products", "transactions"));
@@ -45,4 +63,28 @@ public class GatewayVerticleTest {
         assertThat(creditCards, hasSize(1));
     }
 
+    @Test
+    public void testUpdateCustomerAddress() throws Exception {
+        // create customer
+        Customer customer = CustomerFixtures.randomCustomer();
+        customer = service.createCustomerObservable(customer).toBlocking().first();
+        Address newAddress = Address.anAddress()
+                .withAddress(customer.getAddresses().get(0))
+                .withZipCode("00815")
+                .withCity("NewCity")
+                .build();
+
+        // update address via HTTP endpoint
+        HttpResponse response = httpClient.put("/customer/" + customer.getId().getId() + "/addresses"
+                , newAddress);
+
+        logger.info("response.body: " + response.getBody());
+        logger.info("response.statusMessage: " + response.statusMessage());
+        logger.info("response.statusCode: " + response.statusCode());
+        JsonObject json = response.asJson();
+        logger.info("response json: " + json.encodePrettily());
+        Customer customerUpdated = Customer.fromJson(json);
+        assertThat("customer.addresses", customerUpdated.getAddresses(), Matchers.hasSize(1));
+        assertEquals(newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
+    }
 }

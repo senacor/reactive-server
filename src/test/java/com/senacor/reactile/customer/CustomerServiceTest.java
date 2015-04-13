@@ -78,13 +78,14 @@ public class CustomerServiceTest {
         mongoInitializer.writeBlocking(customer);
 
         Address newAddress = new Address("", "Teststreet", "TestPLZ", "8", "Testcity", new Country("Deutschland", "DE"), customer.getAddresses().get(0).getIndex());
-        service.updateAddressObservable(customer.getId(), newAddress).toBlocking().first();
-
-        Customer customerUpdated = service.getCustomerObservable(customer.getId()).toBlocking().first();
-
+        Customer customerUpdated = service.updateAddressObservable(customer.getId(), newAddress).toBlocking().first();
         assertThat(customerUpdated.getAddresses(), hasSize(customer.getAddresses().size()));
-        assertEquals("address.index", newAddress.getIndex(), customerUpdated.getAddresses().get(0).getIndex());
-        assertEquals("address.city", newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
+
+        Customer customerLoaded = service.getCustomerObservable(customer.getId()).toBlocking().first();
+
+        assertThat(customerLoaded.getAddresses(), hasSize(customer.getAddresses().size()));
+        assertEquals("address.index", newAddress.getIndex(), customerLoaded.getAddresses().get(0).getIndex());
+        assertEquals("address.city", newAddress.getCity(), customerLoaded.getAddresses().get(0).getCity());
     }
 
     @Test
@@ -92,7 +93,7 @@ public class CustomerServiceTest {
         final LinkedBlockingQueue<CustomerAddressChangedEvt> queue = new LinkedBlockingQueue<>();
 
         // listen to events
-        vertxRule.eventBus().consumer(CustomerService.ADDRESS + "#updateAddress")
+        vertxRule.eventBus().consumer(CustomerService.ADDRESS_EVENT_UPDATE_ADDRESS)
                 .toObservable()
                 .map(Message::body)
                 .cast(JsonObject.class)
