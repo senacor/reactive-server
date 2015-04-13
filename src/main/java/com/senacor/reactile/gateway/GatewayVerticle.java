@@ -15,8 +15,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rx.java.ObservableHandler;
-import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.buffer.Buffer;
@@ -72,8 +70,9 @@ public class GatewayVerticle extends AbstractVerticle {
         router.route().method(HttpMethod.POST).method(HttpMethod.PUT)
                 .handler(BodyHandler.create());
 
-        router.put("/customer/:customerId/addresses").handler(this::handleUpdateAddress);
-        router.post("/customer/:customerId/addresses").handler(this::handleUpdateAddress);
+        router.route("/customer/:customerId/addresses")
+                .method(HttpMethod.POST).method(HttpMethod.PUT)
+                .handler(this::handleUpdateAddress);
         router.get("/start").handler(routingContext -> serveRequest(routingContext.request(), routingContext.response(), routingContext.request().params())
                 .subscribe(
                         response -> response.setStatusCode(200).setStatusMessage("vertx is awesome"),
