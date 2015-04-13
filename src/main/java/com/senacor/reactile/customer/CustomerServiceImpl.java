@@ -76,7 +76,6 @@ public class CustomerServiceImpl implements CustomerService {
                             .withNewAddress(address)
                             .build()
                             .toJson());
-                    isTrue(true);
                     logger.info("publishing on '" + eventAddress + "' done");
                 })
                 .doOnError(throwable -> logger.error("updateAddress error", throwable))

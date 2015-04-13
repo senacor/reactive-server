@@ -15,6 +15,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.ext.apex.handler.sockjs.BridgeOptions;
+import io.vertx.ext.apex.handler.sockjs.PermittedOptions;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.buffer.Buffer;
@@ -25,6 +27,10 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.apex.Router;
 import io.vertx.rxjava.ext.apex.RoutingContext;
 import io.vertx.rxjava.ext.apex.handler.BodyHandler;
+import io.vertx.rxjava.ext.apex.handler.ResponseTimeHandler;
+import io.vertx.rxjava.ext.apex.handler.StaticHandler;
+import io.vertx.rxjava.ext.apex.handler.TimeoutHandler;
+import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -36,6 +42,7 @@ import static rx.Observable.zip;
 public class GatewayVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
+
     private final UserService userService;
     private final CustomerService customerService;
     private final AccountService accountService;
@@ -66,6 +73,16 @@ public class GatewayVerticle extends AbstractVerticle {
     private void createRxRouter() {
         Router router = Router.router(vertx);
 
+        // Export Eventbus
+        BridgeOptions bridgeOptions = new BridgeOptions()
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"));
+
+        router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
+
+        // common handler:
+        router.route().handler(TimeoutHandler.create(config().getLong("timeout")))
+                .handler(ResponseTimeHandler.create());
+
         // the request body should only be handled on put and post
         router.route().method(HttpMethod.POST).method(HttpMethod.PUT)
                 .handler(BodyHandler.create());
@@ -80,15 +97,20 @@ public class GatewayVerticle extends AbstractVerticle {
 
         // common handler:
         router.route().handler(this::contentTypeJson)
+                .handler(StaticHandler.create())
                 .handler(this::end);
 
-        HttpServerOptions options = newServerConfig();
-        HttpServer httpServer = vertx.createHttpServer(options);
+        HttpServerOptions serverOptions = newServerConfig();
+        HttpServer httpServer = vertx.createHttpServer(serverOptions);
         addRequestStreamHooks(httpServer);
         httpServer.requestHandler(router::accept)
                 .listenObservable()
-                .subscribe(server -> logger.info("Router Listening at " + options.getHost() + ":" + options.getPort()),
+                .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start: " + failure));
+
+        // Publish a message to the address "news-feed" every second
+        vertx.setPeriodic(1000, t -> vertx.eventBus().publish("news-feed", "news from the server!"));
+        vertx.setPeriodic(4000, t -> vertx.eventBus().publish("news-feed-x", "XXX news from the server!"));
     }
 
     private void contentTypeJson(RoutingContext context) {

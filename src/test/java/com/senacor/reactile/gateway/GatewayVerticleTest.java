@@ -12,12 +12,16 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.Vertx;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
@@ -45,8 +49,10 @@ public class GatewayVerticleTest {
     public void thatRequestsAreHandled() throws Exception {
         HttpResponse response = httpClient.get("/start?user=momann&customerId=cust-100000");
         assertThat(response, hasStatus(200));
+        printHeaders(response.headers());
         assertThat(response, hasHeader("content-length"));
         assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("x-response-time"));
 
         JsonObject json = response.asJson();
         logger.info("response json: " + json.encodePrettily());
@@ -75,16 +81,52 @@ public class GatewayVerticleTest {
                 .build();
 
         // update address via HTTP endpoint
+        updateAddress(customer, newAddress);
+    }
+
+    @Test
+    @Ignore("only for manual tests (receive messages on client eventbus)")
+    public void testUpdateCustomerAddressAndSleep() throws Exception {
+        // create customer
+        Customer customer = CustomerFixtures.randomCustomer("cust-0815");
+        customer = service.createCustomerObservable(customer).toBlocking().first();
+        Address newAddress = Address.anAddress()
+                .withAddress(customer.getAddresses().get(0))
+                .withZipCode("00815")
+                .withCity("NewCity")
+                .build();
+
+        for (int i = 0; i < 100; i++) {
+            // update address via HTTP endpoint
+            updateAddress(customer, newAddress);
+            logger.info("sleeping...");
+            Thread.sleep(5000);
+        }
+    }
+
+    private void updateAddress(Customer customer, Address newAddress) throws Exception {
         HttpResponse response = httpClient.put("/customer/" + customer.getId().getId() + "/addresses"
                 , newAddress);
+        printHeaders(response.headers());
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("content-length"));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("x-response-time"));
 
         logger.info("response.body: " + response.getBody());
         logger.info("response.statusMessage: " + response.statusMessage());
-        logger.info("response.statusCode: " + response.statusCode());
         JsonObject json = response.asJson();
         logger.info("response json: " + json.encodePrettily());
         Customer customerUpdated = Customer.fromJson(json);
         assertThat("customer.addresses", customerUpdated.getAddresses(), Matchers.hasSize(1));
         assertEquals(newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
+    }
+
+    private void printHeaders(MultiMap headers) {
+        List<String> headerKeyValues = headers.names().stream()
+                .map(key -> key + "=" + headers.get(key))
+                .collect(Collectors.toList());
+
+        logger.info("header: " + headerKeyValues);
     }
 }

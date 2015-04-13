@@ -44,7 +44,7 @@ public final class CustomerFixtures {
                 .build();
     }
 
-    private static final Customer.Builder randomCustomerBuilder() {
+    public static final Customer.Builder randomCustomerBuilder() {
         return Customer.newBuilder()
                 .withId("cust-" + uuid())
                 .withFirstname(pickRandom(FIRST_NAMES))

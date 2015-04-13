@@ -1,10 +1,11 @@
 {
-  "main": "guice:com.senacor.reactile.gateway.GatewayVerticle",
+    "main": "guice:com.senacor.reactile.gateway.GatewayVerticle",
 
-  "options": {
-    "config": {
-      "host": "localhost",
-      "port": 8081
+    "options": {
+        "config": {
+            "host": "localhost",
+            "port": 8081,
+            "timeout": 2000
+        }
     }
-  }
 }
