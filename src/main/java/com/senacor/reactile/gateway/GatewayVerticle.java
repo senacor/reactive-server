@@ -76,7 +76,6 @@ public class GatewayVerticle extends AbstractVerticle {
         // Export Eventbus
         BridgeOptions bridgeOptions = new BridgeOptions()
                 .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"));
-
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
 
         // common handler:
@@ -107,10 +106,6 @@ public class GatewayVerticle extends AbstractVerticle {
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start: " + failure));
-
-        // Publish a message to the address "news-feed" every second
-        vertx.setPeriodic(1000, t -> vertx.eventBus().publish("news-feed", "news from the server!"));
-        vertx.setPeriodic(4000, t -> vertx.eventBus().publish("news-feed-x", "XXX news from the server!"));
     }
 
     private void contentTypeJson(RoutingContext context) {
