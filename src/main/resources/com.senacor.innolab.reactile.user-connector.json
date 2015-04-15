@@ -1,7 +1,6 @@
 {
   "main": "guice:com.senacor.reactile.user.UserConnectorVerticle",
 
-
   "options": {
     "worker": true,
     "config": {
