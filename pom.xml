@@ -291,6 +291,8 @@
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/services/com.deenterprised.vertx.spi.BootstrapModuleProvider</resource>
                                 </transformer>
                             </transformers>
