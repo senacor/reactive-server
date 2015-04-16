@@ -12,7 +12,7 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
 /**
  * Verticle which streams Hystrix Metrics
  *
- * Test with curl http://localhost:8082/hystrix.stream
+ * Test with: curl http://localhost:8082/hystrix.stream
  * <p>
  * User: Andreas Keefer, Senacor Technologies AG
  * Date: 16.04.15
