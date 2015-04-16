@@ -54,9 +54,7 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
         response.headers().add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         response.headers().add("Pragma", "no-cache");
 
-        HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> {
-            response.write("data: " + json + "\n\n");
-        }, delay);
+        HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> response.write("data: " + json + "\n\n"), delay);
         logger.info("Starting poller");
         poller.start();
     }
