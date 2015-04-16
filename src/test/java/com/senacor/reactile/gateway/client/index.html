@@ -22,7 +22,7 @@
   var eb = new vertx.EventBus("http://localhost:8081/eventbus");
 
   eb.onopen = function() {
-    eb.registerHandler("PushNotification#Customer#updateAddress#customerId=cust-0815", function(msg) {
+    eb.registerHandler("PushNotification#Customer#updateAddress#customerId=cust-100000", function(msg) {
       var str = "<code>" + JSON.stringify(msg) + "</code><br>";
       $('#status').prepend(str);
     })    
