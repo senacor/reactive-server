@@ -1,17 +1,12 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.account.TransactionService;
-import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.CustomerId;
-import com.senacor.reactile.json.JsonObjects;
-import com.senacor.reactile.rxjava.account.AccountService;
-import com.senacor.reactile.rxjava.customer.CustomerService;
+import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.user.UserId;
-import com.senacor.reactile.user.UserService;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -31,37 +26,22 @@ import io.vertx.rxjava.ext.apex.handler.StaticHandler;
 import io.vertx.rxjava.ext.apex.handler.TimeoutHandler;
 import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
 import rx.Observable;
-import rx.Scheduler;
 
 import javax.inject.Inject;
-
-import static com.senacor.reactile.json.JsonObjects.$;
-import static rx.Observable.zip;
 
 public class GatewayVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
 
-    private final UserService userService;
-    private final CustomerService customerService;
-    private final AccountService accountService;
-    private final CreditCardService creditCardService;
-    private final TransactionService transactionService;
-    private final Scheduler scheduler;
+    private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
+    private final StartCommandFactory startCommandFactory;
 
     @Inject
     public GatewayVerticle(
-            UserService userService,
-            CustomerService customerService,
-            AccountService accountService,
-            CreditCardService creditCardService,
-            TransactionService transactionService, Scheduler scheduler) {
-        this.userService = userService;
-        this.customerService = customerService;
-        this.accountService = accountService;
-        this.creditCardService = creditCardService;
-        this.transactionService = transactionService;
-        this.scheduler = scheduler;
+            CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
+            StartCommandFactory startCommandFactory) {
+        this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
+        this.startCommandFactory = startCommandFactory;
     }
 
     @Override
@@ -117,7 +97,7 @@ public class GatewayVerticle extends AbstractVerticle {
                 sendError(400, "body is null", routingContext);
             } else {
                 Address newAddress = Address.fromJson(newAddressJson);
-                customerService.updateAddressObservable(customerId, newAddress)
+                customerUpdateAddressCommandFactory.create(customerId, newAddress).toObservable()
                         .map(customer -> writeResponse(response, customer.toJson()))
                         .subscribe(res -> routingContext.next());
             }
@@ -135,14 +115,8 @@ public class GatewayVerticle extends AbstractVerticle {
         UserId userId = new UserId(getParam(params, "user"));
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 
-        return userService.getUser(userId).flatMap(user -> {
-            Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId).map(JsonObjects::toJson);
-            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(JsonArray::new);
-            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
-            return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
-                    this::mergeIntoResponse);
-        }).map(json -> writeResponse(response, json));
+        return startCommandFactory.create(userId, customerId).toObservable()
+                .map(json -> writeResponse(response, json));
     }
 
     private void contentTypeJson(RoutingContext context) {
@@ -152,20 +126,6 @@ public class GatewayVerticle extends AbstractVerticle {
 
     private void end(RoutingContext context) {
         context.response().end();
-    }
-
-    private JsonObject mergeIntoResponse(JsonObject cust, JsonArray accounts, JsonArray creditCards, JsonArray transactions) {
-        return $()
-                .put("customer", cust
-                        .put("products", $()
-                                .put("accounts", accounts)
-                                .put("creditCards", creditCards))
-                        .put("transactions", transactions))
-                .put("branch", "empty")
-                .put("appointments", "empty")
-                .put("recommendations", "empty")
-                .put("news", "empty")
-                ;
     }
 
     private HttpServerResponse writeResponse(HttpServerResponse response, JsonObject responseJson) {

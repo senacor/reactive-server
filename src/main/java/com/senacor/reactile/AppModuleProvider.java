@@ -4,6 +4,7 @@ import com.deenterprised.vertx.spi.BootstrapModuleProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.account.AccountServiceImpl;
 import com.senacor.reactile.account.TransactionService;
@@ -12,6 +13,10 @@ import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.customer.CustomerServiceImpl;
+import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
+import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.StartCommand;
+import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.user.UserConnector;
@@ -44,6 +49,14 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(TransactionService.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(UserConnector.class);
+
+            // Install  HystrixComand Factories
+            install(new FactoryModuleBuilder()
+                    .implement(CustomerUpdateAddressCommand.class, CustomerUpdateAddressCommand.class)
+                    .build(CustomerUpdateAddressCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(StartCommand.class, StartCommand.class)
+                    .build(StartCommandFactory.class));
         }
 
         @Provides

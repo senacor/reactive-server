@@ -9,7 +9,7 @@ ext {
     mockitoVersion = '1.9.5'
     catchExceptionVersion = '1.2.0'
 
-    hystrixVersion = '1.4.0-RC6'
+    hystrixVersion = '1.4.4'
 
     jacksonVersion = '1.9.13'
 
@@ -69,5 +69,12 @@ ext.libraries = [
 
         guava        : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
 
-        apachecommons: [group: 'org.apache.commons', name: 'commons-lang3', version: commonsLan3Version]
+        apachecommons: [group: 'org.apache.commons', name: 'commons-lang3', version: commonsLan3Version],
+
+        hystrix: [group: 'com.netflix.hystrix', name: 'hystrix-core', version: hystrixVersion],
+
+        guice: [
+                [group: 'com.google.inject', name: 'guice', version: guiceVersion],
+                [group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: guiceVersion]
+        ]
 ]
