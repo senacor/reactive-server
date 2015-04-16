@@ -1,0 +1,11 @@
+{
+    "main": "guice:com.senacor.reactile.hystrix.metrics.eventstream.HystrixMetricsStreamVerticle",
+
+    "options": {
+        "config": {
+            "host": "localhost",
+            "port": 8082,
+            "delay": 5000
+        }
+    }
+}

@@ -28,7 +28,7 @@ ext {
 ext.libraries = [
 
 
-        vertx        : [
+        vertx            : [
                 [group: 'io.vertx', name: 'vertx-core', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-rx-java', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-apex', version: vertxVersion],
@@ -43,13 +43,13 @@ ext.libraries = [
 
         vertxguicefactory: [group: 'com.deenterprised', name: 'vertx-guice', version: vertxguicefactoryVersion],
 
-        embeddedMongo: [group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: embeddedMongoVersion],
+        embeddedMongo    : [group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: embeddedMongoVersion],
 
-        fongo        : [group: 'com.github.fakemongo', name: 'fongo', version: fongoVersion],
+        fongo            : [group: 'com.github.fakemongo', name: 'fongo', version: fongoVersion],
 
-        guava        : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
+        guava            : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
 
-        junit        : [
+        junit            : [
                 [group: 'junit', name: 'junit', version: junitVersion],
                 [group: 'org.hamcrest', name: 'hamcrest-core', version: hamcrestVersion],
                 [group: 'org.hamcrest', name: 'hamcrest-library', version: hamcrestVersion],
@@ -62,18 +62,21 @@ ext.libraries = [
 
         ],
 
-        resteasyjson : [
+        resteasyjson     : [
                 [group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: jacksonVersion],
                 [group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: jacksonVersion],
         ],
 
-        guava        : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
+        guava            : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
 
-        apachecommons: [group: 'org.apache.commons', name: 'commons-lang3', version: commonsLan3Version],
+        apachecommons    : [group: 'org.apache.commons', name: 'commons-lang3', version: commonsLan3Version],
 
-        hystrix: [group: 'com.netflix.hystrix', name: 'hystrix-core', version: hystrixVersion],
+        hystrix          : [
+                [group: 'com.netflix.hystrix', name: 'hystrix-core', version: hystrixVersion],
+                [group: 'com.netflix.hystrix', name: 'hystrix-metrics-event-stream', version: hystrixVersion]
+        ],
 
-        guice: [
+        guice            : [
                 [group: 'com.google.inject', name: 'guice', version: guiceVersion],
                 [group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: guiceVersion]
         ]
