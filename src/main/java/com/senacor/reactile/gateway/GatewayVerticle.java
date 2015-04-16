@@ -22,7 +22,6 @@ import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.core.http.HttpServerRequest;
-import io.vertx.rxjava.core.http.HttpServerRequestStream;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.apex.Router;
 import io.vertx.rxjava.ext.apex.RoutingContext;
@@ -72,6 +71,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
     private void createRxRouter() {
         Router router = Router.router(vertx);
+        router.exceptionHandler(this::handleException);
 
         // Export Eventbus
         BridgeOptions bridgeOptions = new BridgeOptions()
@@ -79,41 +79,27 @@ public class GatewayVerticle extends AbstractVerticle {
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
 
         // common handler:
-        router.route().handler(TimeoutHandler.create(config().getLong("timeout")))
-                .handler(ResponseTimeHandler.create());
-
-        // the request body should only be handled on put and post
-        router.route().method(HttpMethod.POST).method(HttpMethod.PUT)
-                .handler(BodyHandler.create());
+        router.route().handler(TimeoutHandler.create(config().getLong("timeout")));
+        router.route().handler(ResponseTimeHandler.create());
+        router.route().handler(BodyHandler.create());
+        router.route().handler(this::contentTypeJson);
 
         router.route("/customer/:customerId/addresses")
                 .method(HttpMethod.POST).method(HttpMethod.PUT)
                 .handler(this::handleUpdateAddress);
-        router.get("/start").handler(routingContext -> serveRequest(routingContext.request(), routingContext.response(), routingContext.request().params())
-                .subscribe(
-                        response -> response.setStatusCode(200).setStatusMessage("vertx is awesome"),
-                        Throwable::printStackTrace));
+        router.get("/start").handler(this::handleStart);
 
         // common handler:
-        router.route().handler(this::contentTypeJson)
-                .handler(StaticHandler.create())
-                .handler(this::end);
+        router.route().handler(this::end);
+        // StaticHandler don't call RoutingContext.next()
+        router.route().handler(StaticHandler.create());
 
         HttpServerOptions serverOptions = newServerConfig();
         HttpServer httpServer = vertx.createHttpServer(serverOptions);
-        addRequestStreamHooks(httpServer);
         httpServer.requestHandler(router::accept)
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start: " + failure));
-    }
-
-    private void contentTypeJson(RoutingContext context) {
-        context.response().putHeader("content-type", "application/json");
-    }
-
-    private void end(RoutingContext context) {
-        context.response().end();
     }
 
     private void handleUpdateAddress(RoutingContext routingContext) {
@@ -121,27 +107,28 @@ public class GatewayVerticle extends AbstractVerticle {
         HttpServerResponse response = routingContext.response();
         if (customerIdString == null) {
             logger.warn("Request Param :customerId is null");
-            sendError(400, "missing customerId parameter", response);
+            sendError(400, "missing customerId parameter", routingContext);
         } else {
             CustomerId customerId = new CustomerId(customerIdString);
             logger.info("body: " + routingContext.getBodyAsString());
             JsonObject newAddressJson = routingContext.getBodyAsJson();
             if (newAddressJson == null) {
                 logger.warn("body is null");
-                sendError(400, "body is null", response);
+                sendError(400, "body is null", routingContext);
             } else {
                 Address newAddress = Address.fromJson(newAddressJson);
                 customerService.updateAddressObservable(customerId, newAddress)
                         .map(customer -> writeResponse(response, customer.toJson()))
-                        .subscribe();
+                        .subscribe(res -> routingContext.next());
             }
         }
     }
 
-    private void addRequestStreamHooks(HttpServer httpServer) {
-        HttpServerRequestStream requestStream = httpServer.requestStream();
-        requestStream.exceptionHandler(this::handleException);
-        requestStream.endHandler(this::handleRequestEnd);
+    private void handleStart(RoutingContext routingContext) {
+        serveRequest(routingContext.request(), routingContext.response(), routingContext.request().params())
+                .subscribe(
+                        response -> routingContext.next(),
+                        Throwable::printStackTrace);
     }
 
     private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
@@ -156,6 +143,15 @@ public class GatewayVerticle extends AbstractVerticle {
             return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
                     this::mergeIntoResponse);
         }).map(json -> writeResponse(response, json));
+    }
+
+    private void contentTypeJson(RoutingContext context) {
+        context.response().putHeader("content-type", "application/json");
+        context.next();
+    }
+
+    private void end(RoutingContext context) {
+        context.response().end();
     }
 
     private JsonObject mergeIntoResponse(JsonObject cust, JsonArray accounts, JsonArray creditCards, JsonArray transactions) {
@@ -183,10 +179,6 @@ public class GatewayVerticle extends AbstractVerticle {
         return params.get(key);
     }
 
-    private void handleRequestEnd(Void v) {
-        logger.debug("request stream has been fully read");
-    }
-
     private void handleException(Throwable throwable) {
         logger.error("error in request/response", throwable);
     }
@@ -203,7 +195,8 @@ public class GatewayVerticle extends AbstractVerticle {
                 .setPort(config().getInteger("port"));
     }
 
-    private void sendError(int statusCode, String statusMessage, HttpServerResponse response) {
-        response.setStatusCode(statusCode).setStatusMessage(statusMessage);
+    private void sendError(int statusCode, String statusMessage, RoutingContext context) {
+        context.response().setStatusCode(statusCode).setStatusMessage(statusMessage);
+        context.response().end();
     }
 }
