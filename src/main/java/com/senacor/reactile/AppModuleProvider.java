@@ -1,9 +1,7 @@
 package com.senacor.reactile;
 
 import com.deenterprised.vertx.spi.BootstrapModuleProvider;
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
-import com.google.inject.Provides;
+import com.google.inject.*;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.account.AccountServiceImpl;
@@ -13,12 +11,16 @@ import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.customer.CustomerService;
 import com.senacor.reactile.customer.CustomerServiceImpl;
+import com.senacor.reactile.customer.CustomerServiceImplUpdateAddressCommand;
+import com.senacor.reactile.customer.CustomerServiceImplUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommand;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
+import com.senacor.reactile.hystrix.interception.HystrixCmd;
+import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
 import com.senacor.reactile.user.UserConnector;
 import com.senacor.reactile.user.UserService;
 import com.senacor.reactile.user.UserServiceImpl;
@@ -27,6 +29,9 @@ import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.serviceproxy.ProxyHelper;
 import rx.Scheduler;
+
+import static com.google.inject.matcher.Matchers.annotatedWith;
+import static com.google.inject.matcher.Matchers.any;
 
 public class AppModuleProvider implements BootstrapModuleProvider {
     @Override
@@ -57,6 +62,13 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(StartCommand.class, StartCommand.class)
                     .build(StartCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(CustomerServiceImplUpdateAddressCommand.class, CustomerServiceImplUpdateAddressCommand.class)
+                    .build(CustomerServiceImplUpdateAddressCommandFactory.class));
+
+            HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
+            requestInjection(hystrixCommandInterceptor);
+            bindInterceptor(any(), annotatedWith(HystrixCmd.class), hystrixCommandInterceptor);
         }
 
         @Provides

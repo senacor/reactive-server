@@ -1,5 +1,6 @@
 package com.senacor.reactile.customer;
 
+import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -14,7 +15,6 @@ import javax.inject.Inject;
 
 import static com.senacor.reactile.customer.Customer.addOrReplaceAddress;
 import static com.senacor.reactile.json.JsonObjects.marshal;
-import static org.apache.commons.lang3.Validate.isTrue;
 
 
 public class CustomerServiceImpl implements CustomerService {
@@ -23,7 +23,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     public static final String COLLECTION = "customers";
     private final MongoService mongoService;
-    private Vertx vertx;
+    private final Vertx vertx;
 
     @Inject
     public CustomerServiceImpl(MongoService mongoService, Vertx vertx) {
@@ -55,8 +55,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler) {
-        // 1. load customer from Database
-        mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
+        updateAddress(customerId, address).subscribe(Rx.toSubscriber(resultHandler));
+    }
+
+    @HystrixCmd(CustomerServiceImplUpdateAddressCommandFactory.class)
+    public Observable<Customer> updateAddress(CustomerId customerId, Address address) {
+        return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson) // 2. convert json to Objects
                 .map(customer -> addOrReplaceAddress(customer, address))
                 .flatMap(customer -> {
@@ -78,8 +82,7 @@ public class CustomerServiceImpl implements CustomerService {
                             .toJson());
                     logger.info("publishing on '" + eventAddress + "' done");
                 })
-                .doOnError(throwable -> logger.error("updateAddress error", throwable))
-                .subscribe(Rx.toSubscriber(resultHandler));
+                .doOnError(throwable -> logger.error("updateAddress error", throwable));
     }
 
     @Override
