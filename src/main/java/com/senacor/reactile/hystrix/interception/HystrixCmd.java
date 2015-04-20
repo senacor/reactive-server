@@ -20,7 +20,7 @@ public @interface HystrixCmd {
 
     /**
      * @return The Hystrix Command, which should be used to intercept the annotates method.
-     * Use the HystrixCommand directly, if the method parameters of the interceptet method matches with the Hystrix Command Constructor Parameter.
+     * Use the InterceptableHystrixObservableCommand directly, if the method parameters of the interceptet method matches with the Hystrix Command Constructor Parameter.
      * Otherwise use a Factory with a matching method.
      * <p>
      * If "null" (Void.class ~ null), we will use a convention to search a matching Hystrix Command.

@@ -2,6 +2,7 @@ package com.senacor.reactile.account;
 
 import com.senacor.reactile.creditcard.CreditCardId;
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
@@ -19,6 +20,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.vertx = vertx;
     }
 
+    @HystrixCmd(TransactionServiceImplGetTransactionsForCustomerCommand.class)
     @Override
     public Observable<List<Transaction>> getTransactionsForCustomer(CustomerId customerId) {
         return send(customerId, "getTransactionsForCustomer");

@@ -5,7 +5,7 @@ import com.netflix.hystrix.HystrixObservableCommand;
 import rx.Observable;
 
 /**
- * TODO (ak) Beschreibung
+ * HystrixObservableCommand which is used by HystrixCommandInterceptor to set the target Observable
  * <p>
  * User: Andreas Keefer, Senacor Technologies AG
  * Date: 17.04.15
@@ -13,7 +13,7 @@ import rx.Observable;
  *
  * @author Andreas Keefer (andreas.keefer@senacor.com), Senacor Technologies AG
  */
-public abstract class InterceptableHystrixObservableCommand<T> extends HystrixObservableCommand<T>{
+public abstract class InterceptableHystrixObservableCommand<T> extends HystrixObservableCommand<T> {
 
     protected Observable<T> observable;
 
@@ -30,7 +30,8 @@ public abstract class InterceptableHystrixObservableCommand<T> extends HystrixOb
         return observable;
     }
 
-    public void setObservable(Observable<T> observable) {
+    public InterceptableHystrixObservableCommand<T> withObservable(Observable<T> observable) {
         this.observable = observable;
+        return this;
     }
 }

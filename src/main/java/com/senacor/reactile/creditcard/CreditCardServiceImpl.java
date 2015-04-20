@@ -1,11 +1,13 @@
 package com.senacor.reactile.creditcard;
 
 import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.ext.mongo.MongoService;
+import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -26,8 +28,14 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     @Override
     public void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
+        getCreditCardsForCustomerHystrix(customerId)
+                .subscribe(Rx.toSubscriber(resultHandler));
+    }
+
+    @HystrixCmd(CreditCardServiceImplGetCreditCardsForCustomerCommand.class)
+    public Observable<List<JsonObject>> getCreditCardsForCustomerHystrix(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
-        mongoService.find(COLLECTION, query, resultHandler);
+        return mongoService.findObservable(COLLECTION, query);
     }
 
     @Override

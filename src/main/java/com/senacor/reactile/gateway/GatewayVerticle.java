@@ -90,7 +90,7 @@ public class GatewayVerticle extends AbstractVerticle {
             sendError(400, "missing customerId parameter", routingContext);
         } else {
             CustomerId customerId = new CustomerId(customerIdString);
-            logger.info("body: " + routingContext.getBodyAsString());
+            //logger.info("body: " + routingContext.getBodyAsString());
             JsonObject newAddressJson = routingContext.getBodyAsJson();
             if (newAddressJson == null) {
                 logger.warn("body is null");

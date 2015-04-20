@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import static com.senacor.reactile.customer.Customer.addOrReplaceAddress;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 
-
 public class CustomerServiceImpl implements CustomerService {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
@@ -33,10 +32,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
-        Rx.bridgeHandler(mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
-                .map(Customer::fromJson), resultHandler);
+        Rx.bridgeHandler(getCustomer(customerId), resultHandler);
     }
 
+    @HystrixCmd(CustomerServiceImplGetCustomerCommand.class)
+    public Observable<Customer> getCustomer(CustomerId customerId) {
+        return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
+                .map(Customer::fromJson);
+    }
 
     public void getCustomer_differentApproach(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
         mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)

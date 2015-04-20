@@ -1,5 +1,6 @@
 package com.senacor.reactile.user;
 
+import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
@@ -18,6 +19,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @HystrixCmd(UserServiceImplGetUserCommand.class)
     public Observable<User> getUser(UserId userId) {
         return vertx.eventBus()
                 .<User>sendObservable(UserServiceVerticle.ADDRESS, userId, action("get"))

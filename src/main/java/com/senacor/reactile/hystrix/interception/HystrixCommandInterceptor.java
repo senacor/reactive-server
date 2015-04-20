@@ -1,7 +1,6 @@
 package com.senacor.reactile.hystrix.interception;
 
 import com.google.inject.Injector;
-import com.netflix.hystrix.HystrixObservable;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -9,6 +8,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import static org.apache.commons.lang3.Validate.isAssignableFrom;
 import static org.apache.commons.lang3.Validate.notNull;
 
 /**
- * TODO (ak) Beschreibung
+ * Intercepts a service call with a InterceptableHystrixObservableCommand
  * <p>
  * User: Andreas Keefer, Senacor Technologies AG
  * Date: 17.04.15
@@ -33,12 +33,11 @@ public class HystrixCommandInterceptor implements MethodInterceptor {
     private Injector injector;
 
     public HystrixCommandInterceptor() {
-        //this.injector = injector;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        logger.info("invoking: " + toSignatureString(invocation));
+        //logger.info("invoking: " + toSignatureString(invocation));
 
         // Validation
         isAssignableFrom(Observable.class, invocation.getMethod().getReturnType(),
@@ -51,34 +50,60 @@ public class HystrixCommandInterceptor implements MethodInterceptor {
             // TODO (ak) impl
             throw new UnsupportedOperationException("not yet implemented");
         } else if (commandClass.isInterface()) {
-            logger.info("try to find HystrixCommandFactory in guice...");
-            Object hystrixCommandFactory = injector.getInstance(commandClass);
-            logger.info("HystrixCommandFactory in guice=" + hystrixCommandFactory);
-            notNull(hystrixCommandFactory, "HystrixCommandFactory '%s' not found", commandClass);
-
-            // search for matching method
-            Class<?>[] parameterTypes = invocation.getMethod().getParameterTypes();
-            Optional<Method> first = Arrays.stream(commandClass.getMethods())
-                    .filter(method -> Arrays.equals(method.getParameterTypes(), parameterTypes))
-                    .findFirst();
-            Method method = first.orElseThrow(() -> new NullPointerException(
-                    "No Method found in " + commandClass + " which accepts the parameters "
-                            + Arrays.toString(parameterTypes) + ". Method: " + toSignatureString(invocation)));
-            Object res = method.invoke(hystrixCommandFactory, invocation.getArguments());
-            notNull(res, "HystrixCommandFactory '%s' returns null on invoking Method %s", hystrixCommandFactory, method);
-
-            isAssignableFrom(InterceptableHystrixObservableCommand.class, res.getClass(),
-                    "HystrixCommandFactory '%s' must return something assignable to '%s' on invoking Method %s",
-                    hystrixCommandFactory, InterceptableHystrixObservableCommand.class, method);
-            InterceptableHystrixObservableCommand command = (InterceptableHystrixObservableCommand) res;
-            command.setObservable((Observable) invocation.proceed());
-            return command.toObservable();
+            return createHystrixCommandObservableFromFactory(invocation, commandClass);
         } else if (InterceptableHystrixObservableCommand.class.isAssignableFrom(commandClass)) {
-            logger.info("instanciating HystrixCommand...");
-            // TODO (ak) impl
-            throw new UnsupportedOperationException("not yet implemented");
+            return createHystrixCommandObservable(invocation, commandClass);
         }
         throw new UnsupportedOperationException("not supported: " + commandClass);
+    }
+
+    private Observable createHystrixCommandObservable(MethodInvocation invocation, Class commandClass) throws Throwable {
+        //logger.info("looking for default constructor");
+        Optional<Constructor> defaultConstructor = Arrays.stream(commandClass.getConstructors())
+                .filter(constructor -> 0 == constructor.getParameterTypes().length)
+                .findFirst();
+        final InterceptableHystrixObservableCommand command;
+        if (defaultConstructor.isPresent()) {
+            command = (InterceptableHystrixObservableCommand) defaultConstructor.get().newInstance();
+        } else {
+            // looking for a constructor matching the intercepted Method Parameters
+            Optional<Constructor> constructorWithSameParams = Arrays.stream(commandClass.getConstructors())
+                    .filter(constructor -> Arrays.equals(invocation.getMethod().getParameterTypes(), constructor.getParameterTypes()))
+                    .findFirst();
+            command = (InterceptableHystrixObservableCommand) constructorWithSameParams
+                    .orElseThrow(() -> new IllegalStateException(String.format(
+                            "HystrixCommand '%s' must have a default constructor or a Constructor matching the intercepted Method Parameters: %s",
+                            commandClass, toSignatureString(invocation))))
+                    .newInstance(invocation.getArguments());
+        }
+        return command.withObservable((Observable) invocation.proceed())
+                .toObservable();
+    }
+
+    private Observable createHystrixCommandObservableFromFactory(MethodInvocation invocation, Class commandClass) throws Throwable {
+        //logger.info("try to find HystrixCommandFactory in guice");
+        Object hystrixCommandFactory = injector.getInstance(commandClass);
+        // logger.info("HystrixCommandFactory in guice=" + hystrixCommandFactory);
+        notNull(hystrixCommandFactory, "HystrixCommandFactory '%s' not found", commandClass);
+
+        // search for matching method
+        Class<?>[] parameterTypes = invocation.getMethod().getParameterTypes();
+        Optional<Method> first = Arrays.stream(commandClass.getMethods())
+                .filter(method -> Arrays.equals(method.getParameterTypes(), parameterTypes))
+                .findFirst();
+        Method method = first.orElseThrow(() -> new NullPointerException(
+                "No Method found in " + commandClass + " which accepts the parameters "
+                        + Arrays.toString(parameterTypes) + ". Method: " + toSignatureString(invocation)));
+        Object factoryRes = method.invoke(hystrixCommandFactory, invocation.getArguments());
+        notNull(factoryRes, "HystrixCommandFactory '%s' returns null on invoking Method %s", hystrixCommandFactory, method);
+
+        isAssignableFrom(InterceptableHystrixObservableCommand.class, factoryRes.getClass(),
+                "HystrixCommandFactory '%s' must return something assignable to '%s' on invoking Method %s",
+                hystrixCommandFactory, InterceptableHystrixObservableCommand.class, method);
+        InterceptableHystrixObservableCommand command = (InterceptableHystrixObservableCommand) factoryRes;
+        return command.withObservable((Observable) invocation.proceed())
+                .toObservable();
+
     }
 
     private String toSignatureString(MethodInvocation invocation) {
