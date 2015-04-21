@@ -59,16 +59,16 @@ public class HttpResponseMatchers {
     }
 
     public static Matcher<HttpResponse> has3xxStatus() {
-        return inFamiliy(200);
+        return inFamiliy(300);
     }
 
     public static Matcher<HttpResponse> has4xxStatus() {
-        return inFamiliy(200);
+        return inFamiliy(400);
     }
 
     private static Matcher<HttpResponse> inFamiliy(int family) {
         Matcher<Integer> expected = is(both(greaterThanOrEqualTo(family)).and(lessThanOrEqualTo(family + 99)));
-        return new FeatureMatcher<HttpResponse, Integer>(expected, " status in 2xx family", "status") {
+        return new FeatureMatcher<HttpResponse, Integer>(expected, " status in " + String.valueOf(family).substring(0, 1) + "xx family", "status") {
             @Override
             protected Integer featureValueOf(HttpResponse actual) {
                 return actual.statusCode();
