@@ -79,7 +79,7 @@ public class GatewayVerticle extends AbstractVerticle {
         httpServer.requestHandler(router::accept)
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
-                        failure -> logger.error("Router Failed to start: " + failure));
+                        failure -> logger.error("Router Failed to start", failure));
     }
 
     private void handleUpdateAddress(RoutingContext routingContext) {

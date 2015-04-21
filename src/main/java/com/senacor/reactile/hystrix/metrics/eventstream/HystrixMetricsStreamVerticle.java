@@ -11,7 +11,7 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
 
 /**
  * Verticle which streams Hystrix Metrics
- *
+ * <p>
  * Test with: curl http://localhost:8082/hystrix.stream
  * <p>
  * User: Andreas Keefer, Senacor Technologies AG
@@ -37,7 +37,9 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
             } else {
                 request.response().setStatusCode(404).setStatusMessage("not found").end();
             }
-        }).listen();
+        }).listenObservable()
+                .subscribe(httpServer -> logger.info("HystrixMetricsStreamVerticle Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
+                        failure -> logger.error("HystrixMetricsStreamVerticle Failed to start", failure));
     }
 
     @Override
@@ -54,9 +56,17 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
         response.headers().add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         response.headers().add("Pragma", "no-cache");
 
-        HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> response.write("data: " + json + "\n\n"), delay);
-        logger.info("Starting poller");
+        final HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> response.write("data: " + json + "\n\n"), delay);
+        logger.info("Starting poller with delay=" + delay + "ms");
         poller.start();
+        response.closeHandler(res -> {
+            logger.info("closeHandler: Shutting down poller");
+            poller.shutdown();
+        });
+        response.exceptionHandler(res -> {
+            logger.info("exceptionHandler: Shutting down poller");
+            poller.shutdown();
+        });
     }
 
     private HttpServerOptions newServerConfig() {

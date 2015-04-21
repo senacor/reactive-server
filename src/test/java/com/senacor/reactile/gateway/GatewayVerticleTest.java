@@ -49,7 +49,7 @@ public class GatewayVerticleTest {
     public void thatRequestsAreHandled() throws Exception {
         HttpResponse response = httpClient.get("/start?user=momann&customerId=cust-100000");
         assertThat(response, hasStatus(200));
-        printHeaders(response.headers());
+        logger.info("header: " + response.headersAsString());
         assertThat(response, hasHeader("content-length"));
         assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
         assertThat(response, hasHeader("x-response-time"));
@@ -107,7 +107,7 @@ public class GatewayVerticleTest {
     private void updateAddress(Customer customer, Address newAddress) throws Exception {
         HttpResponse response = httpClient.put("/customer/" + customer.getId().getId() + "/addresses"
                 , newAddress);
-        printHeaders(response.headers());
+        logger.info("header: " + response.headersAsString());
         assertThat(response, hasStatus(200));
         assertThat(response, hasHeader("content-length"));
         assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
@@ -120,13 +120,5 @@ public class GatewayVerticleTest {
         Customer customerUpdated = Customer.fromJson(json);
         assertThat("customer.addresses", customerUpdated.getAddresses(), Matchers.hasSize(1));
         assertEquals(newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
-    }
-
-    private void printHeaders(MultiMap headers) {
-        List<String> headerKeyValues = headers.names().stream()
-                .map(key -> key + "=" + headers.get(key))
-                .collect(Collectors.toList());
-
-        logger.info("header: " + headerKeyValues);
     }
 }
