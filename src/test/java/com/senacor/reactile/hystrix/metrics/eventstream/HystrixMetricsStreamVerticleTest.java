@@ -5,7 +5,6 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpResponseStream;
 import com.senacor.reactile.http.HttpTestClient;
 import io.vertx.core.http.HttpClientOptions;
