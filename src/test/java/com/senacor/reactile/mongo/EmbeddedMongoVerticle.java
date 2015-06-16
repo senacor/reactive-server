@@ -18,7 +18,7 @@ public class EmbeddedMongoVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
 
-        if (vertx != null && !context.isWorker()) {
+        if (vertx != null && !context.isWorkerContext()) {
             throw new IllegalStateException("Must be started as worker verticle!");
         }
 
