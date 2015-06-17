@@ -325,6 +325,7 @@
                 <version>1.4.0</version>
                 <configuration>
                     <executable>${jmeterDir}/bin/${jmeter.script}</executable>
+                    <workingDirectory>${jmeterDir}/bin</workingDirectory>
                     <arguments>
                         <!-- Name of JTL file to log sample results to -->
                         <argument>-l</argument>
