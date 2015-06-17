@@ -17,7 +17,7 @@ ext {
 
     embeddedMongoVersion = '1.46.4'
 
-    vertxVersion = '3.0.0-milestone6'
+    vertxVersion = '3.0.0-milestone4'
 
     guiceVersion = '4.0-beta5'
     vertxguicefactoryVersion = '0.1-SNAPSHOT'
@@ -31,7 +31,7 @@ ext.libraries = [
         vertx            : [
                 [group: 'io.vertx', name: 'vertx-core', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-rx-java', version: vertxVersion],
-                [group: 'io.vertx', name: 'vertx-web', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-apex', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-reactive-streams', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: vertxVersion],
                 [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],

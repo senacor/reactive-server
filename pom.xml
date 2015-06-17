@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <vertx.version>3.0.0-milestone6</vertx.version>
+        <vertx.version>3.0.0-milestone4</vertx.version>
         <vertx-guice.version>0.1-SNAPSHOT</vertx-guice.version>
         <embed.mongo.version>1.46.4</embed.mongo.version>
         <fongo.version>1.6.1</fongo.version>
@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
+            <artifactId>vertx-apex</artifactId>
             <version>${vertx.version}</version>
         </dependency>
         <dependency>
