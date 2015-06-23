@@ -135,6 +135,7 @@ public class Customer implements Identity<CustomerId>, Jsonizable {
                 .build();
     }
 
+    @Override
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id.getId())

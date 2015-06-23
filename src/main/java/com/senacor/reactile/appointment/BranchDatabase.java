@@ -1,0 +1,84 @@
+package com.senacor.reactile.appointment;
+
+import com.senacor.reactile.customer.Address;
+import com.senacor.reactile.customer.Country;
+import com.senacor.reactile.mock.DelayService;
+
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.Validate.notNull;
+
+/**
+ * Represents a Database with some service methods to query Branches
+ *
+ * @author Andreas Keefer
+ */
+public class BranchDatabase {
+
+    private static final DelayService DELAY = new DelayService();
+    private boolean delayEnabled = false;
+
+    private static long NEXT_ID = 0;
+
+    private final Map<String, Branch> dataStore = new ConcurrentHashMap<>();
+
+    public BranchDatabase() {
+        saveOrUpdate(Branch.newBuilder().withName("Bonn").withAddress(new Address(null, "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Munich").withAddress(new Address(null, "Bar Str.", "12346", "66", "Munich", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Stuttgart").withAddress(new Address(null, "FooBar Str.", "12347", "1", "Stuttgart", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Berlin").withAddress(new Address(null, "Hof Str.", "12348", "2", "Berlin", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Hamburg").withAddress(new Address(null, "Bau Str.", "12349", "7", "Hamburg", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Nürnberg").withAddress(new Address(null, "Hafen Str.", "12340", "8", "Nürnberg", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Frankfurt").withAddress(new Address(null, "Moor Str.", "12355", "9", "Frankfurt", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Leipzig").withAddress(new Address(null, "Gold Str.", "12365", "61", "Leipzig", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Dresden").withAddress(new Address(null, "Pech Str.", "12375", "62", "Dresden", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder().withName("Hof").withAddress(new Address(null, "Mond Str.", "12385", "63", "Hof", new Country("Germany", "DE"), 1)).build());
+        delayEnabled = true;
+    }
+
+    public Branch saveOrUpdate(final Branch branch) {
+        notNull(branch, "branch must not be null");
+        final Branch save;
+        if (null == branch.getId()) {
+            save = new Branch(nextId(),
+                    branch.getName(),
+                    branch.getAddress());
+        } else {
+            save = branch;
+        }
+        dataStore.put(save.getId(), save);
+        delay(0.5);
+        return save;
+    }
+
+    public Branch findById(final String branchId) {
+        delay(0.2);
+        return dataStore.get(branchId);
+    }
+
+    public Branch deleteById(final String branchId) {
+        delay(0.2);
+        return dataStore.remove(branchId);
+    }
+
+    public Collection<Branch> findAll() {
+        delay(1);
+        return dataStore.values();
+    }
+
+    private static synchronized String nextId() {
+        return String.valueOf(NEXT_ID++);
+    }
+
+    private void delay(double faktor) {
+        if (delayEnabled) {
+            DELAY.delayed(BigDecimal.valueOf(faktor));
+        }
+    }
+}

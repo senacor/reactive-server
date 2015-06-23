@@ -10,6 +10,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.buffer.Buffer;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,6 +43,22 @@ public final class JsonObjects {
                 .collect(toList());
     }
 
+    /**
+     * @param dateTimeString ISO-8601 Format
+     * @return ZonedDateTime
+     */
+    public static ZonedDateTime unmarshalZonedDateTime(final String dateTimeString) {
+        return null == dateTimeString ? null : ZonedDateTime.parse(dateTimeString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+    }
+
+    /**
+     * @param dateTime DateTime
+     * @return ISO-8601 Format
+     */
+    public static String marshal(final ZonedDateTime dateTime) {
+        return null == dateTime ? null : dateTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+    }
+
     public static <T> JsonArray marshal(List<T> objects, Function<T, JsonObject> mapping) {
         return new JsonArray(objects.stream().map(mapping).collect(toList()));
     }
@@ -48,6 +66,7 @@ public final class JsonObjects {
     public static JsonObject toJson(Jsonizable jsonizable) {
         return jsonizable.toJson();
     }
+
     public static JsonArray toJsonArray(List<? extends Jsonizable> jsonizables) {
         return new JsonArray(jsonizables.stream().map(JsonObjects::toJson).collect(toList()));
     }

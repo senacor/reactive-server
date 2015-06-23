@@ -108,7 +108,7 @@ public class Address implements Jsonizable {
     }
 
     public static Address fromJson(JsonObject jsonObject) {
-        return Address.anAddress()
+        return null == jsonObject ? null : Address.anAddress()
                 .withCoHint(jsonObject.getString("coHint"))
                 .withStreet(jsonObject.getString("street"))
                 .withZipCode(jsonObject.getString("zipCode"))
