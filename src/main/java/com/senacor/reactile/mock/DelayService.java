@@ -1,5 +1,7 @@
 package com.senacor.reactile.mock;
 
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -15,6 +17,8 @@ import java.util.TreeSet;
  * @author Andreas Keefer
  */
 public class DelayService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DelayService.class);
 
     private static final BigDecimal THOUSAND = BigDecimal.valueOf(1000);
     private static final int capacity = 1000;
@@ -56,8 +60,10 @@ public class DelayService {
 
         delay = delay.multiply(faktor);
 
-        System.out.println(String.format("callCount=%s in %sms (=%s calls per Second) (addition=%s) -> delay=%s",
-                callCount, timespan, callsPerSecond, addition, delay));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("callCount=%s in %sms (=%s calls per Second) (addition=%s) -> delay=%s",
+                    callCount, timespan, callsPerSecond, addition, delay));
+        }
         try {
             Thread.sleep(delay.intValue());
         } catch (InterruptedException e) {
