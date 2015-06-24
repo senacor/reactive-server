@@ -55,14 +55,9 @@ public class AppointmentDatabase {
         notNull(appointment, "appointment must not be null");
         final Appointment save;
         if (null == appointment.getId()) {
-            save = new Appointment(nextId(),
-                    appointment.getName(),
-                    appointment.getCustomerId(),
-                    appointment.getBranchId(),
-                    appointment.getStart(),
-                    appointment.getEnd(),
-                    appointment.getNote(),
-                    appointment.getUserId());
+            save = Appointment.newBuilder(appointment)
+                    .withId(nextId())
+                    .build();
         } else {
             save = appointment;
         }

@@ -8,7 +8,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.ZonedDateTime;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshalZonedDateTime;
 
@@ -27,26 +26,15 @@ public class Appointment implements Jsonizable {
     private final String note;
     private final String userId;
 
-    public Appointment(){
-        this(null, null, null, null, null, null, null, null);
-    }
-
-    public Appointment(String id,
-                       String name,
-                       String customerId,
-                       String branchId,
-                       ZonedDateTime start,
-                       ZonedDateTime end,
-                       String note,
-                       String userId) {
-        this.id = id;
-        this.name = name;
-        this.customerId = customerId;
-        this.branchId = branchId;
-        this.start = start;
-        this.end = end;
-        this.note = note;
-        this.userId = userId;
+    public Appointment() {
+        this.id = null;
+        this.name = null;
+        this.customerId = null;
+        this.branchId = null;
+        this.start = null;
+        this.end = null;
+        this.note = null;
+        this.userId = null;
     }
 
     public Appointment(JsonObject jsonObject) {
@@ -54,14 +42,7 @@ public class Appointment implements Jsonizable {
     }
 
     public Appointment(Appointment appointment) {
-        this(appointment.getId(),
-                appointment.getName(),
-                appointment.getCustomerId(),
-                appointment.getBranchId(),
-                appointment.getStart(),
-                appointment.getEnd(),
-                appointment.getNote(),
-                appointment.getUserId());
+        this(Appointment.newBuilder(appointment));
     }
 
     private Appointment(Builder builder) {
@@ -77,6 +58,19 @@ public class Appointment implements Jsonizable {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    public static Builder newBuilder(Appointment copy) {
+        Builder builder = new Builder();
+        builder.id = copy.id;
+        builder.name = copy.name;
+        builder.customerId = copy.customerId;
+        builder.branchId = copy.branchId;
+        builder.start = copy.start;
+        builder.end = copy.end;
+        builder.note = copy.note;
+        builder.userId = copy.userId;
+        return builder;
     }
 
     public String getId() {

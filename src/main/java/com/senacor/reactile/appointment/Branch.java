@@ -18,13 +18,9 @@ public class Branch implements Jsonizable {
     private final Address address;
 
     public Branch() {
-        this(null, null, null);
-    }
-
-    public Branch(String id, String name, Address address) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
+        this.id = null;
+        this.name = null;
+        this.address = null;
     }
 
     public Branch(JsonObject jsonObject) {
@@ -32,9 +28,7 @@ public class Branch implements Jsonizable {
     }
 
     public Branch(Branch branch) {
-        this(branch.getId(),
-                branch.getName(),
-                branch.getAddress());
+        this(Branch.newBuilder(branch));
     }
 
     private Branch(Builder builder) {
@@ -45,6 +39,14 @@ public class Branch implements Jsonizable {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    public static Builder newBuilder(Branch copy) {
+        Builder builder = new Builder();
+        builder.id = copy.id;
+        builder.name = copy.name;
+        builder.address = copy.address;
+        return builder;
     }
 
     public String getId() {

@@ -5,12 +5,9 @@ import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.mock.DelayService;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -46,9 +43,7 @@ public class BranchDatabase {
         notNull(branch, "branch must not be null");
         final Branch save;
         if (null == branch.getId()) {
-            save = new Branch(nextId(),
-                    branch.getName(),
-                    branch.getAddress());
+            save = Branch.newBuilder(branch).withId(nextId()).build();
         } else {
             save = branch;
         }
