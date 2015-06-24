@@ -25,9 +25,10 @@ public class Appointment implements Jsonizable {
     private final ZonedDateTime start;
     private final ZonedDateTime end;
     private final String note;
+    private final String userId;
 
     public Appointment(){
-        this(null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null);
     }
 
     public Appointment(String id,
@@ -36,7 +37,8 @@ public class Appointment implements Jsonizable {
                        String branchId,
                        ZonedDateTime start,
                        ZonedDateTime end,
-                       String note) {
+                       String note,
+                       String userId) {
         this.id = id;
         this.name = name;
         this.customerId = customerId;
@@ -44,6 +46,7 @@ public class Appointment implements Jsonizable {
         this.start = start;
         this.end = end;
         this.note = note;
+        this.userId = userId;
     }
 
     public Appointment(JsonObject jsonObject) {
@@ -57,7 +60,8 @@ public class Appointment implements Jsonizable {
                 appointment.getBranchId(),
                 appointment.getStart(),
                 appointment.getEnd(),
-                appointment.getNote());
+                appointment.getNote(),
+                appointment.getUserId());
     }
 
     private Appointment(Builder builder) {
@@ -68,6 +72,7 @@ public class Appointment implements Jsonizable {
         start = builder.start;
         end = builder.end;
         note = builder.note;
+        userId = builder.userId;
     }
 
     public static Builder newBuilder() {
@@ -102,6 +107,10 @@ public class Appointment implements Jsonizable {
         return note;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public static Appointment fromJson(JsonObject jsonObject) {
         return null == jsonObject ? null : Appointment.newBuilder()
                 .withId(jsonObject.getString("id"))
@@ -111,6 +120,7 @@ public class Appointment implements Jsonizable {
                 .withStart(unmarshalZonedDateTime(jsonObject.getString("start")))
                 .withEnd(unmarshalZonedDateTime(jsonObject.getString("end")))
                 .withNote(jsonObject.getString("note"))
+                .withUserId(jsonObject.getString("userId"))
                 .build();
     }
 
@@ -123,7 +133,8 @@ public class Appointment implements Jsonizable {
                 .put("branchId", branchId)
                 .put("start", marshal(start))
                 .put("end", marshal(end))
-                .put("note", note);
+                .put("note", note)
+                .put("userId", userId);
     }
 
     @Override
@@ -139,6 +150,7 @@ public class Appointment implements Jsonizable {
         private ZonedDateTime start;
         private ZonedDateTime end;
         private String note;
+        private String userId;
 
         private Builder() {
         }
@@ -175,6 +187,11 @@ public class Appointment implements Jsonizable {
 
         public Builder withNote(String note) {
             this.note = note;
+            return this;
+        }
+
+        public Builder withUserId(String userId) {
+            this.userId = userId;
             return this;
         }
 
