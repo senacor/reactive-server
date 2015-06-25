@@ -39,15 +39,13 @@ public class VerticleDeployer {
         }
     }
 
-
     public void deploy(long timeoutInMillis) {
         deploy(timeoutInMillis, new DeploymentOptions());
     }
 
     public void deploy(long timeoutInMillis, DeploymentOptions options) {
-        notStarted.stream().map(identifier -> startVerticle(identifier, new DeploymentOptions(options)))
-                .map(future -> waitForCompletion(future, timeoutInMillis))
-                .forEach(started::add);
+        notStarted.stream().map(identifier -> startVerticle(identifier, new DeploymentOptions(options))).map(future -> waitForCompletion(future,
+            timeoutInMillis)).forEach(started::add);
     }
 
     private <T> T waitForCompletion(CompletableFuture<T> future, long timeoutInMillis) {
@@ -59,25 +57,21 @@ public class VerticleDeployer {
         }
     }
 
-
     public void undeploy(long timeoutInMillis) {
         reverseStarted().stream().map(this::stopVerticle).forEach(future -> waitForCompletion(future, timeoutInMillis));
     }
 
     public void undeploy(Future<Void> stopFuture) {
-        reverseStarted().stream()
-                .map(this::stopVerticle)
-                .map(future -> future.handle((String id, Throwable ex) -> {
-                            if (ex != null) {
-                                stopFuture.fail(ex);
-                                future.completeExceptionally(ex);
-                            } else {
-                                stopFuture.complete();
-                                future.complete(id);
-                            }
-                            return future;
-                        }
-                )).forEach(future -> waitForCompletion(future, DEFAULT_TIMEOUT));
+        reverseStarted().stream().map(this::stopVerticle).map(future -> future.handle((String id, Throwable ex) -> {
+            if (ex != null) {
+                stopFuture.fail(ex);
+                future.completeExceptionally(ex);
+            } else {
+                stopFuture.complete();
+                future.complete(id);
+            }
+            return future;
+        })).forEach(future -> waitForCompletion(future, DEFAULT_TIMEOUT));
     }
 
     private LinkedList<String> reverseStarted() {
@@ -88,28 +82,25 @@ public class VerticleDeployer {
 
     private CompletableFuture<String> startVerticle(String identifier, DeploymentOptions options) {
         CompletableFuture<String> deploymentIdFuture = new CompletableFuture<>();
-        getVertxDelegate().deployVerticle(identifier, options, RxHelper.toFuture(
-                deploymentId -> {
-                    System.out.println("Start succeeded for " + identifier + " with DeploymentId " + deploymentId);
-                    deploymentIdFuture.complete(deploymentId);
-                }, failure -> {
-                    System.out.println("Start failed for " + identifier + ". Cause: " + failure);
-                    deploymentIdFuture.completeExceptionally(failure);
-                }));
+        getVertxDelegate().deployVerticle(identifier, options, RxHelper.toFuture(deploymentId -> {
+            System.out.println("Start succeeded for " + identifier + " with DeploymentId " + deploymentId);
+            deploymentIdFuture.complete(deploymentId);
+        }, failure -> {
+            System.out.println("Start failed for " + identifier + ". Cause: " + failure);
+            deploymentIdFuture.completeExceptionally(failure);
+        }));
         return deploymentIdFuture;
     }
 
     private CompletableFuture<String> stopVerticle(String deploymentId) {
         CompletableFuture<String> undeploymentFuture = new CompletableFuture<>();
-        getVertxDelegate().undeploy(deploymentId, RxHelper.toFuture(
-                response -> {
-                    System.out.println("Stop succeeded for DeploymentId " + deploymentId);
-                    undeploymentFuture.complete(deploymentId);
-                },
-                failure -> {
-                    System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + failure);
-                    undeploymentFuture.completeExceptionally(failure);
-                }));
+        getVertxDelegate().undeploy(deploymentId, RxHelper.toFuture(response -> {
+            System.out.println("Stop succeeded for DeploymentId " + deploymentId);
+            undeploymentFuture.complete(deploymentId);
+        }, failure -> {
+            System.out.println("Stop failed for DeploymentId " + deploymentId + ". Cause: " + failure);
+            undeploymentFuture.completeExceptionally(failure);
+        }));
         return undeploymentFuture;
     }
 
@@ -121,10 +112,7 @@ public class VerticleDeployer {
         Set<ServiceIdProvider> merged = Sets.newLinkedHashSet();
         merged.add(serviceIdProvider);
         merged.addAll(Arrays.asList(more));
-        flattenDependencies(merged).stream()
-                .sorted(ServiceIdProvider.comparator())
-                .map(provider -> provider.getId())
-                .forEach(notStarted::add);
+        flattenDependencies(merged).stream().sorted(ServiceIdProvider.comparator()).map(provider -> provider.getId()).forEach(notStarted::add);
     }
 
     private Set<ServiceIdProvider> flattenDependencies(Set<ServiceIdProvider> providers) {
