@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class NewsServiceVerticleTest {
@@ -35,23 +35,25 @@ public class NewsServiceVerticleTest {
 
     @Test
     public void thatUserCanBeObtainedFromDatabase() throws ExecutionException, InterruptedException, TimeoutException {
-        TestSubscriber<Message<Object>> ts = new TestSubscriber<Message<Object>>();
+        TestSubscriber<News> ts = new TestSubscriber<News>();
+
         vertxRule.vertx().eventBus()
                 .consumer(NewsServiceVerticle.ADDRESS)
                 .toObservable()
                 .take(3)
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .map(News::fromJson)
                 .subscribe(ts);
 
         ts.awaitTerminalEvent();
-        List<Message<Object>> messages = ts.getOnNextEvents();
+        List<News> newsList = ts.getOnNextEvents();
 
-        assertThat(messages, hasSize(3));
+        assertThat(newsList, hasSize(3));
 
-        for (Message<Object> message : messages) {
-            // TODO: get rid of the cast?
-            JsonObject body = (JsonObject) message.body();
-            assertThat(body.getString("title"), is(notEmptyString()));
-            assertThat(body.getString("news"), is(notEmptyString()));
+        for (News news : newsList) {
+            assertThat(news.getTitle(), is(notEmptyString()));
+            assertThat(news.getNews(), is(notEmptyString()));
         }
     }
 
