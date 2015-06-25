@@ -1,6 +1,5 @@
 package com.senacor.reactile.newsticker;
 
-import com.senacor.reactile.guice.Impl;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
@@ -12,16 +11,12 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public static final String ADDRESS = "foobar123";
-
-    private final NewsService newsService;
+    public static final String ADDRESS = "NewsTicker";
 
     private final NewsTickerStream newsTickerStream;
 
     @Inject
-    public NewsServiceVerticle(@Impl NewsService newsService) {
-        this.newsService = newsService;
-
+    public NewsServiceVerticle() {
         newsTickerStream = new NewsTickerStream();
     }
 

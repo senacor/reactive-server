@@ -1,7 +1,9 @@
 package com.senacor.reactile;
 
 import com.deenterprised.vertx.spi.BootstrapModuleProvider;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.account.AccountServiceImpl;
@@ -21,8 +23,6 @@ import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
-import com.senacor.reactile.newsticker.NewsService;
-import com.senacor.reactile.newsticker.NewsServiceImpl;
 import com.senacor.reactile.user.UserConnector;
 import com.senacor.reactile.user.UserService;
 import com.senacor.reactile.user.UserServiceImpl;
@@ -55,7 +55,6 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
-            bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
             bind(UserConnector.class);
 
             // Install  HystrixComand Factories
@@ -93,12 +92,6 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         @Provides
         io.vertx.rxjava.ext.mongo.MongoService provideMongoService(MongoService mongoService) {
             return new io.vertx.rxjava.ext.mongo.MongoService(mongoService);
-        }
-
-        @Provides
-        com.senacor.reactile.rxjava.newsticker.NewsService provideNewsService(Vertx vertx) {
-            NewsService proxy = ProxyHelper.createProxy(NewsService.class, vertx, NewsService.ADDRESS);
-            return new com.senacor.reactile.rxjava.newsticker.NewsService(proxy);
         }
 
         @Provides
