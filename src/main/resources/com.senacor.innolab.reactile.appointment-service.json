@@ -2,6 +2,7 @@
   "main": "guice:com.senacor.reactile.appointment.AppointmentServiceVerticle",
 
   "options": {
+    "worker": true,
     "config": {
       "address": "AppointmentService",
       "collection": "appointments"

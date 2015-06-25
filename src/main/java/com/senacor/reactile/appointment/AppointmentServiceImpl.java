@@ -30,6 +30,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         Rx.bridgeHandler(getAppointmentById(appointmentId), resultHandler);
     }
 
+    public Observable<Appointment> getAppointmentById(String appointmentId) {
+        return Observable.create(subscribe -> {
+            Appointment appointment = database.findById(appointmentId);
+            if (appointment != null) {
+                subscribe.onNext(appointment);
+            } else {
+                subscribe.onError(new NullPointerException("Appointment with ID " + appointmentId + " doesn't exist."));
+            }
+        });
+    }
+
     @Override
     public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
 
@@ -50,23 +61,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     }
 
-    public Observable<Appointment> getAppointmentById(String appointmentId) {
-        return Observable.just(database.findById(appointmentId));
-    }
-
-
     @Override
     public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {
         Rx.bridgeHandler(
-                Observable.just(database.saveOrUpdate(appointment))
+                createOrUpdateAppointment(appointment)
                 , resultHandler);
+    }
+
+    public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
+        return Observable.just(database.saveOrUpdate(appointment));
     }
 
     @Override
     public void deleteAppointment(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
         Rx.bridgeHandler(
-                Observable.just(database.deleteById(appointmentId))
+                deleteAppointment(appointmentId)
                 , resultHandler);
     }
 
+    public Observable<Appointment> deleteAppointment(String appointmentId) {
+        return Observable.just(database.deleteById(appointmentId));
+    }
 }
