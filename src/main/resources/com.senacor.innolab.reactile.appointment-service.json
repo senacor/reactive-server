@@ -1,0 +1,10 @@
+{
+  "main": "guice:com.senacor.reactile.appointment.AppointmentServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "AppointmentService",
+      "collection": "appointments"
+    }
+  }
+}

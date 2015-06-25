@@ -10,6 +10,7 @@ public enum Services implements ServiceIdProvider {
     UserConnector("com.senacor.innolab.reactile.user-connector"),
     UserService("com.senacor.innolab.reactile.user-service", UserConnector),
     CustomerService("com.senacor.innolab.reactile.customer-service", EmbeddedMongo),
+    AppointmentSerivce("com.senacor.innolab.reactile.appointment-service"),
     AccountService("com.senacor.innolab.reactile.account-service", EmbeddedMongo),
     CreditCardService("com.senacor.innolab.reactile.creditcard-service", EmbeddedMongo),
     TransactionService("com.senacor.innolab.reactile.transaction-service", EmbeddedMongo),
