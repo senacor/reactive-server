@@ -1,8 +1,5 @@
 package com.senacor.reactile;
 
-import static com.google.inject.matcher.Matchers.annotatedWith;
-import static com.google.inject.matcher.Matchers.any;
-
 import com.deenterprised.vertx.spi.BootstrapModuleProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -12,6 +9,8 @@ import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.account.AccountServiceImpl;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.account.TransactionServiceImpl;
+import com.senacor.reactile.appointment.AppointmentService;
+import com.senacor.reactile.appointment.AppointmentServiceImpl;
 import com.senacor.reactile.appointment.BranchService;
 import com.senacor.reactile.appointment.BranchServiceImpl;
 import com.senacor.reactile.creditcard.CreditCardService;
@@ -37,6 +36,9 @@ import io.vertx.rx.java.RxHelper;
 import io.vertx.serviceproxy.ProxyHelper;
 import rx.Scheduler;
 
+import static com.google.inject.matcher.Matchers.annotatedWith;
+import static com.google.inject.matcher.Matchers.any;
+
 public class AppModuleProvider implements BootstrapModuleProvider {
     @Override
     public Module get() {
@@ -57,15 +59,20 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
+            bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
             bind(UserConnector.class);
             bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
 
             // Install  HystrixComand Factories
-            install(new FactoryModuleBuilder().implement(CustomerUpdateAddressCommand.class, CustomerUpdateAddressCommand.class).build(
-                CustomerUpdateAddressCommandFactory.class));
-            install(new FactoryModuleBuilder().implement(StartCommand.class, StartCommand.class).build(StartCommandFactory.class));
-            install(new FactoryModuleBuilder().implement(CustomerServiceImplUpdateAddressCommand.class, CustomerServiceImplUpdateAddressCommand.class)
-                .build(CustomerServiceImplUpdateAddressCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(CustomerUpdateAddressCommand.class, CustomerUpdateAddressCommand.class)
+                    .build(CustomerUpdateAddressCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(StartCommand.class, StartCommand.class)
+                    .build(StartCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(CustomerServiceImplUpdateAddressCommand.class, CustomerServiceImplUpdateAddressCommand.class)
+                    .build(CustomerServiceImplUpdateAddressCommandFactory.class));
 
             HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
             requestInjection(hystrixCommandInterceptor);
@@ -113,6 +120,12 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         @Provides
         BranchService provideBranchService(Vertx vertx) {
             return ProxyHelper.createProxy(BranchService.class, vertx, BranchService.ADDRESS);
+        }
+
+        @Provides
+        com.senacor.reactile.rxjava.appointment.AppointmentService provideAppointmentService(Vertx vertx) {
+            AppointmentService proxy = ProxyHelper.createProxy(AppointmentService.class, vertx, AppointmentService.ADDRESS);
+            return new com.senacor.reactile.rxjava.appointment.AppointmentService(proxy);
         }
     }
 }
