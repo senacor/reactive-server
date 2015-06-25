@@ -13,4 +13,6 @@ public interface BranchService {
 
     void getBranch(String branchId, Handler<AsyncResult<Branch>> resultHandler);
 
+    //void getAllBranches(Handler<AsyncResult<List<Branch>>> resultHandler);
+
 }

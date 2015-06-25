@@ -1,18 +1,23 @@
 package com.senacor.reactile.appointment;
 
-import com.google.inject.Inject;
+import java.util.NoSuchElementException;
+import javax.inject.Inject;
+
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 
 public class BranchServiceImpl implements BranchService {
 
     private final BranchDatabase branchDatabase;
+    private final Vertx vertx;
 
     @Inject
-    public BranchServiceImpl(BranchDatabase branchDatabase) {
+    public BranchServiceImpl(BranchDatabase branchDatabase, Vertx vertx) {
         this.branchDatabase = branchDatabase;
+        this.vertx = vertx;
     }
 
     @Override
@@ -21,7 +26,14 @@ public class BranchServiceImpl implements BranchService {
     }
 
     public Observable<Branch> getBranch(String branchId) {
-        // TODO
-        return null;
+        return Observable.create(subscriber -> {
+            Branch branch = branchDatabase.findById(branchId);
+            if (branch == null) {
+                subscriber.onError(new NoSuchElementException(branchId));
+            } else {
+                subscriber.onNext(branch);
+                subscriber.onCompleted();
+            }
+        });
     }
 }
