@@ -4,7 +4,6 @@ import com.senacor.reactile.guice.Impl;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
 
@@ -13,21 +12,26 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    public static final String ADDRESS = "foobar123";
+
     private final NewsService newsService;
+
+    private final NewsTickerStream newsTickerStream;
 
     @Inject
     public NewsServiceVerticle(@Impl NewsService newsService) {
         this.newsService = newsService;
+
+        newsTickerStream = new NewsTickerStream();
     }
 
     @Override
     public void start() throws Exception {
-        log.info("Starting service Verticle: " + config().getString("address"));
-        String address = config().getString("address");
-        if (address == null) {
-            throw new IllegalStateException("address field must be specified in config for NewsService");
-        }
-        ProxyHelper.registerService(NewsService.class, getVertx(), newsService, address);
+        System.out.println("asdasd");
+
+        newsTickerStream.getNewsObservable().subscribe(news -> {
+            vertx.eventBus().publish(ADDRESS, news.toJson());
+        });
     }
 
     @Override
