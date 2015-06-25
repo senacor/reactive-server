@@ -22,7 +22,7 @@ public class CustomerServiceVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        log.info("Starting service: " + config().getString("main"));
+        log.info("Starting service Verticle: " + config().getString("address"));
         String address = config().getString("address");
         if (address == null) {
             throw new IllegalStateException("address field must be specified in config for CustomerService");
@@ -32,7 +32,7 @@ public class CustomerServiceVerticle extends AbstractVerticle {
 
     @Override
     public void stop() throws Exception {
-        log.info("Stopping service: " + config().getString("main"));
+        log.info("Stopping service Verticle: " + config().getString("address"));
     }
 
 }
