@@ -16,12 +16,7 @@ public class News implements Jsonizable {
     private final String news;
 
     public News() {
-        this(null, null);
-    }
-
-    public News(String title, String news) {
-        this.title = title;
-        this.news = news;
+        this(News.newBuilder());
     }
 
     public News(JsonObject jsonObject) {
@@ -29,8 +24,7 @@ public class News implements Jsonizable {
     }
 
     public News(News news) {
-        this(news.getTitle(),
-                news.getNews());
+        this(News.newBuilder(news));
     }
 
     private News(Builder builder) {
@@ -40,6 +34,13 @@ public class News implements Jsonizable {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    public static Builder newBuilder(News copy) {
+        Builder builder = new Builder();
+        builder.title = copy.title;
+        builder.news = copy.news;
+        return builder;
     }
 
     public String getTitle() {

@@ -27,14 +27,7 @@ public class Appointment implements Jsonizable {
     private final String userId;
 
     public Appointment() {
-        this.id = null;
-        this.name = null;
-        this.customerId = null;
-        this.branchId = null;
-        this.start = null;
-        this.end = null;
-        this.note = null;
-        this.userId = null;
+        this(Appointment.newBuilder());
     }
 
     public Appointment(JsonObject jsonObject) {

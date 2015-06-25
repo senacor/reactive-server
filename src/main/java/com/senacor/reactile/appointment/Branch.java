@@ -18,9 +18,7 @@ public class Branch implements Jsonizable {
     private final Address address;
 
     public Branch() {
-        this.id = null;
-        this.name = null;
-        this.address = null;
+        this(Branch.newBuilder());
     }
 
     public Branch(JsonObject jsonObject) {
