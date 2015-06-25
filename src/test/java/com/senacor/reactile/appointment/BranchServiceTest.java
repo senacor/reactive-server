@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
+import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,9 +36,16 @@ public class BranchServiceTest {
         assertEquals("Bonn", branchObservable.toBlocking().first().getName());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void thatErrorIsPropagated() throws Throwable {
+        // TODO: make sure this test works correctly
         Observable<Branch> branchObservable = service.getBranchObservable("abc");
-        branchObservable.toBlocking().first();
+        branchObservable.subscribe((b) -> {
+            Assert.fail();
+        }, (e) -> {
+            Assert.assertEquals(NoSuchElementException.class, e.getClass());
+        }, () -> {
+            Assert.fail();
+        });
     }
 }
