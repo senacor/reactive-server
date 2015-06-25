@@ -96,16 +96,15 @@ public class PushNotificationVerticleTest {
                 .map(Message::body)
                 .cast(JsonObject.class)
                 .map(News::fromJson)
-                .take(5)
+                .take(3)
                 .subscribe(ts);
 
         ts.awaitTerminalEvent();
         List<News> messages = ts.getOnNextEvents();
 
-        assertThat(messages, hasSize(5));
+        assertThat(messages, hasSize(3));
 
         for (News news : messages) {
-            // TODO: get rid of the cast?
             assertThat(news.getTitle(), is(not(isEmptyString())));
             assertThat(news.getNews(), is(not(isEmptyString())));
         }
