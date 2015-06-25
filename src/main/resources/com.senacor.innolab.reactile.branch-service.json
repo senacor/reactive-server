@@ -1,5 +1,5 @@
 {
-  "main": "guice:com.senacor.reactile.customer.BranchServiceVerticle",
+  "main": "guice:com.senacor.reactile.appointment.BranchServiceVerticle",
   "options": {
     "config": {
       "address": "BranchService"
