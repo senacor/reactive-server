@@ -17,8 +17,8 @@ public enum Services implements ServiceIdProvider {
     TransactionService("com.senacor.innolab.reactile.transaction-service", EmbeddedMongo),
     PushNotificationService("com.senacor.innolab.reactile.pushnotification-service"),
     HystrixMetricsStreamVerticle("com.senacor.innolab.reactile.hystrix-metrics-stream-service"),
-    GatewayService("com.senacor.innolab.reactile.gateway-service", UserService, CustomerService, AccountService, CreditCardService,
-        TransactionService, PushNotificationService, HystrixMetricsStreamVerticle);
+    GatewayService("com.senacor.innolab.reactile.gateway-service", UserService, CustomerService, AccountService,
+            CreditCardService, TransactionService, PushNotificationService, HystrixMetricsStreamVerticle);
 
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;
