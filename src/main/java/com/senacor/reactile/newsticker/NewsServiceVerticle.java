@@ -27,8 +27,6 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        System.out.println("asdasd");
-
         newsTickerStream.getNewsObservable().subscribe(news -> {
             vertx.eventBus().publish(ADDRESS, news.toJson());
         });
