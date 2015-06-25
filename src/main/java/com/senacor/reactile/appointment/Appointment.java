@@ -8,7 +8,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.ZonedDateTime;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshalZonedDateTime;
 
@@ -25,25 +24,10 @@ public class Appointment implements Jsonizable {
     private final ZonedDateTime start;
     private final ZonedDateTime end;
     private final String note;
+    private final String userId;
 
-    public Appointment(){
-        this(null, null, null, null, null, null, null);
-    }
-
-    public Appointment(String id,
-                       String name,
-                       String customerId,
-                       String branchId,
-                       ZonedDateTime start,
-                       ZonedDateTime end,
-                       String note) {
-        this.id = id;
-        this.name = name;
-        this.customerId = customerId;
-        this.branchId = branchId;
-        this.start = start;
-        this.end = end;
-        this.note = note;
+    public Appointment() {
+        this(Appointment.newBuilder());
     }
 
     public Appointment(JsonObject jsonObject) {
@@ -51,13 +35,7 @@ public class Appointment implements Jsonizable {
     }
 
     public Appointment(Appointment appointment) {
-        this(appointment.getId(),
-                appointment.getName(),
-                appointment.getCustomerId(),
-                appointment.getBranchId(),
-                appointment.getStart(),
-                appointment.getEnd(),
-                appointment.getNote());
+        this(Appointment.newBuilder(appointment));
     }
 
     private Appointment(Builder builder) {
@@ -68,10 +46,24 @@ public class Appointment implements Jsonizable {
         start = builder.start;
         end = builder.end;
         note = builder.note;
+        userId = builder.userId;
     }
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    public static Builder newBuilder(Appointment copy) {
+        Builder builder = new Builder();
+        builder.id = copy.id;
+        builder.name = copy.name;
+        builder.customerId = copy.customerId;
+        builder.branchId = copy.branchId;
+        builder.start = copy.start;
+        builder.end = copy.end;
+        builder.note = copy.note;
+        builder.userId = copy.userId;
+        return builder;
     }
 
     public String getId() {
@@ -102,6 +94,10 @@ public class Appointment implements Jsonizable {
         return note;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public static Appointment fromJson(JsonObject jsonObject) {
         return null == jsonObject ? null : Appointment.newBuilder()
                 .withId(jsonObject.getString("id"))
@@ -111,6 +107,7 @@ public class Appointment implements Jsonizable {
                 .withStart(unmarshalZonedDateTime(jsonObject.getString("start")))
                 .withEnd(unmarshalZonedDateTime(jsonObject.getString("end")))
                 .withNote(jsonObject.getString("note"))
+                .withUserId(jsonObject.getString("userId"))
                 .build();
     }
 
@@ -123,7 +120,8 @@ public class Appointment implements Jsonizable {
                 .put("branchId", branchId)
                 .put("start", marshal(start))
                 .put("end", marshal(end))
-                .put("note", note);
+                .put("note", note)
+                .put("userId", userId);
     }
 
     @Override
@@ -139,6 +137,7 @@ public class Appointment implements Jsonizable {
         private ZonedDateTime start;
         private ZonedDateTime end;
         private String note;
+        private String userId;
 
         private Builder() {
         }
@@ -175,6 +174,11 @@ public class Appointment implements Jsonizable {
 
         public Builder withNote(String note) {
             this.note = note;
+            return this;
+        }
+
+        public Builder withUserId(String userId) {
+            this.userId = userId;
             return this;
         }
 
