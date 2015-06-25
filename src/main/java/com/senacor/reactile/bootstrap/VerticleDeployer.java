@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class VerticleDeployer {
 
-    private final static long DEFAULT_TIMEOUT = 5_000;
+    private final static long DEFAULT_TIMEOUT = 300_000;
 
     private final Set<String> notStarted = new LinkedHashSet<>();
     private final Set<String> started = new LinkedHashSet<>();
@@ -51,7 +51,7 @@ public class VerticleDeployer {
 
     private <T> T waitForCompletion(CompletableFuture<T> future, long timeoutInMillis) {
         try {
-            return future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
+            return future.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
