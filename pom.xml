@@ -29,7 +29,6 @@
         <commons-lang3.version>3.1</commons-lang3.version>
 
         <jmeterDir>${project.basedir}/apache-jmeter-2.13</jmeterDir>
-        <testhuebl>blub</testhuebl>
     </properties>
 
     <profiles>
