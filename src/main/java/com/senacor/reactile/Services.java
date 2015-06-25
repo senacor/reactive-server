@@ -1,12 +1,13 @@
 package com.senacor.reactile;
 
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
 
 public enum Services implements ServiceIdProvider {
 
     EmbeddedMongo("com.senacor.innolab.reactile.embedded-mongo"),
+    NewsService("com.senacor.innolab.reactile.news-service"),
     UserConnector("com.senacor.innolab.reactile.user-connector"),
     UserService("com.senacor.innolab.reactile.user-service", UserConnector),
     CustomerService("com.senacor.innolab.reactile.customer-service", EmbeddedMongo),

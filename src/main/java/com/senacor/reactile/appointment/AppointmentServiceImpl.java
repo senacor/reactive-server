@@ -41,25 +41,25 @@ public class AppointmentServiceImpl implements AppointmentService {
         });
     }
 
-    @Override
-    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-
-    }
-
-    @Override
-    public void getAppointmentsByBranchAndDate(String branchId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-
-    }
-
-    @Override
-    public void getAppointmentsByUser(String userId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-
-    }
-
-    @Override
-    public void getAppointmentsByUserAndDate(String userId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-
-    }
+//    @Override
+//    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
+//
+//    @Override
+//    public void getAppointmentsByBranchAndDate(String branchId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
+//
+//    @Override
+//    public void getAppointmentsByUser(String userId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
+//
+//    @Override
+//    public void getAppointmentsByUserAndDate(String userId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
 
     @Override
     public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {

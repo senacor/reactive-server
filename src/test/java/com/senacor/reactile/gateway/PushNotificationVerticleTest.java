@@ -99,7 +99,7 @@ public class PushNotificationVerticleTest {
                 .take(3)
                 .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         List<News> messages = ts.getOnNextEvents();
 
         assertThat(messages, hasSize(3));

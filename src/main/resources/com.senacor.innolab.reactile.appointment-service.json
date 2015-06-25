@@ -4,8 +4,7 @@
   "options": {
     "worker": true,
     "config": {
-      "address": "AppointmentService",
-      "collection": "appointments"
+      "address": "AppointmentService"
     }
   }
 }

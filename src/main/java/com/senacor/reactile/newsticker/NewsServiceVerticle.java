@@ -3,6 +3,7 @@ package com.senacor.reactile.newsticker;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
+import rx.Subscription;
 
 import javax.inject.Inject;
 
@@ -15,6 +16,8 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     private final NewsTickerStream newsTickerStream;
 
+    private Subscription subscription;
+
     @Inject
     public NewsServiceVerticle() {
         newsTickerStream = new NewsTickerStream();
@@ -22,7 +25,7 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        newsTickerStream.getNewsObservable().subscribe(news -> {
+        subscription = newsTickerStream.getNewsObservable().subscribe(news -> {
             vertx.eventBus().publish(ADDRESS, news.toJson());
         });
     }
@@ -30,6 +33,7 @@ public class NewsServiceVerticle extends AbstractVerticle {
     @Override
     public void stop() throws Exception {
         log.info("Stopping service Verticle: " + config().getString("address"));
+        subscription.unsubscribe();
     }
 
 }
