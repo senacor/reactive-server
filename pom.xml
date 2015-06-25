@@ -7,7 +7,7 @@
     <groupId>com.senacor.innolab.reactile</groupId>
     <artifactId>reactive-server</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <!-- Kommentar -->
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
