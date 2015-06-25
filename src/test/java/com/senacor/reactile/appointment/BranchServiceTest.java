@@ -1,13 +1,5 @@
 package com.senacor.reactile.appointment;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import java.util.NoSuchElementException;
-
 import com.google.inject.Inject;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
@@ -17,6 +9,13 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import rx.Observable;
+import rx.observables.BlockingObservable;
+
+import java.util.NoSuchElementException;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class BranchServiceTest {
 
@@ -33,7 +32,9 @@ public class BranchServiceTest {
     public void thatBranchIsReturned() {
         Observable<Branch> branchObservable = service.getBranchObservable("0");
         assertThat(branchObservable, is(not(nullValue())));
-        assertEquals("Bonn", branchObservable.toBlocking().first().getName());
+        assertEquals("Bonn", branchObservable.toBlocking()
+                                             .first()
+                                             .getName());
     }
 
     @Test
@@ -47,5 +48,15 @@ public class BranchServiceTest {
         }, () -> {
             Assert.fail();
         });
+    }
+
+    @Test
+    public void thatListIsComplete() throws Throwable {
+        Observable<Branches> branchObservable = service.getAllBranchesObservable();
+        assertThat(branchObservable, is(not(nullValue())));
+        BlockingObservable<Branches> branchesBlockingObservable = branchObservable.toBlocking();
+        Branches branches = branchesBlockingObservable.first();
+        assertEquals(10, branches.getBranches()
+                                 .size());
     }
 }

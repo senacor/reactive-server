@@ -41,6 +41,7 @@ public class BranchServiceImpl implements BranchService {
   public Observable<Branches> getAllBranches() {
     return Observable.create(subscriber -> {
       subscriber.onNext(new Branches(branchDatabase.findAll()));
+        subscriber.onCompleted();
     });
   }
 
