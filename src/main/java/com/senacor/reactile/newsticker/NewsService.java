@@ -11,8 +11,6 @@ public interface NewsService {
 
     static final String ADDRESS = "NewsService";
 
-    static final String ADDRESS_EVENT_UPDATE_ADDRESS = NewsService.ADDRESS + "#getNews";
-
     void getNews(Handler<AsyncResult<News>> resultHandler);
 
 }

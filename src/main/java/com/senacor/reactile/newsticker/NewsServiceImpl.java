@@ -13,7 +13,6 @@ public class NewsServiceImpl implements NewsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NewsServiceImpl.class);
 
-    public static final String COLLECTION = "news";
     private final Vertx vertx;
     private NewsTickerStream newsTickerStream = new NewsTickerStream();
 
