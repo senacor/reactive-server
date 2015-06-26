@@ -1,5 +1,6 @@
 package com.senacor.reactile.appointment;
 
+import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -23,6 +24,19 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentServiceImpl(AppointmentDatabase database, Vertx vertx) {
         this.database = database;
         this.vertx = vertx;
+    }
+
+    @Override
+    public void getAllAppointments(Handler<AsyncResult<AppointmentList>> resultHandler) {
+        Rx.bridgeHandler(getAllAppointments(), resultHandler);
+    }
+
+    @HystrixCmd(AppointmentServiceImplGetAllAppointmentsCommand.class)
+    public Observable<AppointmentList> getAllAppointments() {
+        AppointmentList.Builder builder = new AppointmentList.Builder();
+
+        database.findAll().forEach(appointment -> builder.getAppointmentList().add(appointment));
+        return Observable.just(new AppointmentList(builder));
     }
 
     @Override

@@ -33,6 +33,15 @@ public class AppointmentServiceTest {
     private com.senacor.reactile.rxjava.appointment.AppointmentService service;
 
     @Test
+    public void getAllAppointmentsTest() {
+        final int expectedSize = 21;
+        AppointmentList appointmentList = service.getAllAppointmentsObservable().toBlocking().first();
+        assertNotNull(appointmentList);
+
+        assertEquals(expectedSize, appointmentList.getAppointmentList().size());
+    }
+
+    @Test
     public void thatAppointmentIsReturned() {
         Appointment appointment = service.getAppointmentByIdObservable("2").toBlocking().single();
 
