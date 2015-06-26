@@ -15,6 +15,8 @@ public interface AppointmentService {
 
     void getAppointmentById(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler);
 
+    void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler);
+
     void getAppointmentsByBranch(String branchId, String eventAddress, Handler<AsyncResult<String>> resultHandler);
 
     void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler);

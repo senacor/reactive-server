@@ -4,7 +4,6 @@ import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.Vertx;
@@ -32,6 +31,24 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler) {
+        Rx.bridgeHandler(getAppointmentsByCustomer(customerId), resultHandler);
+    }
+
+    public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
+        if (customerId == null || customerId.isEmpty()) {
+            return Observable.just(new AppointmentList());
+            }
+        AppointmentList.Builder builder = new AppointmentList.Builder();
+
+        database.findAll()
+                .stream()
+                .filter(appointment -> appointment.getCustomerId().equals(customerId))
+                .forEach(appointment -> builder.getAppointmentList().add(appointment));
+        return Observable.just(new AppointmentList(builder));
+    }
+
+    @Override
     public void getAppointmentsByBranch(String branchId, String eventAddress, Handler<AsyncResult<String>> resultHandler) {
         Rx.bridgeHandler(getAppointmentsByBranch(branchId, eventAddress), resultHandler);
     }
@@ -52,7 +69,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             subscriber.onNext(eventAddress);
 
             vertx.eventBus().publish(eventAddress, null,
-            new DeliveryOptions().addHeader("type", "complete"));
+                    new DeliveryOptions().addHeader("type", "complete"));
         });
     }
 
@@ -67,17 +84,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     public Observable<AppointmentList> getAppointmentsByUser(String userId) {
-        final AppointmentList appointmentList = new AppointmentList();
-
         if (userId == null || userId.isEmpty()) {
-            return Observable.just(appointmentList);
+            return Observable.just(new AppointmentList());
         }
+
+        AppointmentList.Builder builder = new AppointmentList.Builder();
 
         database.findAll()
                 .stream()
                 .filter(appointment -> appointment.getUserId().equals(userId))
-                .forEach(appointment -> appointmentList.addAppointment(appointment));
-        return Observable.just(appointmentList);
+                .forEach(appointment -> builder.getAppointmentList().add(appointment));
+        return Observable.just(new AppointmentList(builder));
     }
 
     @Override

@@ -96,4 +96,17 @@ public class AppointmentServiceTest {
 
         assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
     }
+
+    @Test
+    public void getAppoinmentByCustomerTest() {
+        final int expectedListSize = 12;
+        AppointmentList appointmentList = service.getAppointmentsByCustomerObservable("1").toBlocking().first();
+        assertNotNull(appointmentList);
+
+        appointmentList.getAppointmentList().forEach(appointment -> {
+            System.out.println(appointment.toJson());
+        });
+
+        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
+    }
 }
