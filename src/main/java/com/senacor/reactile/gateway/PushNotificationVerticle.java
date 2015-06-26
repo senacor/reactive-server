@@ -65,7 +65,6 @@ public class PushNotificationVerticle extends AbstractVerticle {
                 .cast(JsonObject.class)
                 .subscribe(updateEvent -> {
                     String publishAddress = PUBLISH_NEWS_UPDATE;
-                    logger.info("publish event on Address: " + publishAddress);
                     vertx.eventBus().publish(publishAddress, updateEvent);
                 }, throwable -> logger.error("Error while handling event from " + NewsServiceVerticle.ADDRESS, throwable));
     }

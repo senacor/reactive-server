@@ -5,7 +5,7 @@
         "config": {
             "host": "localhost",
             "port": 8081,
-            "timeout": 2000
+            "timeout": 500
         }
     }
 }

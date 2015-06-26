@@ -1,14 +1,14 @@
 package com.senacor.reactile;
 
-import com.google.common.collect.ImmutableSet;
-
 import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 public enum Services implements ServiceIdProvider {
 
     EmbeddedMongo("com.senacor.innolab.reactile.embedded-mongo"),
-    NewsService("com.senacor.innolab.reactile.news-service"),
     UserConnector("com.senacor.innolab.reactile.user-connector"),
+    NewsService("com.senacor.innolab.reactile.news-service"),
     UserService("com.senacor.innolab.reactile.user-service", UserConnector),
     CustomerService("com.senacor.innolab.reactile.customer-service", EmbeddedMongo),
     AppointmentSerivce("com.senacor.innolab.reactile.appointment-service"),
@@ -19,8 +19,8 @@ public enum Services implements ServiceIdProvider {
     PushNotificationService("com.senacor.innolab.reactile.pushnotification-service"),
     HystrixMetricsStreamVerticle("com.senacor.innolab.reactile.hystrix-metrics-stream-service"),
     GatewayService("com.senacor.innolab.reactile.gateway-service", UserService, CustomerService, AccountService,
-            CreditCardService, TransactionService, AppointmentSerivce, BranchService, PushNotificationService,
-            HystrixMetricsStreamVerticle);
+        CreditCardService, TransactionService, AppointmentSerivce, BranchService, PushNotificationService,
+        HystrixMetricsStreamVerticle, NewsService);
 
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;

@@ -27,6 +27,8 @@ import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
+import com.senacor.reactile.newsticker.NewsService;
+import com.senacor.reactile.newsticker.NewsServiceImpl;
 import com.senacor.reactile.user.UserConnector;
 import com.senacor.reactile.user.UserService;
 import com.senacor.reactile.user.UserServiceImpl;
@@ -62,6 +64,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
             bind(UserConnector.class);
             bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
+            bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
 
             // Install  HystrixComand Factories
             install(new FactoryModuleBuilder()
@@ -127,6 +130,12 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         com.senacor.reactile.rxjava.appointment.AppointmentService provideAppointmentService(Vertx vertx) {
             AppointmentService proxy = ProxyHelper.createProxy(AppointmentService.class, vertx, AppointmentService.ADDRESS);
             return new com.senacor.reactile.rxjava.appointment.AppointmentService(proxy);
+        }
+
+        @Provides
+        com.senacor.reactile.rxjava.newsticker.NewsService provideNewsService(Vertx vertx) {
+            NewsService proxy = ProxyHelper.createProxy(NewsService.class, vertx, NewsService.ADDRESS);
+            return new com.senacor.reactile.rxjava.newsticker.NewsService(proxy);
         }
     }
 }
