@@ -6,6 +6,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -21,15 +22,19 @@ public class AppointmentList implements Jsonizable {
     private final List<Appointment> appointmentList;
 
     public AppointmentList() {
-        this.appointmentList = new ArrayList<>();
+        this.appointmentList = Collections.emptyList();
     }
 
     public AppointmentList(List<Appointment> appointmentList) {
-        this.appointmentList = appointmentList == null ? new ArrayList<>() : ImmutableList.copyOf(appointmentList);
+        this.appointmentList = appointmentList == null ? Collections.emptyList() : ImmutableList.copyOf(appointmentList);
     }
 
     public AppointmentList(AppointmentList appointmentList) {
-        this.appointmentList = appointmentList.getAppointmentList();
+        this.appointmentList = ImmutableList.copyOf(appointmentList.getAppointmentList());
+    }
+
+    public AppointmentList(Builder builder) {
+        this.appointmentList = ImmutableList.copyOf(builder.appointmentList);
     }
 
     public AppointmentList(JsonObject jsonObject) {
@@ -42,10 +47,6 @@ public class AppointmentList implements Jsonizable {
 
     public List<Appointment> getAppointmentList() {
         return appointmentList;
-    }
-
-    public void addAppointment(Appointment appointment) {
-        this.appointmentList.add(appointment);
     }
 
     public static AppointmentList fromJson(JsonObject jsonObject) {
@@ -64,7 +65,11 @@ public class AppointmentList implements Jsonizable {
     public static final class Builder {
         private List<Appointment> appointmentList = new ArrayList<>();
 
-        private Builder() {
+        public Builder() {
+        }
+
+        public List<Appointment> getAppointmentList() {
+            return appointmentList;
         }
 
         public Builder withAppointments(List<Appointment> appointmentList) {

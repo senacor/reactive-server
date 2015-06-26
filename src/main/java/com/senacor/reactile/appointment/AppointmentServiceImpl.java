@@ -29,22 +29,41 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler) {
+       Rx.bridgeHandler(getAppointmentsByCustomer(customerId), resultHandler);
+    }
+
+    public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
+        if (customerId == null || customerId.isEmpty()) {
+            return Observable.just(new AppointmentList());
+        }
+
+        AppointmentList.Builder builder = new AppointmentList.Builder();
+
+        database.findAll()
+                .stream()
+                .filter(appointment -> appointment.getCustomerId().equals(customerId))
+                .forEach(appointment -> builder.getAppointmentList().add(appointment));
+        return Observable.just(new AppointmentList(builder));
+    }
+
+    @Override
     public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
         Rx.bridgeHandler(getAppointmentsByBranch(branchId), resultHandler);
     }
 
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
-        final AppointmentList appointmentList = new AppointmentList();
-
         if (branchId == null || branchId.isEmpty()) {
-            return Observable.just(appointmentList);
+            return Observable.just(new AppointmentList());
         }
+
+        AppointmentList.Builder builder = new AppointmentList.Builder();
 
         database.findAll()
                 .stream()
                 .filter(appointment -> appointment.getBranchId().equals(branchId))
-                .forEach(appointment -> appointmentList.addAppointment(appointment));
-        return Observable.just(appointmentList);
+                .forEach(appointment -> builder.getAppointmentList().add(appointment));
+        return Observable.just(new AppointmentList(builder));
     }
 
     @Override
@@ -58,17 +77,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     public Observable<AppointmentList> getAppointmentsByUser(String userId) {
-        final AppointmentList appointmentList = new AppointmentList();
-
         if (userId == null || userId.isEmpty()) {
-            return Observable.just(appointmentList);
+            return Observable.just(new AppointmentList());
         }
+
+        AppointmentList.Builder builder = new AppointmentList.Builder();
 
         database.findAll()
                 .stream()
                 .filter(appointment -> appointment.getUserId().equals(userId))
-                .forEach(appointment -> appointmentList.addAppointment(appointment));
-        return Observable.just(appointmentList);
+                .forEach(appointment -> builder.getAppointmentList().add(appointment));
+        return Observable.just(new AppointmentList(builder));
     }
 
     @Override

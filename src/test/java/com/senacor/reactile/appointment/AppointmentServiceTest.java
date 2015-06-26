@@ -61,6 +61,7 @@ public class AppointmentServiceTest {
     public void getAppointmentsByBranchTest() {
         final int expectedListSize = 5;
         AppointmentList appointmentList = service.getAppointmentsByBranchObservable("1").toBlocking().first();
+        assertNotNull(appointmentList);
 
         assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
     }
@@ -69,6 +70,16 @@ public class AppointmentServiceTest {
     public void getAppointmentsByUserTest() {
         final int expectedListSize = 6;
         AppointmentList appointmentList = service.getAppointmentsByUserObservable("aangel").toBlocking().first();
+        assertNotNull(appointmentList);
+
+        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
+    }
+
+    @Test
+    public void getAppoinmentByCustomerTest() {
+        final int expectedListSize = 12;
+        AppointmentList appointmentList = service.getAppointmentsByCustomerObservable("1").toBlocking().first();
+        assertNotNull(appointmentList);
 
         appointmentList.getAppointmentList().forEach(appointment -> {
             System.out.println(appointment.toJson());
