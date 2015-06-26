@@ -3,6 +3,7 @@ package com.senacor.reactile.newsticker;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import org.junit.Test;
+import rx.Subscription;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +30,9 @@ public class NewsTickerStreamTest {
     @Test
     public void testNewsStreamRunning() throws Exception {
         LinkedBlockingQueue<Boolean> monitor = new LinkedBlockingQueue<>();
-        new NewsTickerStream().getNewsObservable()
+        Subscription subscription = new NewsTickerStream().getNewsObservable()
                 .subscribe(next -> System.out.println("next: " + next),
-                        error -> error.printStackTrace(),
+                        Throwable::printStackTrace,
                         () -> {
                             System.out.println("completed");
                             try {
@@ -41,5 +42,6 @@ public class NewsTickerStreamTest {
                             }
                         });
         monitor.poll(6, TimeUnit.SECONDS);
+        subscription.unsubscribe();
     }
 }
