@@ -27,6 +27,8 @@ import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -67,6 +69,9 @@ public class GatewayVerticleTest {
         assertThat(accounts, hasSize(1));
         JsonArray creditCards = products.getJsonArray("creditCards");
         assertThat(creditCards, hasSize(1));
+
+        JsonObject news = json.getJsonObject("news");
+        assertThat(news, is(notNullValue()));
     }
 
     @Test
