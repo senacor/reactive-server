@@ -10,10 +10,13 @@ import com.senacor.reactile.appointment.Branch;
 import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.json.JsonObjects;
+import com.senacor.reactile.newsticker.News;
+import com.senacor.reactile.newsticker.NewsTickerStream;
 import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.appointment.AppointmentService;
 import com.senacor.reactile.rxjava.appointment.BranchService;
 import com.senacor.reactile.rxjava.customer.CustomerService;
+import com.senacor.reactile.rxjava.newsticker.NewsService;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
 import io.vertx.core.json.JsonArray;
@@ -44,6 +47,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final TransactionService transactionService;
     private final AppointmentService appointmentService;
     private final BranchService branchService;
+    private final NewsService newsService;
+
     private final UserId userId;
     private final CustomerId customerId;
 
@@ -55,8 +60,10 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         TransactionService transactionService,
                         AppointmentService appointmentService,
                         BranchService branchService,
-                        @Assisted UserId userId,
+                        NewsService newsService, @Assisted UserId userId,
                         @Assisted CustomerId customerId) {
+
+
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Start"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
@@ -68,6 +75,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.transactionService = transactionService;
         this.appointmentService = appointmentService;
         this.branchService = branchService;
+        this.newsService = newsService;
         this.userId = userId;
         this.customerId = customerId;
     }
@@ -79,6 +87,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(JsonArray::new);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
+
             Observable<JsonArray> userAppointments = appointmentService.getAppointmentsByCustomerObservable(customerId.getId())
                     .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))
                     .flatMap(appointment -> branchService.getBranchObservable(appointment.getBranchId())
@@ -90,10 +99,13 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                                         return appointmentWithBranch;
                                     }))
                     .reduce(new JsonArray(), JsonArray::add);
+
+            Observable<JsonArray> newsObservable = newsService.getLatestNewsObservable(10)
+                    .flatMap(newsCollection -> Observable.from(newsCollection.getNews()))
+                    .map(News::toJson).toList().map(JsonArray::new);
+
             return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
-                    userAppointments,
-                    //Observable.just(new JsonArray()),
-                    this::mergeIntoResponse);
+                    userAppointments, newsObservable, this::mergeIntoResponse);
         });
     }
 
@@ -102,7 +114,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                                          JsonArray accounts,
                                          JsonArray creditCards,
                                          JsonArray transactions,
-                                         JsonArray userAppointments) {
+                                         JsonArray userAppointments,
+                                         JsonArray newsObservable) {
         return $()
                 .put("customer", cust
                         .put("products", $()
@@ -112,7 +125,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                 .put("branch", "empty")
                 .put("appointments", userAppointments)
                 .put("recommendations", "empty")
-                .put("news", "empty")
+                .put("news", newsObservable)
                 ;
     }
 }
