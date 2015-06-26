@@ -6,7 +6,6 @@ import com.senacor.reactile.mock.DelayService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,10 +19,10 @@ import static org.apache.commons.lang3.Validate.notNull;
  */
 public class BranchDatabase {
 
-    private static final DelayService DELAY = new DelayService();
+    private final DelayService delay = new DelayService();
     private boolean delayEnabled = false;
 
-    private static long NEXT_ID = 0;
+    private long nextId = 0;
 
     private final Map<String, Branch> dataStore = new ConcurrentHashMap<>();
 
@@ -50,12 +49,12 @@ public class BranchDatabase {
             save = branch;
         }
         dataStore.put(save.getId(), save);
-        delay(0.5);
+        delay(0.2);
         return save;
     }
 
     public Branch findById(final String branchId) {
-        delay(0.2);
+        delay(0.1);
         return dataStore.get(branchId);
     }
 
@@ -64,18 +63,18 @@ public class BranchDatabase {
         return dataStore.remove(branchId);
     }
 
-  public List<Branch> findAll() {
-        delay(1);
-      return new ArrayList<>(dataStore.values());
+    public List<Branch> findAll() {
+        delay(0.5);
+        return new ArrayList<>(dataStore.values());
     }
 
-    private static synchronized String nextId() {
-        return String.valueOf(NEXT_ID++);
+    private synchronized String nextId() {
+        return String.valueOf(nextId++);
     }
 
     private void delay(double faktor) {
         if (delayEnabled) {
-            DELAY.delayed(BigDecimal.valueOf(faktor));
+            delay.delayed(BigDecimal.valueOf(faktor));
         }
     }
 }

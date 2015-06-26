@@ -20,7 +20,10 @@ public final class Rx {
     public static <T> void bridgeHandler(Observable<T> observable, Handler<AsyncResult<T>> handler) {
         observable.subscribe(
                 res -> handler.handle(succeededFuture(res)),
-                throwable -> handler.handle(failedFuture(throwable))
+                throwable -> {
+                    throwable.printStackTrace();
+                    handler.handle(failedFuture(throwable));
+                }
         );
     }
 

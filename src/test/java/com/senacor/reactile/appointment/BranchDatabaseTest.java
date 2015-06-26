@@ -16,8 +16,6 @@ import static org.junit.Assert.*;
 /**
  * @author Andreas Keefer
  */
-@Ignore("TODO (ak): macht probleme wenn danach der entsprechende 'BranchServiceImplTest' ausgeführt wird. Dann schlägt BranchServiceImplTest fehl wenn dieser test davor ausgeführt wird")
-// TODO (ak): macht probleme wenn danach der entsprechende 'BranchServiceImplTest' ausgeführt wird. Dann schlägt BranchServiceImplTest fehl wenn dieser test davor ausgeführt wird
 public class BranchDatabaseTest {
 
     @ClassRule

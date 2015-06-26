@@ -19,10 +19,10 @@ import static org.apache.commons.lang3.Validate.notNull;
  */
 public class AppointmentDatabase {
 
-    private static final DelayService DELAY = new DelayService();
+    private final DelayService delay = new DelayService();
     private boolean delayEnabled = false;
 
-    private static long NEXT_ID = 0;
+    private long nextId = 0;
 
     private final Map<String, Appointment> dataStore = new ConcurrentHashMap<>();
 
@@ -62,22 +62,22 @@ public class AppointmentDatabase {
             save = appointment;
         }
         dataStore.put(save.getId(), save);
-        delay(0.5);
+        delay(0.2);
         return save;
     }
 
     public Appointment findById(final String appointmentId) {
-        delay(0.5);
+        delay(0.1);
         return dataStore.get(appointmentId);
     }
 
     public Appointment deleteById(final String appointmentId) {
-        delay(0.5);
+        delay(0.2);
         return dataStore.remove(appointmentId);
     }
 
     public Collection<Appointment> findAll() {
-        delay(2);
+        delay(0.5);
         return dataStore.values();
     }
 
@@ -89,25 +89,25 @@ public class AppointmentDatabase {
     }
 
     public List<Appointment> findByBranchId(String branchId) {
-        delay(1.5);
+        delay(0.2);
         return dataStore.values().stream()
                 .filter(appointment -> branchId.equals(appointment.getBranchId()))
                 .collect(Collectors.toList());
     }
 
-    private static synchronized String nextId() {
-        return String.valueOf(NEXT_ID++);
+    private synchronized String nextId() {
+        return String.valueOf(nextId++);
     }
 
     private void delay() {
         if (delayEnabled) {
-            DELAY.delayed();
+            delay.delayed();
         }
     }
 
     private void delay(double faktor) {
         if (delayEnabled) {
-            DELAY.delayed(BigDecimal.valueOf(faktor));
+            delay.delayed(BigDecimal.valueOf(faktor));
         }
     }
 }

@@ -18,8 +18,6 @@ import static org.junit.Assert.*;
 /**
  * @author Andreas Keefer
  */
-@Ignore("TODO (ak): macht probleme wenn danach der entsprechende 'AppointmentServiceImplTest' ausgeführt wird. Dann schlägt AppointmentServiceImplTest fehl wenn dieser test davor ausgeführt wird")
-// TODO (ak): macht probleme wenn danach der entsprechende 'AppointmentServiceImplTest' ausgeführt wird. Dann schlägt AppointmentServiceImplTest fehl wenn dieser test davor ausgeführt wird
 public class AppointmentDatabaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentDatabaseTest.class);
