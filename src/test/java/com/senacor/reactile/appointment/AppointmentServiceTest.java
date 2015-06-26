@@ -59,7 +59,7 @@ public class AppointmentServiceTest {
 
     @Test
     public void getAppointmentsByBranchTest() {
-        final int expectedListSize = 6;
+        final int expectedListSize = 5;
         AppointmentList appointmentList = service.getAppointmentsByBranchObservable("1").toBlocking().first();
 
         assertEquals(expectedListSize, appointmentList.getAppointmentList().size());

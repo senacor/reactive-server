@@ -28,7 +28,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         Rx.bridgeHandler(getAppointmentById(appointmentId), resultHandler);
     }
 
-<<<<<<< HEAD
     @Override
     public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
         Rx.bridgeHandler(getAppointmentsByBranch(branchId), resultHandler);
@@ -77,8 +76,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     }
 
-=======
->>>>>>> 64cdc81dfba96a84d80a8de5ed28c834357eff34
     public Observable<Appointment> getAppointmentById(String appointmentId) {
         return Observable.create(subscribe -> {
             Appointment appointment = database.findById(appointmentId);
@@ -89,26 +86,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             }
         });
     }
-
-//    @Override
-//    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-//
-//    }
-//
-//    @Override
-//    public void getAppointmentsByBranchAndDate(String branchId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-//
-//    }
-//
-//    @Override
-//    public void getAppointmentsByUser(String userId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-//
-//    }
-//
-//    @Override
-//    public void getAppointmentsByUserAndDate(String userId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-//
-//    }
 
     @Override
     public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {
