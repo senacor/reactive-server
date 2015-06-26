@@ -1,28 +1,5 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.Services;
-import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.customer.CustomerFixtures;
-import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.http.HttpResponse;
-import com.senacor.reactile.http.HttpTestClient;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rxjava.core.MultiMap;
-import io.vertx.rxjava.core.Vertx;
-import org.hamcrest.Matchers;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
-import javax.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
@@ -31,6 +8,29 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import javax.inject.Inject;
+
+import com.senacor.reactile.Services;
+import com.senacor.reactile.VertxRule;
+import com.senacor.reactile.customer.Address;
+import com.senacor.reactile.customer.Customer;
+import com.senacor.reactile.customer.CustomerFixtures;
+import com.senacor.reactile.domain.JsonObjectMatchers;
+import com.senacor.reactile.guice.GuiceRule;
+import com.senacor.reactile.http.HttpResponse;
+import com.senacor.reactile.http.HttpTestClient;
+
+import org.hamcrest.Matchers;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.Vertx;
 
 public class GatewayVerticleTest {
 
@@ -70,8 +70,9 @@ public class GatewayVerticleTest {
         JsonArray creditCards = products.getJsonArray("creditCards");
         assertThat(creditCards, hasSize(1));
 
-        JsonObject news = json.getJsonObject("news");
+        JsonArray news = json.getJsonArray("news");
         assertThat(news, is(notNullValue()));
+        assertThat(news, JsonObjectMatchers.hasSize(10));
     }
 
     @Test
