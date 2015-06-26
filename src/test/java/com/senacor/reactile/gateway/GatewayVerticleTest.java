@@ -65,7 +65,7 @@ public class GatewayVerticleTest {
         JsonArray creditCards = products.getJsonArray("creditCards");
         assertThat("creditCards", creditCards, hasSize(1));
         JsonArray appointments = json.getJsonArray("appointments");
-        assertThat("appointments", appointments, hasSize(0));
+        assertThat("appointments", appointments, hasSize(3));
     }
 
     @Test

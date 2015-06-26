@@ -102,7 +102,7 @@ public class AppointmentServiceTest {
 
     @Test
     public void getAppoinmentByCustomerTest() {
-        final int expectedListSize = 12;
+        final int expectedListSize = 9;
         AppointmentList appointmentList = service.getAppointmentsByCustomerObservable("1").toBlocking().first();
         assertNotNull(appointmentList);
 
