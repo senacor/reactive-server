@@ -5,6 +5,7 @@ import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerFixtures;
+import com.senacor.reactile.domain.JsonObjectMatchers;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
@@ -24,8 +25,11 @@ import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
 
 public class GatewayVerticleTest {
 
@@ -62,10 +66,17 @@ public class GatewayVerticleTest {
         JsonObject products = jsonCustomer.getJsonObject("products");
         JsonArray accounts = products.getJsonArray("accounts");
         assertThat("accounts", accounts, hasSize(1));
+
         JsonArray creditCards = products.getJsonArray("creditCards");
         assertThat("creditCards", creditCards, hasSize(1));
+
         JsonArray appointments = json.getJsonArray("appointments");
         assertThat("appointments", appointments, hasSize(3));
+        assertThat(creditCards, hasSize(1));
+
+        JsonArray news = json.getJsonArray("news");
+        assertThat(news, is(notNullValue()));
+        assertThat(news, JsonObjectMatchers.hasSize(10));
     }
 
     @Test
