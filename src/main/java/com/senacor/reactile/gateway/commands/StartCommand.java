@@ -12,6 +12,7 @@ import com.senacor.reactile.newsticker.News;
 import com.senacor.reactile.newsticker.NewsTickerStream;
 import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.customer.CustomerService;
+import com.senacor.reactile.rxjava.newsticker.NewsService;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
 import io.vertx.core.json.JsonArray;
@@ -19,7 +20,6 @@ import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.concurrent.TimeUnit;
 
 import static com.senacor.reactile.json.JsonObjects.$;
 import static rx.Observable.zip;
@@ -41,6 +41,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final AccountService accountService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
+    private final NewsService newsService;
     private final UserId userId;
     private final CustomerId customerId;
     private final NewsTickerStream newsTickerStream;
@@ -51,7 +52,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         AccountService accountService,
                         CreditCardService creditCardService,
                         TransactionService transactionService,
-                        @Assisted UserId userId,
+                        NewsService newsService, @Assisted UserId userId,
                         @Assisted CustomerId customerId,
                         NewsTickerStream newsTickerStream) {
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Start"))
@@ -63,6 +64,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
+        this.newsService = newsService;
         this.userId = userId;
         this.customerId = customerId;
         this.newsTickerStream = newsTickerStream;
@@ -75,16 +77,13 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(JsonArray::new);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> newsObservable = getNewsObservable();
+            Observable<JsonArray> newsObservable = newsService.getLatestNewsObservable(10)
+                    .flatMap(newsCollection -> Observable.from(newsCollection.getNews()))
+                    .map(News::toJson).toList().map(JsonArray::new);
             return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable, newsObservable,
                     this::mergeIntoResponse);
         });
     }
-
-    private Observable<JsonArray> getNewsObservable() {
-        return newsTickerStream.getNewsObservable().take(300, TimeUnit.MILLISECONDS).map(News::toJson).toList().map(JsonArray::new);
-    }
-
 
     private JsonObject mergeIntoResponse(JsonObject cust, JsonArray accounts, JsonArray creditCards, JsonArray transactions, JsonArray newsObservable) {
         return $()

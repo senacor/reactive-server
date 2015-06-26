@@ -8,7 +8,6 @@ import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -37,7 +36,6 @@ public class NewsServiceImpl implements NewsService {
 
     private void registerForNews() {
         eventBus.consumer(NewsServiceVerticle.ADDRESS).toObservable()
-                .doOnNext(System.out::println)
                 .map(Message::body)
                 .cast(JsonObject.class)
                 .map(News::fromJson)
