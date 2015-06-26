@@ -32,4 +32,24 @@ public class AppointmentServiceTest {
 
         assertEquals("Consulting 2", appointment.getName());
     }
+
+    @Test
+    public void getAppointmentsByBranchTest() {
+        final int expectedListSize = 6;
+        AppointmentList appointmentList = service.getAppointmentsByBranchObservable("1").toBlocking().first();
+
+        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
+    }
+
+    @Test
+    public void getAppointmentsByUserTest() {
+        final int expectedListSize = 6;
+        AppointmentList appointmentList = service.getAppointmentsByUserObservable("aangel").toBlocking().first();
+
+        appointmentList.getAppointmentList().forEach(appointment -> {
+            System.out.println(appointment.toJson());
+        });
+
+        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
+    }
 }

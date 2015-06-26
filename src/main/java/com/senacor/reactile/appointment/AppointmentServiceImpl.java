@@ -9,8 +9,6 @@ import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.time.ZonedDateTime;
-import java.util.Collection;
 
 public class AppointmentServiceImpl implements AppointmentService {
 
@@ -31,22 +29,50 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
+        Rx.bridgeHandler(getAppointmentsByBranch(branchId), resultHandler);
+    }
+
+    public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
+        final AppointmentList appointmentList = new AppointmentList();
+
+        if (branchId == null || branchId.isEmpty()) {
+            return Observable.just(appointmentList);
+        }
+
+        database.findAll()
+                .stream()
+                .filter(appointment -> appointment.getBranchId().equals(branchId))
+                .forEach(appointment -> appointmentList.addAppointment(appointment));
+        return Observable.just(appointmentList);
+    }
+
+    @Override
+    public void getAppointmentsByBranchAndDate(String branchId, Handler<AsyncResult<Appointment>> resultHandler) {
 
     }
 
     @Override
-    public void getAppointmentsByBranchAndDate(String branchId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+    public void getAppointmentsByUser(String userId, Handler<AsyncResult<AppointmentList>> resultHandler) {
+        Rx.bridgeHandler(getAppointmentsByUser(userId), resultHandler);
+    }
 
+    public Observable<AppointmentList> getAppointmentsByUser(String userId) {
+        final AppointmentList appointmentList = new AppointmentList();
+
+        if (userId == null || userId.isEmpty()) {
+            return Observable.just(appointmentList);
+        }
+
+        database.findAll()
+                .stream()
+                .filter(appointment -> appointment.getUserId().equals(userId))
+                .forEach(appointment -> appointmentList.addAppointment(appointment));
+        return Observable.just(appointmentList);
     }
 
     @Override
-    public void getAppointmentsByUser(String userId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
-
-    }
-
-    @Override
-    public void getAppointmentsByUserAndDate(String userId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+    public void getAppointmentsByUserAndDate(String userId, Handler<AsyncResult<Appointment>> resultHandler) {
 
     }
 
