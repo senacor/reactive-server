@@ -12,7 +12,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.Vertx;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
@@ -20,8 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
@@ -68,7 +65,7 @@ public class GatewayVerticleTest {
         JsonArray creditCards = products.getJsonArray("creditCards");
         assertThat("creditCards", creditCards, hasSize(1));
         JsonArray appointments = json.getJsonArray("appointments");
-        assertThat("appointments", appointments, hasSize(2));
+        assertThat("appointments", appointments, hasSize(0));
     }
 
     @Test
