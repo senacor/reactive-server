@@ -24,7 +24,6 @@ import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerFixtures;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.newsticker.News;
-import com.senacor.reactile.newsticker.NewsServiceVerticle;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -43,7 +42,7 @@ public class PushNotificationVerticleTest {
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.CustomerService)
             .deployVerticle(PushNotificationVerticle.class)
-            .deployVerticle(NewsServiceVerticle.class);
+            .deployVerticle(Services.NewsService);
 
     @Rule
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);

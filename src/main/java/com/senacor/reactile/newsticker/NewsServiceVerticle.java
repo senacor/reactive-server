@@ -1,14 +1,14 @@
 package com.senacor.reactile.newsticker;
 
-import com.senacor.reactile.customer.CustomerService;
+import javax.inject.Inject;
+
 import com.senacor.reactile.guice.Impl;
+
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.serviceproxy.ProxyHelper;
 import rx.Subscription;
-
-import javax.inject.Inject;
 
 
 public class NewsServiceVerticle extends AbstractVerticle {
@@ -37,7 +37,12 @@ public class NewsServiceVerticle extends AbstractVerticle {
             vertx.eventBus().publish(ADDRESS, news.toJson());
         });
 
-        ProxyHelper.registerService(NewsService.class, getVertx(), newsService, config().getString("address"));
+        log.info("Starting service: " + config().getString("main"));
+        String address = config().getString("address");
+        if (address == null) {
+            throw new IllegalStateException("address field must be specified in config for NewsService");
+        }
+        ProxyHelper.registerService(NewsService.class, getVertx(), newsService, address);
     }
 
     @Override
