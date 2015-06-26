@@ -1,9 +1,13 @@
 package com.senacor.reactile.gateway;
 
+import javax.inject.Inject;
+
 import com.senacor.reactile.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.customer.CustomerService;
+import com.senacor.reactile.newsticker.NewsServiceVerticle;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserService;
+
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -11,12 +15,11 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
-import javax.inject.Inject;
-
 public class PushNotificationVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
+    public static final String PUBLISH_NEWS_UPDATE = "PushNotification#News#update";
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
 
@@ -31,6 +34,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public void start() {
         registerEventSubcriber();
         registerCustomerAddressUpdateHandler();
+        registerNewsUpdateHandler();
     }
 
     private void registerCustomerAddressUpdateHandler() {
@@ -41,7 +45,8 @@ public class PushNotificationVerticle extends AbstractVerticle {
                     String publishAddress = PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + updateEvent.getString("id");
                     logger.info("publish event on Address: " + publishAddress);
                     vertx.eventBus().publish(publishAddress, updateEvent);
-                }, throwable -> logger.error("Error while handling event from " + CustomerService.ADDRESS_EVENT_UPDATE_ADDRESS, throwable));
+                }, throwable -> logger.error("Error while handling event from " + CustomerService
+                        .ADDRESS_EVENT_UPDATE_ADDRESS, throwable));
     }
 
     private void registerEventSubcriber() {
@@ -52,5 +57,16 @@ public class PushNotificationVerticle extends AbstractVerticle {
                     return userObservable.map(event::replaceUser);
                 })
                 .subscribe(eventWithUser -> logger.info("Received event " + eventWithUser));
+    }
+
+    private void registerNewsUpdateHandler() {
+        vertx.eventBus().consumer(NewsServiceVerticle.ADDRESS).toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .subscribe(updateEvent -> {
+                    String publishAddress = PUBLISH_NEWS_UPDATE;
+                    logger.info("publish event on Address: " + publishAddress);
+                    vertx.eventBus().publish(publishAddress, updateEvent);
+                }, throwable -> logger.error("Error while handling event from " + NewsServiceVerticle.ADDRESS, throwable));
     }
 }

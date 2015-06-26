@@ -5,7 +5,9 @@ import com.senacor.reactile.customer.Country;
 import com.senacor.reactile.mock.DelayService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,9 +64,9 @@ public class BranchDatabase {
         return dataStore.remove(branchId);
     }
 
-    public Collection<Branch> findAll() {
+  public List<Branch> findAll() {
         delay(1);
-        return dataStore.values();
+      return new ArrayList<>(dataStore.values());
     }
 
     private static synchronized String nextId() {

@@ -118,8 +118,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        BranchService provideBranchService(Vertx vertx) {
-            return ProxyHelper.createProxy(BranchService.class, vertx, BranchService.ADDRESS);
+        com.senacor.reactile.rxjava.appointment.BranchService provideBranchService(Vertx vertx) {
+            BranchService proxy = ProxyHelper.createProxy(BranchService.class, vertx, BranchService.ADDRESS);
+            return new com.senacor.reactile.rxjava.appointment.BranchService(proxy);
         }
 
         @Provides

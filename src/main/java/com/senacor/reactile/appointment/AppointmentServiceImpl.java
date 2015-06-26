@@ -28,6 +28,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         Rx.bridgeHandler(getAppointmentById(appointmentId), resultHandler);
     }
 
+<<<<<<< HEAD
     @Override
     public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
         Rx.bridgeHandler(getAppointmentsByBranch(branchId), resultHandler);
@@ -76,23 +77,58 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     }
 
+=======
+>>>>>>> 64cdc81dfba96a84d80a8de5ed28c834357eff34
     public Observable<Appointment> getAppointmentById(String appointmentId) {
-        return Observable.just(database.findById(appointmentId));
+        return Observable.create(subscribe -> {
+            Appointment appointment = database.findById(appointmentId);
+            if (appointment != null) {
+                subscribe.onNext(appointment);
+            } else {
+                subscribe.onError(new NullPointerException("Appointment with ID " + appointmentId + " doesn't exist."));
+            }
+        });
     }
 
+//    @Override
+//    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
+//
+//    @Override
+//    public void getAppointmentsByBranchAndDate(String branchId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
+//
+//    @Override
+//    public void getAppointmentsByUser(String userId, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
+//
+//    @Override
+//    public void getAppointmentsByUserAndDate(String userId, ZonedDateTime date, Handler<AsyncResult<Collection<Appointment>>> resultHandler) {
+//
+//    }
 
     @Override
     public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {
         Rx.bridgeHandler(
-                Observable.just(database.saveOrUpdate(appointment))
+                createOrUpdateAppointment(appointment)
                 , resultHandler);
+    }
+
+    public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
+        return Observable.just(database.saveOrUpdate(appointment));
     }
 
     @Override
     public void deleteAppointment(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
         Rx.bridgeHandler(
-                Observable.just(database.deleteById(appointmentId))
+                deleteAppointment(appointmentId)
                 , resultHandler);
     }
 
+    public Observable<Appointment> deleteAppointment(String appointmentId) {
+        return Observable.just(database.deleteById(appointmentId));
+    }
 }

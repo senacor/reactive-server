@@ -1,0 +1,10 @@
+{
+  "main": "guice:com.senacor.reactile.appointment.BranchServiceVerticle",
+
+  "options": {
+    "worker": true,
+    "config": {
+      "address": "BranchService"
+    }
+  }
+}
