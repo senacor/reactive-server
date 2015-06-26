@@ -1,7 +1,6 @@
 package com.senacor.reactile.gateway.commands;
 
 import com.google.inject.assistedinject.Assisted;
-import com.netflix.hystrix.HystrixCollapserProperties;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
@@ -20,11 +19,9 @@ import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
 import javax.inject.Inject;
-
 import java.util.concurrent.TimeUnit;
 
 import static com.senacor.reactile.json.JsonObjects.$;
-import static java.util.stream.Collectors.toList;
 import static rx.Observable.zip;
 
 /**
@@ -78,10 +75,14 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(JsonArray::new);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> newsObservable = newsTickerStream.getNewsObservable().take(300, TimeUnit.MILLISECONDS).map(News::toJson).toList().map(JsonArray::new);
+            Observable<JsonArray> newsObservable = getNewsObservable();
             return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable, newsObservable,
                     this::mergeIntoResponse);
         });
+    }
+
+    private Observable<JsonArray> getNewsObservable() {
+        return newsTickerStream.getNewsObservable().take(300, TimeUnit.MILLISECONDS).map(News::toJson).toList().map(JsonArray::new);
     }
 
 
