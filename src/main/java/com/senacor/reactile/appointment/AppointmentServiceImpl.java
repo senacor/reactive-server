@@ -3,12 +3,15 @@ package com.senacor.reactile.appointment;
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class AppointmentServiceImpl implements AppointmentService {
 
@@ -29,26 +32,32 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(getAppointmentsByBranch(branchId), resultHandler);
+    public void getAppointmentsByBranch(String branchId, String eventAddress, Handler<AsyncResult<String>> resultHandler) {
+        Rx.bridgeHandler(getAppointmentsByBranch(branchId, eventAddress), resultHandler);
     }
 
-    public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
-        final AppointmentList appointmentList = new AppointmentList();
+    private Observable<String> getAppointmentsByBranch(String branchId, String eventAddress) {
+        return Observable.create(subscriber -> {
+            List<Appointment> appointmentList = database.findByBranchId(branchId);
 
-        if (branchId == null || branchId.isEmpty()) {
-            return Observable.just(appointmentList);
-        }
+            Observable
+                    .from(appointmentList)
+                    .subscribe(appointment -> {
+                        logger.info("publishing on '" + eventAddress + "'...");
+                        vertx.eventBus().publish(eventAddress, appointment
+                                .toJson(), new DeliveryOptions().addHeader("type", "next"));
+                        logger.info("publishing on '" + eventAddress + "' done");
+                    });
 
-        database.findAll()
-                .stream()
-                .filter(appointment -> appointment.getBranchId().equals(branchId))
-                .forEach(appointment -> appointmentList.addAppointment(appointment));
-        return Observable.just(appointmentList);
+            subscriber.onNext(eventAddress);
+
+            vertx.eventBus().publish(eventAddress, null,
+            new DeliveryOptions().addHeader("type", "complete"));
+        });
     }
 
     @Override
-    public void getAppointmentsByBranchAndDate(String branchId, Handler<AsyncResult<Appointment>> resultHandler) {
+    public void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
 
     }
 
@@ -72,7 +81,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void getAppointmentsByUserAndDate(String userId, Handler<AsyncResult<Appointment>> resultHandler) {
+    public void getAppointmentsByUserAndDate(String userId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
 
     }
 

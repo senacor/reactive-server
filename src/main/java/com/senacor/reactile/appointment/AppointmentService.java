@@ -15,13 +15,13 @@ public interface AppointmentService {
 
     void getAppointmentById(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler);
 
-    void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler);
+    void getAppointmentsByBranch(String branchId, String eventAddress, Handler<AsyncResult<String>> resultHandler);
 
-    void getAppointmentsByBranchAndDate(String branchId, Handler<AsyncResult<Appointment>> resultHandler);
+    void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler);
 
     void getAppointmentsByUser(String userId, Handler<AsyncResult<AppointmentList>> resultHandler);
 
-    void getAppointmentsByUserAndDate(String userId, Handler<AsyncResult<Appointment>> resultHandler);
+    void getAppointmentsByUserAndDate(String userId, Long date, Handler<AsyncResult<Appointment>> resultHandler);
 
     void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler);
 
