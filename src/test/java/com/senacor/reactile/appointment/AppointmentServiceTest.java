@@ -2,23 +2,18 @@ package com.senacor.reactile.appointment;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.guice.GuiceRule;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.eventbus.ReplyException;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import rx.observers.TestSubscriber;
 
 import javax.inject.Inject;
-
-import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +35,7 @@ public class AppointmentServiceTest {
     public void thatAppointmentIsReturned() {
         Appointment appointment = service.getAppointmentByIdObservable("2").toBlocking().single();
 
-        assertEquals("Consulting 2", appointment.getName());
+        assertEquals("Consulting 3", appointment.getName());
     }
 
     @Test
