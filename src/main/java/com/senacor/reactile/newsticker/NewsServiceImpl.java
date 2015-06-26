@@ -32,11 +32,12 @@ public class NewsServiceImpl implements NewsService {
                     }
                 }
         );
+        registerForNews();
     }
 
-    @PostConstruct
-    private void init() {
+    private void registerForNews() {
         eventBus.consumer(NewsServiceVerticle.ADDRESS).toObservable()
+                .doOnNext(System.out::println)
                 .map(Message::body)
                 .cast(JsonObject.class)
                 .map(News::fromJson)
