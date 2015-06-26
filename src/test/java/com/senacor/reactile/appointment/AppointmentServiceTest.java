@@ -4,13 +4,16 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 import io.vertx.core.eventbus.ReplyException;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -36,6 +39,31 @@ public class AppointmentServiceTest {
     }
 
     @Test
+    public void thatAppointmentsAreReturnedByBranch() throws InterruptedException {
+        String eventAddress = UUID.randomUUID().toString();
+        service.getAppointmentsByBranchObservable("2", eventAddress)
+                .subscribe(ea -> System.out.println("Returned: " + ea), e -> e.printStackTrace(), () -> System.out.println("Completed!"));
+
+        MessageConsumer<Object> consumer = vertxRule.vertx().eventBus().consumer(eventAddress);
+        Iterable<Appointment> appointments = consumer
+                .toObservable()
+                .takeWhile(msg -> "next".equals(msg.headers().get("type")))
+                .map(msg -> msg.body())
+                .cast(JsonObject.class)
+                .map(Appointment::fromJson)
+                .toBlocking()
+                .toIterable();
+
+        int count = 0;
+        for (Appointment app : appointments) {
+            assertEquals("2", app.getBranchId());
+            count++;
+        }
+
+        assertEquals(6, count);
+    }
+
+    @Test
     public void thatAppointmentCanBeUpdated() throws Exception {
         Appointment appointment = service.getAppointmentByIdObservable("3").toBlocking().single();
         Appointment expected = appointment.newBuilder(appointment).withName("Unsulting 2").build();
@@ -55,14 +83,6 @@ public class AppointmentServiceTest {
         } catch (ReplyException re) {
             assertEquals("Appointment with ID 4 doesn't exist.", re.getMessage());
         }
-    }
-
-    @Test
-    public void getAppointmentsByBranchTest() {
-        final int expectedListSize = 5;
-        AppointmentList appointmentList = service.getAppointmentsByBranchObservable("1").toBlocking().first();
-
-        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
     }
 
     @Test

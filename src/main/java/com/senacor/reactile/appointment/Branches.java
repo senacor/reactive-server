@@ -5,11 +5,9 @@
  */
 package com.senacor.reactile.appointment;
 
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.Contact;
+import com.google.common.collect.ImmutableList;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
@@ -28,22 +26,22 @@ public class Branches implements Jsonizable {
 
     public List<Branch> branches;
 
-    public Branches(){branches = Collections.EMPTY_LIST;}
+    public Branches() {
+        branches = Collections.emptyList();
+    }
 
     public Branches(final JsonObject json) {
-        /*ArrayList<Branch> list = new ArrayList<>();
-        final JsonArray array = json.getJsonArray("branches");
-        array.forEach((JsonObject branch) -> {
-            list.add(Branch.fromJson(branch));
-        });
-        setBranches(list); */
         List<Branch> list =
                 unmarshal(json.getJsonArray("branches"), Branch::fromJson);
         this.branches = list;
     }
 
     public Branches(Collection<Branch> branches) {
-        setBranches(branches);
+        this.branches = ImmutableList.copyOf(branches);
+    }
+
+    public Branches(Branches toCopy) {
+        this.branches = ImmutableList.copyOf(toCopy.getBranches());
     }
 
     public List<Branch> getBranches() {
