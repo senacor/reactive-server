@@ -44,7 +44,7 @@ public class NewsServiceTest {
     private EventBus eventBus;
 
     @Test
-    public void thatCustomerIsReturned() throws InterruptedException {
+    public void thatMostRecentNewsIsReturned() throws InterruptedException {
 
         TestSubscriber<News> ts = new TestSubscriber<News>();
 
