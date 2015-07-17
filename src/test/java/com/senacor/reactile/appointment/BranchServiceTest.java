@@ -36,10 +36,10 @@ public class BranchServiceTest {
 
     @Test
     public void thatListIsComplete() throws Throwable {
-        Observable<Branches> branchObservable = service.getAllBranchesObservable();
+        Observable<BranchList> branchObservable = service.getAllBranchesObservable();
         assertThat(branchObservable, is(not(nullValue())));
-        BlockingObservable<Branches> branchesBlockingObservable = branchObservable.toBlocking();
-        Branches branches = branchesBlockingObservable.first();
+        BlockingObservable<BranchList> branchesBlockingObservable = branchObservable.toBlocking();
+        BranchList branches = branchesBlockingObservable.first();
         assertEquals(10, branches.getBranches().size());
     }
 }

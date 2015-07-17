@@ -11,7 +11,6 @@ import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.List;
 
 public class AppointmentServiceImpl implements AppointmentService {
 
@@ -49,17 +48,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         Rx.bridgeHandler(getAppointmentsByCustomer(customerId), resultHandler);
     }
 
+    @HystrixCmd(AppointmentServiceImplGetAppointmentsByCustomerCommand.class)
     public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
         if (customerId == null || customerId.isEmpty()) {
             return Observable.just(new AppointmentList());
-            }
-        AppointmentList.Builder builder = new AppointmentList.Builder();
-
-        database.findAll()
-                .stream()
-                .filter(appointment -> appointment.getCustomerId().equals(customerId))
-                .forEach(appointment -> builder.getAppointmentList().add(appointment));
-        return Observable.just(new AppointmentList(builder));
+        }
+        AppointmentList res = AppointmentList.newBuilder()
+                .withAppointments(database.findByCustomerId(customerId))
+                .build();
+        return Observable.just(res);
     }
 
     @Override
@@ -69,27 +66,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private Observable<String> getAppointmentsByBranch(String branchId, String eventAddress) {
         return Observable.create(subscriber -> {
-            List<Appointment> appointmentList = database.findByBranchId(branchId);
-
-            Observable
-                    .from(appointmentList)
-                    .subscribe(appointment -> {
-                        logger.info("publishing on '" + eventAddress + "'...");
-                        vertx.eventBus().publish(eventAddress, appointment
-                                .toJson(), new DeliveryOptions().addHeader("type", "next"));
-                        logger.info("publishing on '" + eventAddress + "' done");
-                    });
-
-            subscriber.onNext(eventAddress);
-
+            database.findByBranchId(branchId).forEach(appointment -> {
+                logger.info("publishing next on '" + eventAddress + "'...");
+                vertx.eventBus().publish(eventAddress, appointment
+                        .toJson(), new DeliveryOptions().addHeader("type", "next"));
+                logger.info("publishing next on '" + eventAddress + "' done");
+            });
+            logger.info("publishing complete on '" + eventAddress + "'...");
             vertx.eventBus().publish(eventAddress, null,
                     new DeliveryOptions().addHeader("type", "complete"));
+            logger.info("publishing complete on '" + eventAddress + "' done");
+
+            subscriber.onNext(eventAddress);
+            subscriber.onCompleted();
         });
     }
 
     @Override
     public void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
-
+        // TODO impl!
     }
 
     @Override
@@ -97,23 +92,23 @@ public class AppointmentServiceImpl implements AppointmentService {
         Rx.bridgeHandler(getAppointmentsByUser(userId), resultHandler);
     }
 
-    public Observable<AppointmentList> getAppointmentsByUser(String userId) {
+    public Observable<AppointmentList> getAppointmentsByUser(final String userId) {
         if (userId == null || userId.isEmpty()) {
             return Observable.just(new AppointmentList());
         }
 
-        AppointmentList.Builder builder = new AppointmentList.Builder();
+        final AppointmentList.Builder builder = new AppointmentList.Builder();
 
         database.findAll()
                 .stream()
-                .filter(appointment -> appointment.getUserId().equals(userId))
+                .filter(appointment -> userId.equals(appointment.getUserId()))
                 .forEach(appointment -> builder.getAppointmentList().add(appointment));
-        return Observable.just(new AppointmentList(builder));
+        return Observable.just(builder.build());
     }
 
     @Override
     public void getAppointmentsByUserAndDate(String userId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
-
+        // TODO impl
     }
 
     public Observable<Appointment> getAppointmentById(String appointmentId) {
@@ -121,6 +116,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             Appointment appointment = database.findById(appointmentId);
             if (appointment != null) {
                 subscribe.onNext(appointment);
+                subscribe.onCompleted();
             } else {
                 subscribe.onError(new NullPointerException("Appointment with ID " + appointmentId + " doesn't exist."));
             }
@@ -129,9 +125,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(
-                createOrUpdateAppointment(appointment)
-                , resultHandler);
+        Rx.bridgeHandler(createOrUpdateAppointment(appointment), resultHandler);
     }
 
     public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
@@ -140,9 +134,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void deleteAppointment(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(
-                deleteAppointment(appointmentId)
-                , resultHandler);
+        Rx.bridgeHandler(deleteAppointment(appointmentId), resultHandler);
     }
 
     public Observable<Appointment> deleteAppointment(String appointmentId) {

@@ -8,16 +8,19 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class AppointmentServiceTest {
 
@@ -30,36 +33,44 @@ public class AppointmentServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private com.senacor.reactile.rxjava.appointment.AppointmentService service;
+    private com.senacor.reactile.rxjava.appointment.AppointmentService appointmentService;
 
     @Test
     public void getAllAppointmentsTest() {
-        final int expectedSize = 21;
-        AppointmentList appointmentList = service.getAllAppointmentsObservable().toBlocking().first();
-        assertNotNull(appointmentList);
+        AppointmentList appointmentList = appointmentService.getAllAppointmentsObservable()
+                .toBlocking().first();
 
-        assertEquals(expectedSize, appointmentList.getAppointmentList().size());
+        assertNotNull("AppointmentList", appointmentList);
+        assertThat("AppointmentList", appointmentList.getAppointmentList(), not(empty()));
     }
 
     @Test
     public void thatAppointmentIsReturned() {
-        Appointment appointment = service.getAppointmentByIdObservable("2").toBlocking().single();
+        Appointment appointment = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withName("test").build())
+                .toBlocking().first();
+        logger.info("created: " + appointment);
+        Appointment loaded = appointmentService.getAppointmentByIdObservable(appointment.getId()).toBlocking().single();
 
-        assertEquals("Consulting 3", appointment.getName());
+        assertEquals("test", loaded.getName());
     }
 
     @Test
-    @Ignore("TODO (ak): erstaml deaktiviet, da assert falsch")
-    // TODO (ak)
+    @Ignore("ist noch nicht ausgereift, da die Events nicht in der Reihenfolge beim Receiver ankommen, " +
+            "wie sie auf den EventBus gegeben werden! Es fehlt noch eine SequenceId um die Reihenfolge abzubilden")
     public void thatAppointmentsAreReturnedByBranch() throws InterruptedException {
         String eventAddress = UUID.randomUUID().toString();
-        service.getAppointmentsByBranchObservable("2", eventAddress)
+        appointmentService.getAppointmentsByBranchObservable("2", eventAddress)
                 .subscribe(ea -> System.out.println("Returned: " + ea), e -> e.printStackTrace(), () -> System.out.println("Completed!"));
 
         MessageConsumer<Object> consumer = vertxRule.vertx().eventBus().consumer(eventAddress);
         Iterable<Appointment> appointments = consumer
                 .toObservable()
-                .takeWhile(msg -> "next".equals(msg.headers().get("type")))
+                .takeWhile(msg -> {
+                    String type = msg.headers().get("type");
+                    System.out.println("received type=" + type);
+                    return "next".equals(type);
+                })
                 .map(msg -> msg.body())
                 .cast(JsonObject.class)
                 .map(Appointment::fromJson)
@@ -77,48 +88,90 @@ public class AppointmentServiceTest {
 
     @Test
     public void thatAppointmentCanBeUpdated() throws Exception {
-        Appointment appointment = service.getAppointmentByIdObservable("3").toBlocking().single();
-        Appointment expected = appointment.newBuilder(appointment).withName("Unsulting 2").build();
+        Appointment create = Appointment.newBuilder().withUserId(randomNumeric(20))
+                .withBranchId(randomNumeric(20))
+                .withCustomerId(randomNumeric(20))
+                .withName("testCreate")
+                .withNote("test create")
+                .build();
 
-        Appointment result = service.createOrUpdateAppointmentObservable(expected).toBlocking().first();
+        Appointment created = appointmentService.createOrUpdateAppointmentObservable(create)
+                .toBlocking().single();
+        assertThat("id", created.getId(), notNullValue());
 
-        System.out.println("expecting: " + expected.toJson());
-        assertEquals(expected.toJson(), result.toJson());
+        Appointment update = Appointment.newBuilder(created).withName("update").build();
+
+        Appointment updated = appointmentService.createOrUpdateAppointmentObservable(update)
+                .toBlocking().single();
+
+        assertEquals(update.toJson(), updated.toJson());
+
+        Appointment readUpdated = appointmentService.getAppointmentByIdObservable(updated.getId())
+                .toBlocking().single();
+
+        assertThat(readUpdated.getName(), is("update"));
     }
 
     @Test
     public void thatAppointmentCanBeDeleted() throws Exception {
-        Appointment original = service.deleteAppointmentObservable("4").toBlocking().single();
-        assertNotNull(original);
+        Appointment create = Appointment.newBuilder().withUserId(randomNumeric(20))
+                .withBranchId(randomNumeric(20))
+                .withCustomerId(randomNumeric(20))
+                .withName("testCreate")
+                .withNote("test create")
+                .build();
+
+        Appointment created = appointmentService.createOrUpdateAppointmentObservable(create)
+                .toBlocking().single();
+        assertThat("id", created.getId(), notNullValue());
+
+        appointmentService.deleteAppointmentObservable(created.getId()).toBlocking().single();
+
         try {
-            service.getAppointmentByIdObservable("4").toBlocking().single();
+            appointmentService.getAppointmentByIdObservable(created.getId()).toBlocking().single();
         } catch (ReplyException re) {
-            assertEquals("Appointment with ID 4 doesn't exist.", re.getMessage());
+            assertEquals("Appointment with ID "+created.getId()+" doesn't exist.", re.getMessage());
         }
     }
 
     @Test
     public void getAppointmentsByUserTest() {
-        final int expectedListSize = 6;
-        AppointmentList appointmentList = service.getAppointmentsByUserObservable("aangel").toBlocking().first();
+        final String userId1 = randomNumeric(20);
+        Appointment created1User1 = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withUserId(userId1).withName("testCreate").build())
+            .toBlocking().single();
+        Appointment created2User1 = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withUserId(userId1).withName("testCreate").build())
+                .toBlocking().single();
+        Appointment created3User2 = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withUserId(randomNumeric(20)).withName("testCreate").build())
+                .toBlocking().single();
 
-        appointmentList.getAppointmentList().forEach(appointment -> {
-            System.out.println(appointment.toJson());
-        });
+        AppointmentList appointmentList = appointmentService.getAppointmentsByUserObservable(userId1)
+                .toBlocking().first();
 
-        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
+        assertThat(appointmentList, notNullValue());
+        assertThat(appointmentList.getAppointmentList(), hasSize(2));
+        assertThat(appointmentList.getAppointmentList(), everyItem(hasProperty("userId", is(userId1))));
     }
 
     @Test
     public void getAppoinmentByCustomerTest() {
-        final int expectedListSize = 9;
-        AppointmentList appointmentList = service.getAppointmentsByCustomerObservable("1").toBlocking().first();
-        assertNotNull(appointmentList);
+        final String customerId1 = randomNumeric(20);
+        Appointment created1User1 = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withCustomerId(customerId1).withName("testCreate").build())
+                .toBlocking().single();
+        Appointment created2User1 = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withCustomerId(customerId1).withName("testCreate").build())
+                .toBlocking().single();
+        Appointment created3User2 = appointmentService.createOrUpdateAppointmentObservable(
+                Appointment.newBuilder().withCustomerId(randomNumeric(20)).withName("testCreate").build())
+                .toBlocking().single();
 
-        appointmentList.getAppointmentList().forEach(appointment -> {
-            System.out.println(appointment.toJson());
-        });
+        AppointmentList appointmentList = appointmentService.getAppointmentsByCustomerObservable(customerId1).toBlocking().first();
 
-        assertEquals(expectedListSize, appointmentList.getAppointmentList().size());
+        assertThat(appointmentList, notNullValue());
+        assertThat(appointmentList.getAppointmentList(), hasSize(2));
+        assertThat(appointmentList.getAppointmentList(), everyItem(hasProperty("customerId", is(customerId1))));
     }
 }

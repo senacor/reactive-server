@@ -35,16 +35,16 @@ public class Branch implements Jsonizable {
         address = builder.address;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public static Builder newBuilder(Branch copy) {
         Builder builder = new Builder();
         builder.id = copy.id;
         builder.name = copy.name;
         builder.address = copy.address;
         return builder;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public String getId() {

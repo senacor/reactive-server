@@ -11,8 +11,6 @@ public interface AppointmentService {
 
     static final String ADDRESS = "AppointmentService";
 
-    static final String ADDRESS_EVENT_GET_APPOINTMENT_BY_ID = AppointmentService.ADDRESS + "#getAppointmentById";
-
     void getAllAppointments(Handler<AsyncResult<AppointmentList>> resultHandler);
 
     void getAppointmentById(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler);

@@ -22,10 +22,10 @@ public class AppointmentServiceVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        log.info("Starting service Verticle: " + config().getString("address"));
         String address = config().getString("address");
+        log.info("Starting service Verticle: " + address);
         if (address == null) {
-            throw new IllegalStateException("address field must be specified in config for AppointmentService");
+            throw new IllegalStateException("address field must be specified in config for " + this.getClass().getSimpleName());
         }
         ProxyHelper.registerService(AppointmentService.class, getVertx(), appointmentService, address);
     }

@@ -82,7 +82,7 @@ public class AppointmentDatabase {
     }
 
     public List<Appointment> findByCustomerId(String customerId) {
-        delay();
+        delay(0.2);
         return dataStore.values().stream()
                 .filter(appointment -> customerId.equals(appointment.getCustomerId()))
                 .collect(Collectors.toList());
@@ -97,12 +97,6 @@ public class AppointmentDatabase {
 
     private synchronized String nextId() {
         return String.valueOf(nextId++);
-    }
-
-    private void delay() {
-        if (delayEnabled) {
-            delay.delayed();
-        }
     }
 
     private void delay(double faktor) {

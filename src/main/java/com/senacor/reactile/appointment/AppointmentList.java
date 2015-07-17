@@ -14,7 +14,7 @@ import static com.senacor.reactile.json.JsonObjects.marshal;
 import static com.senacor.reactile.json.JsonObjects.unmarshal;
 
 /**
- * Created by mhaunolder on 25.06.15.
+ * @author mhaunolder
  */
 @DataObject
 public class AppointmentList implements Jsonizable {

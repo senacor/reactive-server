@@ -2,10 +2,9 @@
   "main": "guice:com.senacor.reactile.appointment.AppointmentServiceVerticle",
   "options": {
     "worker": true,
+    "instances": 3,
     "config": {
       "address": "AppointmentService"
-    },
-
-    "instances": 5
+    }
   }
 }

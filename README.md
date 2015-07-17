@@ -25,8 +25,13 @@ FAQ
 - Alternativ zu dem automatischen Download kann auch unter 
   <USER_HOEM>/.embedmongo/<linux|windows|osx>/mongodb-<OS/ARCH>-<VERSION>.<tgz|bei windows=zip>
   die passende mongodb, die man online unter https://www.mongodb.org für sein OS bekommt, ablegen.
+
+### Wie kann ich die MongoDB leeren?
+- mongo reactile --eval "db.dropDatabase()"
+  "reactile" ist der Datenbankname
   
   
 TODO
 ====
 - Embedded Mongo auf einem anderen Port laufen lassen
+- Mongo "Management" GUI: mongoHUB

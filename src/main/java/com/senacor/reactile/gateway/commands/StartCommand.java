@@ -11,7 +11,6 @@ import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.customer.CustomerId;
 import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.newsticker.News;
-import com.senacor.reactile.newsticker.NewsTickerStream;
 import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.appointment.AppointmentService;
 import com.senacor.reactile.rxjava.appointment.BranchService;
@@ -60,7 +59,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         TransactionService transactionService,
                         AppointmentService appointmentService,
                         BranchService branchService,
-                        NewsService newsService, @Assisted UserId userId,
+                        NewsService newsService,
+                        @Assisted UserId userId,
                         @Assisted CustomerId customerId) {
 
 
