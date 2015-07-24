@@ -1,5 +1,6 @@
 package com.senacor.reactile.appointment;
 
+import com.google.common.collect.Lists;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
@@ -11,6 +12,10 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.*;
 
 /**
@@ -40,6 +45,16 @@ public class BranchDatabaseTest {
 
         Branch byId = database.findById(saved.getId());
         assertSame(saved, byId);
+    }
+
+    @Test
+    public void testFindByIds() throws Exception {
+        Branch saved1 = database.saveOrUpdate(Branch.newBuilder().withName("Test1").build());
+        assertNotNull(saved1.getId());
+        Branch saved2 = database.saveOrUpdate(Branch.newBuilder().withName("Test2").build());
+
+        List<Branch> res = database.findByIds(newArrayList(saved1.getId(), "gibtsNicht", saved2.getId()));
+        assertThat(res, contains(saved1, saved2));
     }
 
     @Test

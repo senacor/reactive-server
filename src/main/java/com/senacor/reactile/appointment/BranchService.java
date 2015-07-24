@@ -5,14 +5,19 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.util.List;
+
 @ProxyGen
 @VertxGen
 public interface BranchService {
 
-    static final String ADDRESS = "BranchService";
+    String ADDRESS = "BranchService";
 
     void getBranch(String branchId, Handler<AsyncResult<Branch>> resultHandler);
 
-  void getAllBranches(Handler<AsyncResult<BranchList>> resultHandler);
+    void findBranches(List<String> branchIds, Handler<AsyncResult<BranchList>> resultHandler);
+
+    void getAllBranches(Handler<AsyncResult<BranchList>> resultHandler);
+
 
 }

@@ -83,10 +83,14 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     @Override
     protected Observable<JsonObject> construct() {
         return userService.getUser(userId).flatMap(user -> {
-            Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId).map(JsonObjects::toJson);
-            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId).map(JsonArray::new);
-            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId).map(JsonObjects::toJsonArray);
+            Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId)
+                    .map(JsonObjects::toJson);
+            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
+                    .map(JsonArray::new);
+            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
+                    .map(JsonObjects::toJsonArray);
+            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId)
+                    .map(JsonObjects::toJsonArray);
 
             Observable<JsonArray> userAppointments = appointmentService.getAppointmentsByCustomerObservable(customerId.getId())
                     .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))

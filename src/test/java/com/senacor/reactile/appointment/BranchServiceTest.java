@@ -1,11 +1,5 @@
 package com.senacor.reactile.appointment;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import com.google.inject.Inject;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
@@ -15,6 +9,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import rx.Observable;
 import rx.observables.BlockingObservable;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class BranchServiceTest {
 
@@ -32,6 +33,24 @@ public class BranchServiceTest {
         Observable<Branch> branchObservable = service.getBranchObservable("0");
         assertThat(branchObservable, is(not(nullValue())));
         assertEquals("Bonn", branchObservable.toBlocking().first().getName());
+    }
+
+    @Test
+    public void thatBranchIdsReturned() {
+        BranchList allBranches = service.getAllBranchesObservable().toBlocking().first();
+        assertThat(allBranches.getBranches().size(), greaterThanOrEqualTo(2));
+
+        List<String> branchIds = allBranches.getBranches().stream()
+                .limit(2)
+                .map(branch -> branch.getId())
+                .collect(Collectors.toList());
+
+        Observable<BranchList> branchListObservable = service.findBranchesObservable(
+                branchIds);
+
+        List<Branch> branches = branchListObservable.toBlocking().first().getBranches();
+        assertThat("branches", branches, hasSize(2));
+        assertThat("branches", branches, everyItem(hasProperty("id", isOneOf(branchIds.toArray()))));
     }
 
     @Test

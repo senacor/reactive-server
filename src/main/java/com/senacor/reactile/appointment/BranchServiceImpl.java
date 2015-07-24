@@ -7,6 +7,7 @@ import io.vertx.core.Handler;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class BranchServiceImpl implements BranchService {
@@ -36,16 +37,36 @@ public class BranchServiceImpl implements BranchService {
         });
     }
 
-    public Observable<BranchList> getAllBranches() {
+    @Override
+    public void findBranches(List<String> branchIds, Handler<AsyncResult<BranchList>> resultHandler) {
+        Rx.bridgeHandler(findBranches(branchIds), resultHandler);
+    }
+
+    public Observable<BranchList> findBranches(final List<String> branchIds) {
         return Observable.create(subscriber -> {
-            subscriber.onNext(BranchList.newBuilder().withBranches(branchDatabase.findAll()).build());
-            subscriber.onCompleted();
+            try {
+                subscriber.onNext(BranchList.newBuilder().withBranches(branchDatabase.findByIds(branchIds)).build());
+                subscriber.onCompleted();
+            } catch (RuntimeException e) {
+                subscriber.onError(e);
+            }
         });
     }
 
     @Override
     public void getAllBranches(Handler<AsyncResult<BranchList>> resultHandler) {
         Rx.bridgeHandler(getAllBranches(), resultHandler);
+    }
+
+    public Observable<BranchList> getAllBranches() {
+        return Observable.create(subscriber -> {
+            try {
+                subscriber.onNext(BranchList.newBuilder().withBranches(branchDatabase.findAll()).build());
+                subscriber.onCompleted();
+            } catch (RuntimeException e) {
+                subscriber.onError(e);
+            }
+        });
     }
 
 }

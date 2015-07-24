@@ -58,6 +58,18 @@ public class BranchDatabase {
         return dataStore.get(branchId);
     }
 
+    public List<Branch> findByIds(final List<String> branchIds) {
+        delay(0.2);
+        List<Branch> res = new ArrayList<>(branchIds.size());
+        for (String branchId : branchIds) {
+            Branch branch = dataStore.get(branchId);
+            if (null != branch) {
+                res.add(branch);
+            }
+        }
+        return res;
+    }
+
     public Branch deleteById(final String branchId) {
         delay(0.2);
         return dataStore.remove(branchId);
