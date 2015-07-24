@@ -5,7 +5,6 @@ import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.customer.Address;
 import com.senacor.reactile.customer.Customer;
 import com.senacor.reactile.customer.CustomerFixtures;
-import com.senacor.reactile.domain.JsonObjectMatchers;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
@@ -23,9 +22,9 @@ import javax.inject.Inject;
 
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
+import static com.senacor.reactile.domain.JsonObjectMatchers.*;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -72,11 +71,18 @@ public class GatewayVerticleTest {
 
         JsonArray appointments = json.getJsonArray("appointments");
         assertThat("appointments", appointments, hasSize(3));
+        for (int i = 0; i < appointments.size(); i++) {
+            JsonObject jsonAppointment = appointments.getJsonObject(i);
+            assertThat(jsonAppointment, hasProperty("branch"));
+            assertThat(jsonAppointment, not(hasProperty("branchId")));
+            assertThat(jsonAppointment.getJsonObject("branch"), hasProperties("id", "name"));
+        }
+
         assertThat(creditCards, hasSize(1));
 
         JsonArray news = json.getJsonArray("news");
         assertThat(news, is(notNullValue()));
-        assertThat(news, JsonObjectMatchers.hasSize(10));
+        assertThat(news, hasSize(10));
     }
 
     @Test

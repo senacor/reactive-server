@@ -5,7 +5,6 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.account.TransactionService;
-import com.senacor.reactile.appointment.Appointment;
 import com.senacor.reactile.appointment.Branch;
 import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.customer.CustomerId;
@@ -23,6 +22,7 @@ import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 import static com.senacor.reactile.json.JsonObjects.$;
 import static rx.Observable.zip;
@@ -93,15 +93,17 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonObjects::toJsonArray);
 
             Observable<JsonArray> userAppointments = appointmentService.getAppointmentsByCustomerObservable(customerId.getId())
-                    .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))
-                    .flatMap(appointment -> branchService.getBranchObservable(appointment.getBranchId())
+                    .flatMap(appointmentList -> branchService.findBranchesObservable(appointmentList.getAppointmentList().stream()
+                            .map(appointment -> appointment.getBranchId())
+                            .collect(Collectors.toList()))
+                            .flatMap(branchList -> Observable.from(branchList.getBranches()))
                             .map(Branch::toJson)
-                            .zipWith(Observable.just(appointment).map(Appointment::toJson),
-                                    (branchJ, appointmentJ) -> {
-                                        JsonObject appointmentWithBranch = appointmentJ.put("branch", branchJ);
-                                        appointmentWithBranch.remove("branchId");
-                                        return appointmentWithBranch;
-                                    }))
+                            .zipWith(appointmentList.getAppointmentList(), (branchJ, appointment) -> {
+                                JsonObject appointmentJ = appointment.toJson();
+                                JsonObject appointmentWithBranch = appointmentJ.put("branch", branchJ);
+                                appointmentWithBranch.remove("branchId");
+                                return appointmentWithBranch;
+                            }))
                     .reduce(new JsonArray(), JsonArray::add);
 
             Observable<JsonArray> newsObservable = newsService.getLatestNewsObservable(10)
