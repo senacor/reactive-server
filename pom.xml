@@ -13,7 +13,7 @@
 
         <vertx.version>3.0.0-milestone4</vertx.version>
         <vertx-guice.version>0.1-SNAPSHOT</vertx-guice.version>
-        <embed.mongo.version>1.46.4</embed.mongo.version>
+        <embed.mongo.version>1.50.0</embed.mongo.version>
         <fongo.version>1.6.1</fongo.version>
         <guava.version>18.0</guava.version>
         <junit.version>4.12</junit.version>

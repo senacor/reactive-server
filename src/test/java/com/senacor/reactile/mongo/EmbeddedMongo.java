@@ -1,10 +1,12 @@
 package com.senacor.reactile.mongo;
 
+import com.mongodb.async.client.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
+import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
@@ -20,7 +22,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class EmbeddedMongo {
 
-    private final MongodStarter starter = MongodStarter.getInstance(newRuntimeConfig());
+    private final MongodStarter starter = MongodStarter.getDefaultInstance();
     public static final int DEFAULT_MONGO_PORT = 27017;
 
     private MongodExecutable mongodExe;
@@ -84,19 +86,6 @@ public class EmbeddedMongo {
         cleanArtifactStore();
         mongod = null;
         mongodExe = null;
-    }
-
-    private static IRuntimeConfig newRuntimeConfig() {
-        Command command = Command.MongoD;
-        return new RuntimeConfigBuilder()
-                .defaults(command)
-                .processOutput(ProcessOutput.getDefaultInstanceSilent())
-                .artifactStore(new ArtifactStoreBuilder()
-                        .defaults(command)
-                        .executableNaming((prefix, postfix) -> "embeddedmongo")
-                        .tempDir(buildDirPath())
-                        .useCache(false))
-                .build();
     }
 
     private static FixedPath buildDirPath() {
