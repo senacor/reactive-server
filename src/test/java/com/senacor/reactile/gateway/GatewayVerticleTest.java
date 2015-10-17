@@ -8,6 +8,7 @@ import com.senacor.reactile.customer.CustomerFixtures;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
+import com.senacor.reactile.rxjava.customer.CustomerService;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -41,7 +42,7 @@ public class GatewayVerticleTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private com.senacor.reactile.rxjava.customer.CustomerService service;
+    private CustomerService service;
 
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
 
@@ -82,7 +83,7 @@ public class GatewayVerticleTest {
 
         JsonArray news = json.getJsonArray("news");
         assertThat(news, is(notNullValue()));
-        assertThat(news, hasSize(10));
+        assertThat(news, is(not(empty())));
     }
 
     @Test
