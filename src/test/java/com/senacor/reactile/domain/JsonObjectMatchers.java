@@ -21,7 +21,7 @@ public class JsonObjectMatchers {
 
 
     public static Matcher<JsonObject> hasValue(String property, Object value) {
-        FeatureMatcher<JsonObject, Object> valueMatcher = new FeatureMatcher<JsonObject, Object>(equalTo(value), " a json object with property " + property + " and value", "value") {
+        FeatureMatcher<JsonObject, Object> valueMatcher = new FeatureMatcher<JsonObject, Object>(equalTo(value), "a json object with property " + property + " and value", "value") {
             @Override
             protected Object featureValueOf(JsonObject actual) {
                 return actual.getValue(property);
@@ -31,12 +31,16 @@ public class JsonObjectMatchers {
     }
 
     public static Matcher<JsonArray> hasSize(int expectedSize) {
-        return new FeatureMatcher<JsonArray, Integer>(is(expectedSize), " a json array with size", "size") {
+        return new FeatureMatcher<JsonArray, Integer>(equalTo(expectedSize), "a json array with size", "size") {
             @Override
             protected Integer featureValueOf(JsonArray actual) {
                 return actual.size();
             }
         };
+    }
+
+    public static Matcher<JsonArray> empty() {
+        return hasSize(0);
     }
 
     public static Matcher<JsonObject> hasProperty(String property) {
