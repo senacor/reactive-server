@@ -1,13 +1,20 @@
 package com.senacor.reactile;
 
 import com.deenterprised.vertx.spi.BootstrapModuleProvider;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.senacor.reactile.account.AccountService;
 import com.senacor.reactile.account.AccountServiceImpl;
 import com.senacor.reactile.account.TransactionService;
 import com.senacor.reactile.account.TransactionServiceImpl;
-import com.senacor.reactile.appointment.*;
+import com.senacor.reactile.appointment.AppointmentDatabase;
+import com.senacor.reactile.appointment.AppointmentService;
+import com.senacor.reactile.appointment.AppointmentServiceImpl;
+import com.senacor.reactile.appointment.BranchService;
+import com.senacor.reactile.appointment.BranchServiceImpl;
 import com.senacor.reactile.creditcard.CreditCardService;
 import com.senacor.reactile.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.customer.CustomerService;
@@ -24,7 +31,6 @@ import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
 import com.senacor.reactile.newsticker.NewsService;
 import com.senacor.reactile.newsticker.NewsServiceImpl;
-import com.senacor.reactile.rx.RxServiceInterceptor;
 import com.senacor.reactile.user.UserConnector;
 import com.senacor.reactile.user.UserService;
 import com.senacor.reactile.user.UserServiceImpl;
@@ -32,10 +38,10 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.serviceproxy.ProxyHelper;
-import rx.Observable;
 import rx.Scheduler;
 
-import static com.google.inject.matcher.Matchers.*;
+import static com.google.inject.matcher.Matchers.annotatedWith;
+import static com.google.inject.matcher.Matchers.any;
 
 public class AppModuleProvider implements BootstrapModuleProvider {
     @Override
