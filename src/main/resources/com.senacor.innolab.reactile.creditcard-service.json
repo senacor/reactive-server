@@ -1,0 +1,10 @@
+{
+  "main": "guice:com.senacor.reactile.creditcard.CreditCardServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "CreditCardService",
+      "collection": "creditcards"
+    }
+  }
+}

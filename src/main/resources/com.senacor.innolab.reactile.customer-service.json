@@ -1,0 +1,10 @@
+{
+  "main": "guice:com.senacor.reactile.customer.CustomerServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "CustomerService",
+      "collection": "customers"
+    }
+  }
+}

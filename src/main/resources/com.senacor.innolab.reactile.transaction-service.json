@@ -1,0 +1,10 @@
+{
+  "main": "guice:com.senacor.reactile.account.TransactionServiceVerticle",
+
+  "options": {
+    "config": {
+      "address": "TransactionServiceVerticle",
+      "collection": "transactions"
+    }
+  }
+}

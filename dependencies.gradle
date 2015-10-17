@@ -1,0 +1,83 @@
+ext {
+    guavaVersion = '18.0'
+
+    commonsLan3Version = '3.1'
+
+    hamcrestVersion = '1.3'
+    junitVersion = '4.12'
+    junitparamsVersion = '1.0.4'
+    mockitoVersion = '1.9.5'
+    catchExceptionVersion = '1.2.0'
+
+    hystrixVersion = '1.4.4'
+
+    jacksonVersion = '1.9.13'
+
+    fongoVersion = '1.6.1'
+
+    embeddedMongoVersion = '1.46.4'
+
+    vertxVersion = '3.0.0-milestone4'
+
+    guiceVersion = '4.0-beta5'
+    vertxguicefactoryVersion = '0.1-SNAPSHOT'
+
+}
+
+
+ext.libraries = [
+
+
+        vertx            : [
+                [group: 'io.vertx', name: 'vertx-core', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-rx-java', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-apex', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-reactive-streams', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-service-factory', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-maven-service-factory', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-service-proxy', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-mongo-service', version: vertxVersion],
+                [group: 'io.vertx', name: 'vertx-codegen', version: vertxVersion],
+        ],
+
+        vertxguicefactory: [group: 'com.deenterprised', name: 'vertx-guice', version: vertxguicefactoryVersion],
+
+        embeddedMongo    : [group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: embeddedMongoVersion],
+
+        fongo            : [group: 'com.github.fakemongo', name: 'fongo', version: fongoVersion],
+
+        guava            : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
+
+        junit            : [
+                [group: 'junit', name: 'junit', version: junitVersion],
+                [group: 'org.hamcrest', name: 'hamcrest-core', version: hamcrestVersion],
+                [group: 'org.hamcrest', name: 'hamcrest-library', version: hamcrestVersion],
+                [group: 'org.mockito', name: 'mockito-core', version: mockitoVersion],
+                [group: 'pl.pragmatists', name: 'JUnitParams', version: junitparamsVersion],
+                [group: 'com.googlecode.catch-exception', name: 'catch-exception', version: catchExceptionVersion],
+                dependencies.create('com.github.stefanbirkner:system-rules:1.8.0') {
+                    exclude group: 'junit'
+                },
+
+        ],
+
+        resteasyjson     : [
+                [group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: jacksonVersion],
+                [group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: jacksonVersion],
+        ],
+
+        guava            : [group: 'com.google.guava', name: 'guava', version: guavaVersion],
+
+        apachecommons    : [group: 'org.apache.commons', name: 'commons-lang3', version: commonsLan3Version],
+
+        hystrix          : [
+                [group: 'com.netflix.hystrix', name: 'hystrix-core', version: hystrixVersion],
+                [group: 'com.netflix.hystrix', name: 'hystrix-metrics-event-stream', version: hystrixVersion]
+        ],
+
+        guice            : [
+                [group: 'com.google.inject', name: 'guice', version: guiceVersion],
+                [group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: guiceVersion]
+        ]
+]
