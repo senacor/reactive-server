@@ -4,17 +4,13 @@ import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.service.account.TransactionService;
-import com.senacor.reactile.service.appointment.Branch;
+import com.senacor.reactile.json.JsonObjects;
+import com.senacor.reactile.rxjava.service.account.AccountService;
+import com.senacor.reactile.rxjava.service.customer.CustomerService;
+import com.senacor.reactile.rxjava.service.account.TransactionService;
+import com.senacor.reactile.service.account.TransactionList;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.json.JsonObjects;
-import com.senacor.reactile.service.newsticker.News;
-import com.senacor.reactile.rxjava.account.AccountService;
-import com.senacor.reactile.rxjava.appointment.AppointmentService;
-import com.senacor.reactile.rxjava.appointment.BranchService;
-import com.senacor.reactile.rxjava.customer.CustomerService;
-import com.senacor.reactile.rxjava.newsticker.NewsService;
 import com.senacor.reactile.user.UserId;
 import com.senacor.reactile.user.UserService;
 import io.vertx.core.json.JsonArray;
@@ -22,7 +18,6 @@ import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.stream.Collectors;
 
 import static com.senacor.reactile.json.JsonObjects.$;
 import static rx.Observable.zip;
@@ -80,7 +75,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonArray::new);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
                     .map(JsonObjects::toJsonArray);
-            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId)
+            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomerObservable(customerId)
+                    .map(TransactionList::getTransactionList)
                     .map(JsonObjects::toJsonArray);
 
             return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable, this::mergeIntoResponse);

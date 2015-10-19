@@ -62,7 +62,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(UserService.class).to(UserServiceImpl.class);
             bind(AccountService.class).annotatedWith(Impl.class).to(AccountServiceImpl.class);
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
-            bind(TransactionService.class).to(TransactionServiceImpl.class);
+            bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
             bind(UserConnector.class);
@@ -109,9 +109,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        com.senacor.reactile.rxjava.customer.CustomerService provideCustomerService(Vertx vertx) {
+        com.senacor.reactile.rxjava.service.customer.CustomerService provideCustomerService(Vertx vertx) {
             CustomerService proxy = ProxyHelper.createProxy(CustomerService.class, vertx, CustomerService.ADDRESS);
-            return new com.senacor.reactile.rxjava.customer.CustomerService(proxy);
+            return new com.senacor.reactile.rxjava.service.customer.CustomerService(proxy);
         }
 
         @Provides
@@ -120,9 +120,15 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        com.senacor.reactile.rxjava.account.AccountService provideAccountService(Vertx vertx) {
+        com.senacor.reactile.rxjava.service.account.AccountService provideAccountService(Vertx vertx) {
             AccountService proxy = ProxyHelper.createProxy(AccountService.class, vertx, AccountService.ADDRESS);
-            return new com.senacor.reactile.rxjava.account.AccountService(proxy);
+            return new com.senacor.reactile.rxjava.service.account.AccountService(proxy);
+        }
+
+        @Provides
+        com.senacor.reactile.rxjava.service.account.TransactionService provideTransactionService(Vertx vertx) {
+            TransactionService proxy = ProxyHelper.createProxy(TransactionService.class, vertx, TransactionService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.account.TransactionService(proxy);
         }
     }
 }

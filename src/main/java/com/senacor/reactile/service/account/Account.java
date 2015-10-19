@@ -34,11 +34,7 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
     }
 
     public Account(JsonObject jsonObject) {
-        this(
-                new AccountId(jsonObject.getString("id")),
-                new CustomerId(jsonObject.getString("customerId")),
-                Amount.fromJson(jsonObject.getJsonObject("balance"))
-        );
+        this(fromJson(jsonObject));
     }
 
     public static Builder anAccount() {
@@ -79,6 +75,7 @@ public class Account implements Product, Jsonizable, Identity<AccountId> {
                 .build();
     }
 
+    @Override
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id.getId())

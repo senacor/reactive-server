@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 
 @ProxyGen
 public interface CreditCardService {
-    static final String ADDRESS = "CreditCardService";
+    String ADDRESS = "CreditCardService";
 
     @GenIgnore
     default Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {

@@ -19,20 +19,20 @@ public final class TransactionFixtures {
     }
 
     public static Transaction newAccTransaction(String customerId, String accountId) {
-        return newTransaction(true)
+        return newTransactionBuilder(true)
                 .withCustomerId(customerId)
                 .withAccountId(accountId)
                 .build();
     }
 
     public static Transaction newCCTransaction(String customerId, String creditCardId) {
-        return newTransaction(false)
+        return newTransactionBuilder(false)
                 .withCustomerId(customerId)
                 .withCreditCardId(creditCardId)
                 .build();
     }
 
-    public static Transaction.Builder newTransaction(boolean forAccount) {
+    public static Transaction.Builder newTransactionBuilder(boolean forAccount) {
         Transaction.Builder builder = Transaction.aTransaction()
                 .withId("transaction-" + rnd())
                 .withCustomerId("cust-" + rnd())
@@ -50,11 +50,19 @@ public final class TransactionFixtures {
     }
 
     public static Observable<Transaction> randomTransactions(CustomerId customerId, AccountId accountId, int count) {
-        return Observable.just(newAccTransaction(customerId.getId(), accountId.getId())).repeat(count);
+        return Observable.range(0, count).map(i -> newTransactionBuilder(true)
+                .withAccountId(accountId)
+                .withCustomerId(customerId)
+                .withId("acc-" + rnd() + "-" + i)
+                .build());
     }
 
     public static Observable<Transaction> randomTransactions(CustomerId customerId, CreditCardId creditCardId, int count) {
-        return Observable.just(newCCTransaction(customerId.getId(), creditCardId.getId())).repeat(count);
+        return Observable.range(0, count).map(i -> newTransactionBuilder(false)
+                .withCreditCardId(creditCardId)
+                .withCustomerId(customerId)
+                .withId("cc-" + rnd() + "-" + i)
+                .build());
     }
 
     public static Observable<Transaction> randomTransactions(Observable<CustomerId> customers) {

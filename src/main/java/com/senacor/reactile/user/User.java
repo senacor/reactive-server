@@ -67,6 +67,7 @@ public class User implements Identity<UserId>, Jsonizable {
                 '}';
     }
 
+    @Override
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id.toValue())

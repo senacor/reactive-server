@@ -57,10 +57,10 @@ public class CreditCardServiceTest {
 
     @Test
     public void thatCreditCardCanBeCreated() {
-        CreditCard creditCard = service.createCreditCard(randomCreditCard("cc-003", "cust-003")).toBlocking().first();
+        CreditCard creditCard = service.createCreditCard(randomCreditCard("cc-004", "cust-004")).toBlocking().first();
         assertThat(creditCard.toJson(), hasProperty("id"));
-        assertThat(creditCard.toJson(), hasValue("id", "cc-003"));
-        assertThat(creditCard.toJson(), hasValue("customerId", "cust-003"));
+        assertThat(creditCard.toJson(), hasValue("id", "cc-004"));
+        assertThat(creditCard.toJson(), hasValue("customerId", "cust-004"));
     }
 
 

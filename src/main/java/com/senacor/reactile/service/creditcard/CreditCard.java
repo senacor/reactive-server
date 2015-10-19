@@ -57,6 +57,7 @@ public class CreditCard implements Product, Jsonizable, Identity<CreditCardId> {
                 .build();
     }
 
+    @Override
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id.getId())
