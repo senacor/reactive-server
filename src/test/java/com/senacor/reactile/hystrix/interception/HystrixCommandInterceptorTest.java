@@ -28,7 +28,7 @@ public class HystrixCommandInterceptorTest {
     private TestService testService;
 
     @Inject
-    TestCommandFactory testCommandFactory;
+    private TestCommandFactory testCommandFactory;
 
     @Test
     public void testCommand() throws Exception {
