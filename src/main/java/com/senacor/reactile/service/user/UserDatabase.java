@@ -1,4 +1,4 @@
-package com.senacor.reactile.user;
+package com.senacor.reactile.service.user;
 
 import com.google.common.collect.ImmutableMap;
 

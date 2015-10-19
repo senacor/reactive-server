@@ -7,9 +7,8 @@ import com.google.common.collect.ImmutableSet;
 public enum Services implements ServiceIdProvider {
 
     EmbeddedMongo("com.senacor.reactile.embedded-mongo"),
-    UserConnector("com.senacor.reactile.user-connector"),
     NewsService("com.senacor.reactile.news-service"),
-    UserService("com.senacor.reactile.user-service", UserConnector),
+    UserService("com.senacor.reactile.user-service"),
     CustomerService("com.senacor.reactile.customer-service", EmbeddedMongo),
     AppointmentSerivce("com.senacor.reactile.appointment-service"),
     BranchService("com.senacor.reactile.branch-service"),

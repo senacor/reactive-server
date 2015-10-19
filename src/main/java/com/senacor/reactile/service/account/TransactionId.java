@@ -27,6 +27,15 @@ public class TransactionId implements IdObject {
         this(creditCardId.getId());
     }
 
+    public TransactionId(TransactionId transactionId) {
+        this(transactionId.getId());
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return new JsonObject().put("id", toValue());
+    }
+
     @Override
     public String getId() {
         return id;

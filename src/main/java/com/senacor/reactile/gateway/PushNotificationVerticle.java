@@ -1,13 +1,9 @@
 package com.senacor.reactile.gateway;
 
-import javax.inject.Inject;
-
+import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.service.customer.CustomerService;
-import com.senacor.reactile.service.newsticker.NewsServiceVerticle;
-import com.senacor.reactile.user.User;
-import com.senacor.reactile.user.UserService;
-
+import com.senacor.reactile.service.user.User;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -15,11 +11,12 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.Message;
 import rx.Observable;
 
+import javax.inject.Inject;
+
 public class PushNotificationVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
-    public static final String PUBLISH_NEWS_UPDATE = "PushNotification#News#update";
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
 
@@ -52,7 +49,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(PUBLISH_ADDRESS).toObservable()
                 .map(message -> (CustomerAddressChangedEvt) message.body())
                 .flatMap(event -> {
-                    Observable<User> userObservable = userService.getUser(event.getUserId());
+                    Observable<User> userObservable = userService.getUserObservable(event.getUserId());
                     return userObservable.map(event::replaceUser);
                 })
                 .subscribe(eventWithUser -> logger.info("Received event " + eventWithUser));

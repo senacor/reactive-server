@@ -2,8 +2,8 @@ package com.senacor.reactile.service.customer;
 
 import com.senacor.reactile.domain.Jsonizable;
 import com.senacor.reactile.event.Event;
-import com.senacor.reactile.user.User;
-import com.senacor.reactile.user.UserId;
+import com.senacor.reactile.service.user.User;
+import com.senacor.reactile.service.user.UserId;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.builder.ToStringBuilder;

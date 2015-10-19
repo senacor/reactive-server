@@ -8,11 +8,11 @@ import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.rxjava.service.account.AccountService;
 import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
+import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.account.TransactionList;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.user.UserId;
-import com.senacor.reactile.user.UserService;
+import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
@@ -68,7 +68,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
 
     @Override
     protected Observable<JsonObject> construct() {
-        return userService.getUser(userId).flatMap(user -> {
+        return userService.getUserObservable(userId).flatMap(user -> {
             Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId)
                     .map(JsonObjects::toJson);
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
