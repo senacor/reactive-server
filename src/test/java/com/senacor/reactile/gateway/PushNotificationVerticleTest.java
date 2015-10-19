@@ -18,12 +18,12 @@ import javax.inject.Inject;
 import com.google.common.base.Throwables;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.customer.CustomerAddressChangedEvt;
-import com.senacor.reactile.customer.CustomerFixtures;
+import com.senacor.reactile.service.customer.Address;
+import com.senacor.reactile.service.customer.Customer;
+import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
+import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.newsticker.News;
+import com.senacor.reactile.service.newsticker.News;
 
 import org.junit.ClassRule;
 import org.junit.Rule;

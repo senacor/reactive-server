@@ -1,5 +1,5 @@
 {
-  "main": "guice:com.senacor.reactile.creditcard.CreditCardServiceVerticle",
+  "main": "guice:com.senacor.reactile.service.creditcard.CreditCardServiceVerticle",
 
   "options": {
     "config": {

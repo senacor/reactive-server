@@ -2,9 +2,9 @@ package com.senacor.reactile.gateway;
 
 import javax.inject.Inject;
 
-import com.senacor.reactile.customer.CustomerAddressChangedEvt;
-import com.senacor.reactile.customer.CustomerService;
-import com.senacor.reactile.newsticker.NewsServiceVerticle;
+import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
+import com.senacor.reactile.service.customer.CustomerService;
+import com.senacor.reactile.service.newsticker.NewsServiceVerticle;
 import com.senacor.reactile.user.User;
 import com.senacor.reactile.user.UserService;
 

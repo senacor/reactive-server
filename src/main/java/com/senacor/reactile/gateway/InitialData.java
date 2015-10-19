@@ -1,14 +1,14 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.account.Account;
-import com.senacor.reactile.account.AccountFixtures;
-import com.senacor.reactile.creditcard.CreditCard;
-import com.senacor.reactile.creditcard.CreditCardFixtures;
-import com.senacor.reactile.creditcard.CreditCardService;
-import com.senacor.reactile.account.TransactionFixtures;
-import com.senacor.reactile.account.TransactionService;
-import com.senacor.reactile.customer.CustomerFixtures;
-import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.service.account.Account;
+import com.senacor.reactile.service.account.AccountFixtures;
+import com.senacor.reactile.service.creditcard.CreditCard;
+import com.senacor.reactile.service.creditcard.CreditCardFixtures;
+import com.senacor.reactile.service.creditcard.CreditCardService;
+import com.senacor.reactile.service.account.TransactionFixtures;
+import com.senacor.reactile.service.account.TransactionService;
+import com.senacor.reactile.service.customer.CustomerFixtures;
+import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.rxjava.account.AccountService;
 import com.senacor.reactile.rxjava.customer.CustomerService;
 import io.vertx.rxjava.core.RxHelper;

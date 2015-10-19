@@ -1,5 +1,5 @@
 {
-  "main": "guice:com.senacor.reactile.appointment.AppointmentServiceVerticle",
+  "main": "guice:com.senacor.reactile.service.appointment.AppointmentServiceVerticle",
   "options": {
     "worker": true,
     "instances": 3,

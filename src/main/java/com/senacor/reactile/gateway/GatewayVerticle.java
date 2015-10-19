@@ -1,7 +1,7 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.service.customer.Address;
+import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.user.UserId;

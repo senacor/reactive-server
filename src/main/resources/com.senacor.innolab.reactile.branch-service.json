@@ -1,5 +1,5 @@
 {
-  "main": "guice:com.senacor.reactile.appointment.BranchServiceVerticle",
+  "main": "guice:com.senacor.reactile.service.appointment.BranchServiceVerticle",
   "options": {
     "worker": true,
     "instances": 1,

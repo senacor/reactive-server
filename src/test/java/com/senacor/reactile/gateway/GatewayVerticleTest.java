@@ -2,9 +2,9 @@ package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.customer.CustomerFixtures;
+import com.senacor.reactile.service.customer.Address;
+import com.senacor.reactile.service.customer.Customer;
+import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;

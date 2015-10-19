@@ -4,9 +4,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.customer.Address;
-import com.senacor.reactile.customer.Customer;
-import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.service.customer.Address;
+import com.senacor.reactile.service.customer.Customer;
+import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.rxjava.customer.CustomerService;
 import rx.Observable;
 

@@ -1,7 +1,7 @@
 package com.senacor.reactile.codec;
 
-import com.senacor.reactile.customer.Country;
-import com.senacor.reactile.customer.Customer;
+import com.senacor.reactile.service.customer.Country;
+import com.senacor.reactile.service.customer.Customer;
 import io.vertx.core.buffer.Buffer;
 import org.junit.Test;
 

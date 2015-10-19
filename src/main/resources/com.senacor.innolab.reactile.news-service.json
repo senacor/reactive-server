@@ -1,5 +1,5 @@
 {
-  "main": "guice:com.senacor.reactile.newsticker.NewsServiceVerticle",
+  "main": "guice:com.senacor.reactile.service.newsticker.NewsServiceVerticle",
 
   "options": {
     "config": {

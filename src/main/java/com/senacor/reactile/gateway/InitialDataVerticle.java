@@ -1,6 +1,6 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.customer.CustomerId;
+import com.senacor.reactile.service.customer.CustomerId;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
