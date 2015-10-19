@@ -10,7 +10,7 @@ public interface Product {
     Type getType();
 
 
-    public enum Type {
+    enum Type {
         ACCOUNT, CREDITCARD
     }
 }
