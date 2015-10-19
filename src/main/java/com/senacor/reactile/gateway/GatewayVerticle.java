@@ -105,13 +105,13 @@ public class GatewayVerticle extends AbstractVerticle {
     }
 
     private void handleStart(RoutingContext routingContext) {
-        serveRequest(routingContext.request(), routingContext.response(), routingContext.request().params())
+        serveRequest(routingContext.response(), routingContext.request().params())
                 .subscribe(
                         response -> routingContext.next(),
                         Throwable::printStackTrace);
     }
 
-    private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
+    private Observable<HttpServerResponse> serveRequest(HttpServerResponse response, MultiMap params) {
         UserId userId = new UserId(getParam(params, "user"));
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 

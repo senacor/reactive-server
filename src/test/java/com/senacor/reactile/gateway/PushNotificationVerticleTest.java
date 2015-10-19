@@ -83,29 +83,4 @@ public class PushNotificationVerticleTest {
         assertEquals("event.newAddress.city", "NewCity", event.getNewAddress().getCity());
     }
 
-    @Test
-    public void testNewsUpdateEvent() throws Exception {
-        TestSubscriber<News> ts = new TestSubscriber<News>();
-
-        // listen for events
-        String eventAddress = PushNotificationVerticle.PUBLISH_NEWS_UPDATE;
-        logger.info("listening on address '" + eventAddress + "'");
-        vertxRule.eventBus().consumer(eventAddress)
-                .toObservable()
-                .map(Message::body)
-                .cast(JsonObject.class)
-                .map(News::fromJson)
-                .take(3)
-                .subscribe(ts);
-
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-        List<News> messages = ts.getOnNextEvents();
-
-        assertThat(messages, hasSize(3));
-
-        for (News news : messages) {
-            assertThat(news.getTitle(), is(not(isEmptyString())));
-            assertThat(news.getNews(), is(not(isEmptyString())));
-        }
-    }
 }

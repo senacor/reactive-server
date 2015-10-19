@@ -34,7 +34,6 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public void start() {
         registerEventSubcriber();
         registerCustomerAddressUpdateHandler();
-        registerNewsUpdateHandler();
     }
 
     private void registerCustomerAddressUpdateHandler() {
@@ -59,13 +58,4 @@ public class PushNotificationVerticle extends AbstractVerticle {
                 .subscribe(eventWithUser -> logger.info("Received event " + eventWithUser));
     }
 
-    private void registerNewsUpdateHandler() {
-        vertx.eventBus().consumer(NewsServiceVerticle.ADDRESS).toObservable()
-                .map(Message::body)
-                .cast(JsonObject.class)
-                .subscribe(updateEvent -> {
-                    String publishAddress = PUBLISH_NEWS_UPDATE;
-                    vertx.eventBus().publish(publishAddress, updateEvent);
-                }, throwable -> logger.error("Error while handling event from " + NewsServiceVerticle.ADDRESS, throwable));
-    }
 }

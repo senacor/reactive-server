@@ -15,28 +15,16 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public static final String ADDRESS = "NewsTicker";
-
-    private final NewsTickerStream newsTickerStream;
-
     private final NewsService newsService;
-
-    private Subscription subscription;
 
     @Inject
     public NewsServiceVerticle(@Impl NewsService newsService) {
-
-        newsTickerStream = new NewsTickerStream();
         this.newsService = newsService;
     }
 
 
     @Override
     public void start() throws Exception {
-        subscription = newsTickerStream.getNewsObservable().subscribe(news -> {
-            vertx.eventBus().publish(ADDRESS, news.toJson());
-        });
-
         log.info("Starting service: " + config().getString("main"));
         String address = config().getString("address");
         if (address == null) {
@@ -48,7 +36,6 @@ public class NewsServiceVerticle extends AbstractVerticle {
     @Override
     public void stop() throws Exception {
         log.info("Stopping service Verticle: " + config().getString("address"));
-        subscription.unsubscribe();
     }
 
 }
