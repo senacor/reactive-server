@@ -1,25 +1,12 @@
 package com.senacor.reactile.service.account;
 
 import com.senacor.reactile.guice.Impl;
-import com.senacor.reactile.service.creditcard.CreditCardId;
-import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.service.AbstractServiceVerticle;
-import com.senacor.reactile.service.Action;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.rxjava.ext.mongo.MongoService;
 import io.vertx.serviceproxy.ProxyHelper;
-import rx.Observable;
-import rx.functions.Func1;
 
 import javax.inject.Inject;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 public class TransactionServiceVerticle extends AbstractVerticle {
     private final Logger log = LoggerFactory.getLogger(this.getClass());

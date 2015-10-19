@@ -1,24 +1,19 @@
 package com.senacor.reactile.service.account;
 
 import com.senacor.reactile.rx.Rx;
-import com.senacor.reactile.service.Action;
 import com.senacor.reactile.service.creditcard.CreditCardId;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.eventbus.Message;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 import rx.functions.Func1;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 
-import static com.senacor.reactile.header.Headers.action;
 import static java.util.stream.Collectors.toList;
 
 public class TransactionServiceImpl implements TransactionService {

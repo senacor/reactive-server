@@ -1,14 +1,14 @@
 package com.senacor.reactile.service.user;
 
 import com.senacor.reactile.guice.Impl;
-import com.senacor.reactile.service.AbstractServiceVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
 
-public class UserServiceVerticle extends AbstractServiceVerticle {
+public class UserServiceVerticle extends AbstractVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

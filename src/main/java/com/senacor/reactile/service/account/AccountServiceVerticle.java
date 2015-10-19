@@ -1,7 +1,6 @@
 package com.senacor.reactile.service.account;
 
 import com.senacor.reactile.guice.Impl;
-import com.senacor.reactile.service.AbstractServiceVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
