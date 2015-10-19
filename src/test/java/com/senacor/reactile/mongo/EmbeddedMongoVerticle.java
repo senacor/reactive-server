@@ -34,11 +34,12 @@ public class EmbeddedMongoVerticle extends AbstractVerticle {
         }
 
         launchMongoServiceObservable()
-        .subscribe(
-                res -> {},
-                startFuture::fail,
-                startFuture::complete
-        );
+                .subscribe(
+                        res -> {
+                        },
+                        startFuture::fail,
+                        startFuture::complete
+                );
     }
 
     @Override
@@ -49,7 +50,8 @@ public class EmbeddedMongoVerticle extends AbstractVerticle {
 
     private Observable<String> launchMongoServiceObservable() {
         JsonObject config = new JsonObject()
-                .put("db_name", "reactile");
+                .put("db_name", "reactile")
+                .put("waitQueueMultiple", "800");
         ObservableFuture<String> observableHandler = RxHelper.observableFuture();
         getVertx().deployVerticle("service:io.vertx.mongo-service", new DeploymentOptions().setConfig(config), observableHandler.toHandler());
         return observableHandler;
