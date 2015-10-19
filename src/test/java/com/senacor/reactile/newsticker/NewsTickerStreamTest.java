@@ -41,7 +41,7 @@ public class NewsTickerStreamTest {
                                 e.printStackTrace();
                             }
                         });
-        monitor.poll(6, TimeUnit.SECONDS);
+        monitor.poll(1, TimeUnit.SECONDS);
         subscription.unsubscribe();
     }
 }
