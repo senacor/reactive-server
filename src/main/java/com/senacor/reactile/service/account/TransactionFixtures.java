@@ -19,25 +19,25 @@ public final class TransactionFixtures {
     }
 
     public static Transaction newAccTransaction(String customerId, String accountId) {
-        return newTransactionBuilder(true)
+        return newTransactionBuilder(Product.Type.ACCOUNT)
                 .withCustomerId(customerId)
                 .withAccountId(accountId)
                 .build();
     }
 
     public static Transaction newCCTransaction(String customerId, String creditCardId) {
-        return newTransactionBuilder(false)
+        return newTransactionBuilder(Product.Type.CREDITCARD)
                 .withCustomerId(customerId)
                 .withCreditCardId(creditCardId)
                 .build();
     }
 
-    public static Transaction.Builder newTransactionBuilder(boolean forAccount) {
+    public static Transaction.Builder newTransactionBuilder(Product.Type type) {
         Transaction.Builder builder = Transaction.aTransaction()
                 .withId("transaction-" + rnd())
                 .withCustomerId("cust-" + rnd())
                 .withAmount(BigDecimal.valueOf(rd.nextInt(1000)));
-        return forAccount ? builder.withAccountId("acc-" + rnd()) : builder.withCreditCardId("cc-" + rnd());
+        return type == Product.Type.ACCOUNT ? builder.withAccountId("acc-" + rnd()) : builder.withCreditCardId("cc-" + rnd());
     }
 
     private static String rnd() {
@@ -49,19 +49,11 @@ public final class TransactionFixtures {
         return randomTransactions(customerId(count));
     }
 
-    public static Observable<Transaction> randomTransactions(CustomerId customerId, AccountId accountId, int count) {
-        return Observable.range(0, count).map(i -> newTransactionBuilder(true)
-                .withAccountId(accountId)
+    public static Observable<Transaction> randomTransactions(CustomerId customerId, Product product, int count) {
+        String idPrefix = product.getType() == Product.Type.ACCOUNT ? "acc-" : "cc-";
+        return Observable.range(0, count).map(i -> newTransactionBuilder(product.getType())
                 .withCustomerId(customerId)
-                .withId("acc-" + rnd() + "-" + i)
-                .build());
-    }
-
-    public static Observable<Transaction> randomTransactions(CustomerId customerId, CreditCardId creditCardId, int count) {
-        return Observable.range(0, count).map(i -> newTransactionBuilder(false)
-                .withCreditCardId(creditCardId)
-                .withCustomerId(customerId)
-                .withId("cc-" + rnd() + "-" + i)
+                .withId(idPrefix + rnd() + "-" + i)
                 .build());
     }
 

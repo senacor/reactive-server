@@ -3,6 +3,8 @@ package com.senacor.reactile.gateway;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
 import com.senacor.reactile.service.account.Account;
 import com.senacor.reactile.service.account.AccountFixtures;
+import com.senacor.reactile.service.account.Product;
+import com.senacor.reactile.service.account.Transaction;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
 import com.senacor.reactile.service.creditcard.CreditCardService;
@@ -51,19 +53,19 @@ public class InitialData {
     }
 
     private Observable<CreditCard> createCreditCardWithTransactions(CreditCard creditCard) {
-        return creditCardService.createCreditCard(creditCard)
-                .flatMap(cc -> TransactionFixtures.randomTransactions(cc.getCustomerId(), cc.getId(), rn.nextInt(12) + 3))
-                .flatMap(transaction -> transactionService.createTransactionObservable(transaction))
-                .last()
+        return withTransactions(creditCardService.createCreditCard(creditCard))
                 .flatMap(transaction -> Observable.just(creditCard));
     }
 
     private Observable<Account> createAccountWithTransactions(Account account) {
-        return accountService.createAccountObservable(account)
-                .flatMap(acc -> TransactionFixtures.randomTransactions(acc.getCustomerId(), acc.getId(), rn.nextInt(12) + 3))
-                .flatMap(transaction -> transactionService.createTransactionObservable(transaction))
-                .last()
+        return withTransactions(accountService.createAccountObservable(account))
                 .flatMap(transaction -> Observable.just(account));
+    }
+
+    private Observable<Transaction> withTransactions(Observable<? extends Product> productObservable) {
+        return productObservable
+                .flatMap(p -> TransactionFixtures.randomTransactions(p.getCustomerId(), p, rn.nextInt(12) + 3))
+                .flatMap(transaction -> transactionService.createTransactionObservable(transaction));
     }
 
 }
