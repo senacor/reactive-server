@@ -22,7 +22,6 @@ public class ApplicationStartup extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
 
-        registerCodecs();
         startVerticle(MongoBootstrap.class.getName())
                 .subscribe(
                         deployedIds::add,
@@ -62,10 +61,6 @@ public class ApplicationStartup extends AbstractVerticle {
 
     private Observable<Services> services() {
         return Observable.from(EnumSet.range(Services.UserConnector, Services.GatewayService));
-    }
-
-    private void registerCodecs() {
-        Codecs.load(getVertx().eventBus());
     }
 
     private Observable<String> startVerticle(String identifier) {
