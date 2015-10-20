@@ -16,9 +16,9 @@ import java.util.TreeSet;
  *
  * @author Andreas Keefer
  */
-public class DelayService {
+public class Throttler {
 
-    private static final Logger logger = LoggerFactory.getLogger(DelayService.class);
+    private static final Logger logger = LoggerFactory.getLogger(Throttler.class);
 
     private static final BigDecimal THOUSAND = BigDecimal.valueOf(1000);
     private static final int capacity = 1000;

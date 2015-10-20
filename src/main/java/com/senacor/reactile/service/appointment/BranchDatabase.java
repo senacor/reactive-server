@@ -2,7 +2,7 @@ package com.senacor.reactile.service.appointment;
 
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Country;
-import com.senacor.reactile.mock.DelayService;
+import com.senacor.reactile.mock.Throttler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import static org.apache.commons.lang3.Validate.notNull;
  */
 public class BranchDatabase {
 
-    private final DelayService delay = new DelayService();
+    private final Throttler delay = new Throttler();
     private boolean delayEnabled = false;
 
     private long nextId = 0;
