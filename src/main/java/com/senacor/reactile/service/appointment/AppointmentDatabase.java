@@ -1,6 +1,6 @@
 package com.senacor.reactile.service.appointment;
 
-import com.senacor.reactile.mock.Throttler;
+import com.senacor.reactile.magic.Throttler;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

@@ -1,4 +1,4 @@
-package com.senacor.reactile.mock;
+package com.senacor.reactile.magic;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
