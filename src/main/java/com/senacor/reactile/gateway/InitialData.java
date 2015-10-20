@@ -65,7 +65,9 @@ public class InitialData {
     private Observable<Transaction> withTransactions(Observable<? extends Product> productObservable) {
         return productObservable
                 .flatMap(p -> TransactionFixtures.randomTransactions(p.getCustomerId(), p, rn.nextInt(12) + 3))
-                .flatMap(transaction -> transactionService.createTransactionObservable(transaction));
+                .flatMap(transaction -> transactionService.createTransactionObservable(transaction))
+                .last()
+                ;
     }
 
 }
