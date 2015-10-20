@@ -1,4 +1,4 @@
-package com.senacor.reactile.service.account;
+package com.senacor.reactile.service.user;
 
 import com.senacor.reactile.guice.Impl;
 import io.vertx.core.logging.Logger;
@@ -8,28 +8,24 @@ import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
 
-public class AccountServiceVerticle extends AbstractVerticle {
+public class UserServiceVerticle extends AbstractVerticle {
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final AccountService accountService;
+    private final UserService userService;
 
     @Inject
-    public AccountServiceVerticle(@Impl AccountService accountService) {
-        this.accountService = accountService;
+    public UserServiceVerticle(@Impl UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public void start() throws Exception {
-        log.info("Starting service: " + config().getString("main"));
         String address = config().getString("address");
         if (address == null) {
             throw new IllegalStateException("address field must be specified in config for CustomerService");
         }
-        ProxyHelper.registerService(AccountService.class, getVertx(), accountService, address);
+        ProxyHelper.registerService(UserService.class, getVertx(), userService, address);
     }
 
-    @Override
-    public void stop() throws Exception {
-        log.info("Stopping service: " + config().getString("main"));
-    }
 }

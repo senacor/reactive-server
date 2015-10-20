@@ -4,7 +4,7 @@ import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
-import com.senacor.reactile.user.UserId;
+import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -16,7 +16,6 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.MultiMap;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.apex.Router;
 import io.vertx.rxjava.ext.apex.RoutingContext;
@@ -105,13 +104,13 @@ public class GatewayVerticle extends AbstractVerticle {
     }
 
     private void handleStart(RoutingContext routingContext) {
-        serveRequest(routingContext.request(), routingContext.response(), routingContext.request().params())
+        serveRequest(routingContext.response(), routingContext.request().params())
                 .subscribe(
                         response -> routingContext.next(),
                         Throwable::printStackTrace);
     }
 
-    private Observable<HttpServerResponse> serveRequest(HttpServerRequest request, HttpServerResponse response, MultiMap params) {
+    private Observable<HttpServerResponse> serveRequest(HttpServerResponse response, MultiMap params) {
         UserId userId = new UserId(getParam(params, "user"));
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 

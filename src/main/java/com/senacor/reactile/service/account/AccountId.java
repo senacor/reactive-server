@@ -6,6 +6,8 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @DataObject
 public class AccountId implements IdObject {
 
@@ -16,7 +18,7 @@ public class AccountId implements IdObject {
     }
 
     public AccountId(String id) {
-        this.id = id;
+        this.id = checkNotNull(id);
     }
 
     public AccountId(AccountId accountId) {

@@ -34,7 +34,7 @@ public class CustomerServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private com.senacor.reactile.rxjava.customer.CustomerService service;
+    private com.senacor.reactile.rxjava.service.customer.CustomerService service;
 
     private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "customers");
 

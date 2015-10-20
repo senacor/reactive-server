@@ -32,7 +32,7 @@ public class AccountServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private com.senacor.reactile.rxjava.account.AccountService service;
+    private com.senacor.reactile.rxjava.service.account.AccountService service;
 
     private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), AccountServiceImpl.COLLECTION);
 

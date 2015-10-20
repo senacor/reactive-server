@@ -2,13 +2,15 @@ package com.senacor.reactile.service.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.Identity;
+import com.senacor.reactile.domain.Jsonizable;
 import com.senacor.reactile.service.creditcard.CreditCardId;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigDecimal;
 
+@DataObject
 public class Transaction implements Identity<TransactionId>, Jsonizable {
     private final TransactionId id;
     private final CustomerId customerId;
@@ -16,6 +18,10 @@ public class Transaction implements Identity<TransactionId>, Jsonizable {
     private final CreditCardId creditCardId;
     private final BigDecimal amount;
     private final Currency currency;
+
+    public Transaction() {
+        this(null, null, null, null, null, null);
+    }
 
     public Transaction(
             @JsonProperty("id") TransactionId id,
@@ -31,6 +37,15 @@ public class Transaction implements Identity<TransactionId>, Jsonizable {
         this.amount = amount;
         this.currency = currency;
     }
+
+    public Transaction(Transaction transaction) {
+        this(transaction.getId(), transaction.getCustomerId(), transaction.getAccountId(), transaction.getCreditCardId(), transaction.getAmount(), transaction.getCurrency());
+    }
+
+    public Transaction(JsonObject jsonObject) {
+        this(fromJson(jsonObject));
+    }
+
 
     public static Builder aTransaction() {
         return new Builder();
@@ -61,14 +76,21 @@ public class Transaction implements Identity<TransactionId>, Jsonizable {
     }
 
     public static Transaction fromJson(JsonObject jsonObject) {
-        return aTransaction()
+        Builder builder = aTransaction()
                 .withId(jsonObject.getString("id"))
                 .withCustomerId(jsonObject.getString("customerId"))
-                .withAccountId(jsonObject.getString("accountId"))
-                .withCreditCardId(jsonObject.getString("creditCardId"))
                 .withAmount(new BigDecimal(jsonObject.getString("amount")))
-                .withCurrency(jsonObject.getString("currency"))
-                .build();
+                .withCurrency(jsonObject.getString("currency"));
+
+        String accountId = jsonObject.getString("accountId");
+        if (accountId != null) {
+            builder.withAccountId(accountId);
+        }
+        String creditCardId = jsonObject.getString("creditCardId");
+        if (creditCardId != null) {
+            builder.withCreditCardId(creditCardId);
+        }
+        return builder.build();
     }
 
     public JsonObject toJson() {
@@ -86,6 +108,7 @@ public class Transaction implements Identity<TransactionId>, Jsonizable {
 
         return json;
     }
+
     public static final class Builder {
         private TransactionId id;
         private CustomerId customerId;
@@ -122,8 +145,17 @@ public class Transaction implements Identity<TransactionId>, Jsonizable {
             return this;
         }
 
+        public Builder withAccountId(AccountId accountId) {
+            this.accountId = accountId;
+            return this;
+        }
+
         public Builder withCreditCardId(String creditCardId) {
             this.creditCardId = new CreditCardId(creditCardId);
+            return this;
+        }
+        public Builder withCreditCardId(CreditCardId creditCardId) {
+            this.creditCardId = creditCardId;
             return this;
         }
 

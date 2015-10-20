@@ -5,8 +5,7 @@ import io.vertx.core.logging.impl.LoggerFactory;
 import org.junit.Test;
 import rx.Subscription;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -28,20 +27,11 @@ public class NewsTickerStreamTest {
     }
 
     @Test
-    public void testNewsStreamRunning() throws Exception {
-        LinkedBlockingQueue<Boolean> monitor = new LinkedBlockingQueue<>();
+    public void shouldReceiveOneItemFromNewsStream() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
         Subscription subscription = new NewsTickerStream().getNewsObservable()
-                .subscribe(next -> System.out.println("next: " + next),
-                        Throwable::printStackTrace,
-                        () -> {
-                            System.out.println("completed");
-                            try {
-                                monitor.put(true);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        });
-        monitor.poll(1, TimeUnit.SECONDS);
+                .subscribe(news -> latch.countDown());
+        latch.await();
         subscription.unsubscribe();
     }
 }

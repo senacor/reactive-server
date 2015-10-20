@@ -2,15 +2,22 @@ package com.senacor.reactile.service.account;
 
 import com.senacor.reactile.service.creditcard.CreditCardId;
 import com.senacor.reactile.service.customer.CustomerId;
+import io.vertx.codegen.annotations.ProxyGen;
+import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import rx.Observable;
 
 import java.util.List;
 
+@ProxyGen
+@VertxGen
 public interface TransactionService {
+    String ADDRESS = "TransactionService";
 
-    Observable<List<Transaction>> getTransactionsForCustomer(CustomerId customerId);
-    Observable<List<Transaction>> getTransactionsForAccount(AccountId accountId);
-    Observable<List<Transaction>> getTransactionsForCreditCard(CreditCardId creditCardId);
+    void getTransactionsForCustomer(CustomerId customerId, Handler<AsyncResult<TransactionList>> resultHandler);
+    void getTransactionsForAccount(AccountId accountId, Handler<AsyncResult<TransactionList>> resultHandler);
+    void getTransactionsForCreditCard(CreditCardId creditCardId, Handler<AsyncResult<TransactionList>> resultHandler);
 
-    Observable<Transaction> createTransaction(Transaction transaction);
+    void createTransaction(Transaction transaction, Handler<AsyncResult<Transaction>> resultHandler);
 }

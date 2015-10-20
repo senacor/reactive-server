@@ -3,7 +3,7 @@
 
   "options": {
     "config": {
-      "address": "TransactionServiceVerticle",
+      "address": "TransactionService",
       "collection": "transactions"
     }
   }

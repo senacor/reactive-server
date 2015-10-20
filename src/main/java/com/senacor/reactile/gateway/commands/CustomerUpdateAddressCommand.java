@@ -7,7 +7,7 @@ import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.rxjava.customer.CustomerService;
+import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import rx.Observable;
 
 import javax.inject.Inject;

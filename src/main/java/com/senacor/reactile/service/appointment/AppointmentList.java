@@ -68,10 +68,6 @@ public class AppointmentList implements Jsonizable {
         public Builder() {
         }
 
-        public List<Appointment> getAppointmentList() {
-            return appointmentList;
-        }
-
         public Builder withAppointments(List<Appointment> appointmentList) {
             this.appointmentList = appointmentList;
             return this;

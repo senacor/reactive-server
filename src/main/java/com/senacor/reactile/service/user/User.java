@@ -1,17 +1,23 @@
-package com.senacor.reactile.user;
+package com.senacor.reactile.service.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.Identity;
 import com.senacor.reactile.domain.Jsonizable;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
+@DataObject
 public class User implements Identity<UserId>, Jsonizable {
 
     private final UserId id;
     private final String firstName;
     private final String lastName;
+
+    public User() {
+        this(null, null, null);
+    }
 
     public User(
             @JsonProperty("id") UserId id,
@@ -21,6 +27,14 @@ public class User implements Identity<UserId>, Jsonizable {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public User(User user) {
+        this(user.getId(), user.getFirstName(), user.getLastName());
+    }
+
+    public User(JsonObject jsonObject) {
+        this(fromJson(jsonObject));
     }
 
     public static Builder aUser() {
@@ -67,11 +81,20 @@ public class User implements Identity<UserId>, Jsonizable {
                 '}';
     }
 
+    @Override
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id.toValue())
                 .put("firstName", firstName)
                 .put("lastName", lastName);
+    }
+
+    public static User fromJson(JsonObject jsonObject) {
+        return aUser()
+                .withId(jsonObject.getString("id"))
+                .withFirstName(jsonObject.getString("firstName"))
+                .withLastName(jsonObject.getString("lastName"))
+                .build();
     }
 
     public static final class Builder {

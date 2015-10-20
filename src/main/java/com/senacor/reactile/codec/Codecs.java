@@ -12,8 +12,8 @@ import com.senacor.reactile.service.customer.Contact;
 import com.senacor.reactile.service.customer.Country;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.user.User;
-import com.senacor.reactile.user.UserId;
+import com.senacor.reactile.service.user.User;
+import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.eventbus.EventBus;
 
 import java.util.ArrayList;

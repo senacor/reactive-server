@@ -12,7 +12,7 @@ import java.util.List;
 @ProxyGen
 @VertxGen
 public interface AccountService {
-    static final String ADDRESS = "AccountService";
+    String ADDRESS = "AccountService";
 
     void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler);
 

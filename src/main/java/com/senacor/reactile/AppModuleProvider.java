@@ -13,6 +13,7 @@ import com.senacor.reactile.service.account.TransactionServiceImpl;
 import com.senacor.reactile.service.appointment.AppointmentDatabase;
 import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
+import com.senacor.reactile.service.appointment.BranchDatabase;
 import com.senacor.reactile.service.appointment.BranchService;
 import com.senacor.reactile.service.appointment.BranchServiceImpl;
 import com.senacor.reactile.service.creditcard.CreditCardService;
@@ -31,9 +32,8 @@ import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
 import com.senacor.reactile.service.newsticker.NewsService;
 import com.senacor.reactile.service.newsticker.NewsServiceImpl;
-import com.senacor.reactile.user.UserConnector;
-import com.senacor.reactile.user.UserService;
-import com.senacor.reactile.user.UserServiceImpl;
+import com.senacor.reactile.service.user.UserService;
+import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.RxHelper;
@@ -58,16 +58,16 @@ public class AppModuleProvider implements BootstrapModuleProvider {
 
         @Override
         protected void configure() {
-            bind(UserService.class).to(UserServiceImpl.class);
+            bind(UserService.class).annotatedWith(Impl.class).to(UserServiceImpl.class);
             bind(AccountService.class).annotatedWith(Impl.class).to(AccountServiceImpl.class);
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
-            bind(TransactionService.class).to(TransactionServiceImpl.class);
+            bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
-            bind(UserConnector.class);
             bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
             bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
+            bind(BranchDatabase.class).in(Scopes.SINGLETON);
 
             // Install  HystrixComand Factories
             install(new FactoryModuleBuilder()
@@ -107,9 +107,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        com.senacor.reactile.rxjava.customer.CustomerService provideCustomerService(Vertx vertx) {
+        com.senacor.reactile.rxjava.service.customer.CustomerService provideCustomerService(Vertx vertx) {
             CustomerService proxy = ProxyHelper.createProxy(CustomerService.class, vertx, CustomerService.ADDRESS);
-            return new com.senacor.reactile.rxjava.customer.CustomerService(proxy);
+            return new com.senacor.reactile.rxjava.service.customer.CustomerService(proxy);
         }
 
         @Provides
@@ -118,27 +118,22 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        com.senacor.reactile.rxjava.account.AccountService provideAccountService(Vertx vertx) {
+        com.senacor.reactile.rxjava.service.account.AccountService provideAccountService(Vertx vertx) {
             AccountService proxy = ProxyHelper.createProxy(AccountService.class, vertx, AccountService.ADDRESS);
-            return new com.senacor.reactile.rxjava.account.AccountService(proxy);
+            return new com.senacor.reactile.rxjava.service.account.AccountService(proxy);
         }
 
         @Provides
-        com.senacor.reactile.rxjava.appointment.BranchService provideBranchService(Vertx vertx) {
-            BranchService proxy = ProxyHelper.createProxy(BranchService.class, vertx, BranchService.ADDRESS);
-            return new com.senacor.reactile.rxjava.appointment.BranchService(proxy);
+        com.senacor.reactile.rxjava.service.account.TransactionService provideTransactionService(Vertx vertx) {
+            TransactionService proxy = ProxyHelper.createProxy(TransactionService.class, vertx, TransactionService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.account.TransactionService(proxy);
         }
 
         @Provides
-        com.senacor.reactile.rxjava.appointment.AppointmentService provideAppointmentService(Vertx vertx) {
-            AppointmentService proxy = ProxyHelper.createProxy(AppointmentService.class, vertx, AppointmentService.ADDRESS);
-            return new com.senacor.reactile.rxjava.appointment.AppointmentService(proxy);
+        com.senacor.reactile.rxjava.service.user.UserService provideUserService(Vertx vertx) {
+            UserService proxy = ProxyHelper.createProxy(UserService.class, vertx, UserService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.user.UserService(proxy);
         }
 
-        @Provides
-        com.senacor.reactile.rxjava.newsticker.NewsService provideNewsService(Vertx vertx) {
-            NewsService proxy = ProxyHelper.createProxy(NewsService.class, vertx, NewsService.ADDRESS);
-            return new com.senacor.reactile.rxjava.newsticker.NewsService(proxy);
-        }
     }
 }

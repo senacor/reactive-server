@@ -4,25 +4,20 @@ import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.service.account.TransactionService;
-import com.senacor.reactile.service.appointment.Branch;
+import com.senacor.reactile.json.JsonObjects;
+import com.senacor.reactile.rxjava.service.account.AccountService;
+import com.senacor.reactile.rxjava.service.customer.CustomerService;
+import com.senacor.reactile.rxjava.service.account.TransactionService;
+import com.senacor.reactile.rxjava.service.user.UserService;
+import com.senacor.reactile.service.account.TransactionList;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.json.JsonObjects;
-import com.senacor.reactile.service.newsticker.News;
-import com.senacor.reactile.rxjava.account.AccountService;
-import com.senacor.reactile.rxjava.appointment.AppointmentService;
-import com.senacor.reactile.rxjava.appointment.BranchService;
-import com.senacor.reactile.rxjava.customer.CustomerService;
-import com.senacor.reactile.rxjava.newsticker.NewsService;
-import com.senacor.reactile.user.UserId;
-import com.senacor.reactile.user.UserService;
+import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.stream.Collectors;
 
 import static com.senacor.reactile.json.JsonObjects.$;
 import static rx.Observable.zip;
@@ -44,9 +39,6 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final AccountService accountService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
-    private final AppointmentService appointmentService;
-    private final BranchService branchService;
-    private final NewsService newsService;
 
     private final UserId userId;
     private final CustomerId customerId;
@@ -57,9 +49,6 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         AccountService accountService,
                         CreditCardService creditCardService,
                         TransactionService transactionService,
-                        AppointmentService appointmentService,
-                        BranchService branchService,
-                        NewsService newsService,
                         @Assisted UserId userId,
                         @Assisted CustomerId customerId) {
 
@@ -73,45 +62,24 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
-        this.appointmentService = appointmentService;
-        this.branchService = branchService;
-        this.newsService = newsService;
         this.userId = userId;
         this.customerId = customerId;
     }
 
     @Override
     protected Observable<JsonObject> construct() {
-        return userService.getUser(userId).flatMap(user -> {
+        return userService.getUserObservable(userId).flatMap(user -> {
             Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId)
                     .map(JsonObjects::toJson);
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
                     .map(JsonArray::new);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
                     .map(JsonObjects::toJsonArray);
-            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId)
+            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomerObservable(customerId)
+                    .map(TransactionList::getTransactionList)
                     .map(JsonObjects::toJsonArray);
 
-            Observable<JsonArray> userAppointments = appointmentService.getAppointmentsByCustomerObservable(customerId.getId())
-                    .flatMap(appointmentList -> branchService.findBranchesObservable(appointmentList.getAppointmentList().stream()
-                            .map(appointment -> appointment.getBranchId())
-                            .collect(Collectors.toList()))
-                            .flatMap(branchList -> Observable.from(branchList.getBranches()))
-                            .map(Branch::toJson)
-                            .zipWith(appointmentList.getAppointmentList(), (branchJ, appointment) -> {
-                                JsonObject appointmentJ = appointment.toJson();
-                                JsonObject appointmentWithBranch = appointmentJ.put("branch", branchJ);
-                                appointmentWithBranch.remove("branchId");
-                                return appointmentWithBranch;
-                            }))
-                    .reduce(new JsonArray(), JsonArray::add);
-
-            Observable<JsonArray> newsObservable = newsService.getLatestNewsObservable(10)
-                    .flatMap(newsCollection -> Observable.from(newsCollection.getNews()))
-                    .map(News::toJson).toList().map(JsonArray::new);
-
-            return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable,
-                    userAppointments, newsObservable, this::mergeIntoResponse);
+            return zip(customerObservable, accountObservable, creditCardObservable, transactionObservable, this::mergeIntoResponse);
         });
     }
 
@@ -119,9 +87,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private JsonObject mergeIntoResponse(JsonObject cust,
                                          JsonArray accounts,
                                          JsonArray creditCards,
-                                         JsonArray transactions,
-                                         JsonArray userAppointments,
-                                         JsonArray newsObservable) {
+                                         JsonArray transactions) {
         return $()
                 .put("customer", cust
                         .put("products", $()
@@ -129,9 +95,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                                 .put("creditCards", creditCards))
                         .put("transactions", transactions))
                 .put("branch", "empty")
-                .put("appointments", userAppointments)
                 .put("recommendations", "empty")
-                .put("news", newsObservable)
                 ;
     }
 }

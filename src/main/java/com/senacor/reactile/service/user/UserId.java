@@ -1,12 +1,16 @@
-package com.senacor.reactile.user;
+package com.senacor.reactile.service.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.senacor.reactile.IdObject;
+import com.senacor.reactile.service.creditcard.CreditCardId;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@DataObject
 public class UserId implements IdObject {
 
     private final String id;
@@ -16,9 +20,30 @@ public class UserId implements IdObject {
         this.id = id;
     }
 
+    public UserId() {
+        this((String) null);
+    }
+
+    public UserId(UserId userId) {
+        this(userId.getId());
+    }
+
+    public UserId(JsonObject jsonObject) {
+        this(jsonObject.getString("id"));
+    }
+
+    public UserId(CreditCardId creditCardId) {
+        this(creditCardId.getId());
+    }
+
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return new JsonObject().put("id", toValue());
     }
 
 
