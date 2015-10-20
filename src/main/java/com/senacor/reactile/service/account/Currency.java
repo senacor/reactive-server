@@ -1,6 +1,6 @@
 package com.senacor.reactile.service.account;
 
-import com.senacor.reactile.ValueObject;
+import com.senacor.reactile.domain.ValueObject;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 

@@ -1,6 +1,5 @@
-package com.senacor.reactile;
+package com.senacor.reactile.domain;
 
-import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonObject;
 
 public interface IdObject extends ValueObject, Jsonizable {

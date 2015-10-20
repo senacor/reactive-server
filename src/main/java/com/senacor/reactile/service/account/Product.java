@@ -1,6 +1,6 @@
 package com.senacor.reactile.service.account;
 
-import com.senacor.reactile.IdObject;
+import com.senacor.reactile.domain.IdObject;
 import com.senacor.reactile.service.customer.CustomerId;
 
 public interface Product {

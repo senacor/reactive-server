@@ -1,7 +1,7 @@
 package com.senacor.reactile.mongo;
 
-import com.senacor.reactile.IdObject;
-import com.senacor.reactile.Identity;
+import com.senacor.reactile.domain.IdObject;
+import com.senacor.reactile.domain.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.mongo.MongoService;

@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.creditcard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.senacor.reactile.IdObject;
+import com.senacor.reactile.domain.IdObject;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 

@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.customer;
 
 import com.google.common.collect.ImmutableList;
-import com.senacor.reactile.Identity;
+import com.senacor.reactile.domain.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;

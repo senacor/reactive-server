@@ -1,4 +1,4 @@
-package com.senacor.reactile;
+package com.senacor.reactile.domain;
 
 /**
  * Created by rwinzing on 11.03.15.

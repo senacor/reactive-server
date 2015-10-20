@@ -1,7 +1,5 @@
 package com.senacor.reactile.domain;
 
-import com.senacor.reactile.IdObject;
-import com.senacor.reactile.Identity;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 

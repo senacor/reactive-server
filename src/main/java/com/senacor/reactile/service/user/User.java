@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.senacor.reactile.Identity;
+import com.senacor.reactile.domain.Identity;
 import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;

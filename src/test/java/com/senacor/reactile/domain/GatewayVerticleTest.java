@@ -1,7 +1,8 @@
-package com.senacor.reactile.gateway;
+package com.senacor.reactile.domain;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
+import com.senacor.reactile.gateway.InitialDataVerticle;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
