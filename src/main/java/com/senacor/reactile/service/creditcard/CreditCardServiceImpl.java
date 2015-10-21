@@ -6,6 +6,7 @@ import com.senacor.reactile.rx.Rx;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
@@ -13,6 +14,7 @@ import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -32,40 +34,25 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     @Override
-    public void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
+    public void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<CreditCardList>> resultHandler) {
         getCreditCardsForCustomerHystrix(customerId)
                 .subscribe(Rx.toSubscriber(resultHandler));
     }
 
     @HystrixCmd(CreditCardServiceImplGetCreditCardsForCustomerCommand.class)
-    private Observable<List<JsonObject>> getCreditCardsForCustomerHystrix(CustomerId customerId) {
+    private Observable<CreditCardList> getCreditCardsForCustomerHystrix(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
-        return mongoService.findObservable(COLLECTION, query);
+        return mongoService.findObservable(COLLECTION, query)
+                .flatMapIterable(x -> x)
+                .map(CreditCard::fromJson)
+                .collect(() -> new ArrayList<CreditCard>(), (list, cc) -> list.add(cc))
+                .map(CreditCardList::new);
     }
 
     @Override
-    public void createCreditCard(CreditCard creditCard, Handler<AsyncResult<String>> resultHandler) {
+    public void createCreditCard(CreditCard creditCard, Handler<AsyncResult<CreditCard>> resultHandler) {
         JsonObject doc = creditCard.toJson().put("_id", creditCard.getId().toValue());
-        mongoService.insert(COLLECTION, doc, resultHandler);
+        Rx.bridgeHandler(mongoService.insertObservable(COLLECTION, doc).map(id -> creditCard), resultHandler);
 
-    }
-
-
-    private Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
-        ObservableFuture<CreditCard> observableFuture = RxHelper.observableFuture();
-        getCreditCard(creditCardId, observableFuture.toHandler());
-        return observableFuture;
-    }
-
-    private Observable<List<CreditCard>> getCreditCardsForCustomer(CustomerId customerId){
-        ObservableFuture<List<JsonObject>> observableFuture = RxHelper.observableFuture();
-        getCreditCardsForCustomer(customerId, observableFuture.toHandler());
-        return observableFuture.map(list -> list.stream().map(CreditCard::fromJson).collect(toList()));
-    }
-
-    private Observable<CreditCard> createCreditCard(CreditCard creditCard){
-        ObservableFuture<String> observableFuture = RxHelper.observableFuture();
-        createCreditCard(creditCard, observableFuture.toHandler());
-        return observableFuture.flatMap(id -> Observable.just(creditCard));
     }
 }

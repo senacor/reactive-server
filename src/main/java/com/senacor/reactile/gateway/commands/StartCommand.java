@@ -6,11 +6,12 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.rxjava.service.account.AccountService;
+import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
 import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
 import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.account.TransactionList;
-import com.senacor.reactile.service.creditcard.CreditCardService;
+import com.senacor.reactile.service.creditcard.CreditCardList;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.json.JsonArray;
@@ -73,7 +74,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonObjects::toJson);
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
                     .map(JsonArray::new);
-            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
+            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomerObservable(customerId)
+                    .map(CreditCardList::getCreditCardList)
                     .map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomerObservable(customerId)
                     .map(TransactionList::getTransactionList)

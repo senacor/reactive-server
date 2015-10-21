@@ -20,11 +20,12 @@ import static java.util.stream.Collectors.toList;
 public interface CreditCardService {
     String ADDRESS = "CreditCardService";
 
+
     void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<CreditCard>> resultHandler);
 
-    void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler);
+    void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<CreditCardList>> resultHandler);
 
-    void createCreditCard(CreditCard creditCard, Handler<AsyncResult<String>> resultHandler);
+    void createCreditCard(CreditCard creditCard, Handler<AsyncResult<CreditCard>> resultHandler);
 
 
 }

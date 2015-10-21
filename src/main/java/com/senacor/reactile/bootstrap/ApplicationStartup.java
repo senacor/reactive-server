@@ -59,7 +59,7 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
     private Observable<Services> services() {
-        return Observable.from(EnumSet.range(Services.NewsService, Services.GatewayService));
+        return Observable.from(EnumSet.complementOf(EnumSet.of(Services.EmbeddedMongo)));
     }
 
     private Observable<String> startVerticle(String identifier) {

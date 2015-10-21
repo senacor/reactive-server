@@ -8,7 +8,7 @@ import io.vertx.core.Handler;
 @ProxyGen
 @VertxGen
 public interface NewsService {
-    static final String ADDRESS = "NewsService";
+    String ADDRESS = "NewsService";
 
     void getLatestNews(int max, Handler<AsyncResult<NewsCollection>> resultHandler);
 

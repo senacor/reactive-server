@@ -4,7 +4,6 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardId;
-import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
@@ -34,7 +33,7 @@ public class CreditCardServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private CreditCardService service;
+    private com.senacor.reactile.rxjava.service.creditcard.CreditCardService service;
 
 
     private final MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "creditcards");
@@ -42,7 +41,7 @@ public class CreditCardServiceTest {
     @Test
     public void thatSingleCreditCardIsReturned_forCreditCardId() {
         mongoInitializer.writeBlocking(newCreditCard("cc-001"));
-        CreditCard creditCard = service.getCreditCard(new CreditCardId("cc-001")).toBlocking().first();
+        CreditCard creditCard = service.getCreditCardObservable(new CreditCardId("cc-001")).toBlocking().first();
         assertThat(creditCard, hasId("cc-001"));
         assertThat(creditCard.toJson(), allOf(hasValue("id", "cc-001"), hasProperty("customerId")));
     }
@@ -50,14 +49,14 @@ public class CreditCardServiceTest {
     @Test
     public void thatMultipleCreditCardsAreReturned_forCustomer() {
         mongoInitializer.writeBlocking(randomCreditCard("cc-002", "cust-001"), randomCreditCard("cc-003", "cust-001"));
-        List<CreditCard> creditCards = service.getCreditCardsForCustomer(new CustomerId("cust-001")).toBlocking().first();
+        List<CreditCard> creditCards = service.getCreditCardsForCustomerObservable(new CustomerId("cust-001")).toBlocking().first().getCreditCardList();
         assertThat(creditCards, hasSize(2));
         assertThat(creditCards, hasItems(hasId("cc-002"), hasId("cc-003")));
     }
 
     @Test
     public void thatCreditCardCanBeCreated() {
-        CreditCard creditCard = service.createCreditCard(randomCreditCard("cc-004", "cust-004")).toBlocking().first();
+        CreditCard creditCard = service.createCreditCardObservable(randomCreditCard("cc-004", "cust-004")).toBlocking().first();
         assertThat(creditCard.toJson(), hasProperty("id"));
         assertThat(creditCard.toJson(), hasValue("id", "cc-004"));
         assertThat(creditCard.toJson(), hasValue("customerId", "cust-004"));
