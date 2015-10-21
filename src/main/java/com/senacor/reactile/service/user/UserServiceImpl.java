@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @HystrixCmd(UserServiceImplGetUserCommand.class)
-    private Observable<User> getUser(UserId userId) {
+    public Observable<User> getUser(UserId userId) {
         return Observable.just(database.findUser(userId));
     }
 }

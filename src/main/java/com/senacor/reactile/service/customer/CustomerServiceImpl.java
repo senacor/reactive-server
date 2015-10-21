@@ -35,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @HystrixCmd(CustomerServiceImplGetCustomerCommand.class)
-    private Observable<Customer> getCustomer(CustomerId customerId) {
+    public Observable<Customer> getCustomer(CustomerId customerId) {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson);
     }

@@ -40,7 +40,7 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     @HystrixCmd(CreditCardServiceImplGetCreditCardsForCustomerCommand.class)
-    private Observable<CreditCardList> getCreditCardsForCustomerHystrix(CustomerId customerId) {
+    public Observable<CreditCardList> getCreditCardsForCustomerHystrix(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
         return mongoService.findObservable(COLLECTION, query)
                 .flatMapIterable(x -> x)

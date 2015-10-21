@@ -46,7 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @HystrixCmd(TransactionServiceImplGetTransactionsForCustomerCommand.class)
-    private Observable<TransactionList> getTransactionsForCustomer(CustomerId customerId) {
+    public Observable<TransactionList> getTransactionsForCustomer(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.toValue());
         return executeQuery(query);
     }
