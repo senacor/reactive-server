@@ -23,11 +23,12 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
 public class HystrixMetricsStreamVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(HystrixMetricsStreamVerticle.class);
+    private HttpServer server;
 
     @Override
     public void start() {
         HttpServerOptions serverOptions = newServerConfig();
-        HttpServer server = vertx.createHttpServer(serverOptions);
+        server = vertx.createHttpServer(serverOptions);
         int defaultDelay = config().getInteger("delay", 5000);
 
         server.requestHandler(request -> {
@@ -44,7 +45,7 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
 
     @Override
     public void stop() throws Exception {
-
+        server.close();
     }
 
     private void stream(HttpServerRequest request, int delay) {
@@ -56,7 +57,7 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
         response.headers().add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         response.headers().add("Pragma", "no-cache");
 
-        final HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> response.write("data: " + json + "\n\n"), delay);
+        HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> response.write("data: " + json + "\n\n"), delay);
         logger.info("Starting poller with delay=" + delay + "ms");
         poller.start();
         response.closeHandler(res -> {
