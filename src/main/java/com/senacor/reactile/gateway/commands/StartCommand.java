@@ -2,6 +2,7 @@ package com.senacor.reactile.gateway.commands;
 
 import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.json.JsonObjects;
@@ -54,7 +55,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         @Assisted CustomerId customerId) {
 
 
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Start"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Gateway"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("Start"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));

@@ -1,6 +1,7 @@
 package com.senacor.reactile.service.user;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableCommand;
 
@@ -20,7 +21,8 @@ public class UserServiceImplGetUserCommand extends InterceptableHystrixObservabl
     private final UserId userId;
 
     public UserServiceImplGetUserCommand(UserId userId) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("UserServiceImplGetUser"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Service"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("GetUser"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));

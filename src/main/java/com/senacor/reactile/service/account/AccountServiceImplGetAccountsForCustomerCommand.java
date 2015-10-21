@@ -1,6 +1,7 @@
 package com.senacor.reactile.service.account;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableCommand;
@@ -24,7 +25,8 @@ public class AccountServiceImplGetAccountsForCustomerCommand extends Interceptab
     private final CustomerId customerId;
 
     public AccountServiceImplGetAccountsForCustomerCommand(CustomerId customerId) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("AccountServiceImplGetAccountsForCustomer"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Service"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("GetAccountsForCustomer"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));

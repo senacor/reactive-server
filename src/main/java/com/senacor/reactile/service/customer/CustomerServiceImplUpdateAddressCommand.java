@@ -2,6 +2,7 @@ package com.senacor.reactile.service.customer;
 
 import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableCommand;
 import io.vertx.core.logging.Logger;
@@ -33,7 +34,8 @@ public class CustomerServiceImplUpdateAddressCommand extends InterceptableHystri
                                                       MongoService mongoService,
                                                       @Assisted CustomerId customerId,
                                                       @Assisted Address address) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CustomerServiceImplUpdateAddress"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Services"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("UpdateAddress"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));
