@@ -67,8 +67,4 @@ public class ApplicationStartup extends AbstractVerticle {
                 .doOnNext(id -> logger.info("Starting verticle with identifier " + identifier + " and deploymentId " + id));
     }
 
-    private Observable<Void> stopVerticle(String deploymentId) {
-        logger.info("Stopping verticle with deploymentId " + deploymentId);
-        return vertx.undeployObservable(deploymentId);
-    }
 }
