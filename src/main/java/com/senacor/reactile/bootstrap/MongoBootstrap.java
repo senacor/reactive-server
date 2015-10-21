@@ -22,8 +22,7 @@ public class MongoBootstrap extends AbstractVerticle {
 
     private Observable<String> launchMongoServiceObservable() {
         JsonObject config = new JsonObject()
-                .put("db_name", "reactile")
-                .put("waitQueueMultiple", "800");
+                .put("db_name", "reactile");
         ObservableFuture<String> observableHandler = RxHelper.observableFuture();
         getVertx().deployVerticle("service:io.vertx.mongo-service", new DeploymentOptions().setConfig(config), observableHandler.toHandler());
         return observableHandler;

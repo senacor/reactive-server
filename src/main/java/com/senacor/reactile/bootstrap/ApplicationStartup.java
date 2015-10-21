@@ -1,7 +1,6 @@
 package com.senacor.reactile.bootstrap;
 
 import com.senacor.reactile.Services;
-import com.senacor.reactile.codec.Codecs;
 import com.senacor.reactile.gateway.InitialDataVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;

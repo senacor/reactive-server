@@ -1,7 +1,6 @@
 package com.senacor.reactile;
 
 import com.senacor.reactile.bootstrap.VerticleDeployer;
-import com.senacor.reactile.codec.Codecs;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.rxjava.core.Vertx;
@@ -59,7 +58,6 @@ public class VertxRule extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
-        registerDomainObjectCodec();
         verticleDeployer.deploy(15_000);
     }
 
@@ -70,10 +68,6 @@ public class VertxRule extends ExternalResource {
         vertx.close();
     }
 
-
-    private void registerDomainObjectCodec() {
-        Codecs.load((io.vertx.core.eventbus.EventBus) eventBus().getDelegate());
-    }
 
     public <T> Message<T> sendBlocking(String address, Object message) throws InterruptedException, ExecutionException, TimeoutException {
         return blockingEventBus.<T>sendObservable(address, message);

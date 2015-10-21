@@ -22,9 +22,9 @@ Die Klasse dekoriert eine Implementierung von CustomerService um Observable-Meth
 @VertxGen
 public interface CustomerService {
 
-    static final String ADDRESS = "CustomerService";
+    String ADDRESS = "CustomerService";
 
-    static final String ADDRESS_EVENT_UPDATE_ADDRESS = CustomerService.ADDRESS + "#updateAddress";
+    String ADDRESS_EVENT_UPDATE_ADDRESS = CustomerService.ADDRESS + "#updateAddress";
 
     void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler);
 
