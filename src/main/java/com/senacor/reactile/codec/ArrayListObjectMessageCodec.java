@@ -1,7 +1,7 @@
 package com.senacor.reactile.codec;
 
-import com.senacor.reactile.domain.ValueObject;
 import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.domain.ValueObject;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.eventbus.impl.codecs.JsonArrayMessageCodec;

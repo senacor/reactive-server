@@ -5,7 +5,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.rx.java.RxHelper;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
 
 import static io.vertx.core.Future.failedFuture;
