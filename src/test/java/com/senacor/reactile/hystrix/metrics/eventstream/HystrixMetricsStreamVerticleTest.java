@@ -30,7 +30,7 @@ public class HystrixMetricsStreamVerticleTest {
     @Rule
     public final VertxRule vertxRule = new VertxRule(Services.HystrixMetricsStreamVerticle);
 
-    private final HttpClient httpClientHystrixStream = Vertx.vertx().createHttpClient(
+    private final HttpClient httpClientHystrixStream = vertxRule.vertx().createHttpClient(
             new HttpClientOptions().setDefaultPort(8082).setDefaultHost("localhost"));
     private final HttpTestClient testHttpClientHystrixStream = new HttpTestClient(httpClientHystrixStream);
 
