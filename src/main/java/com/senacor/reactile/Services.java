@@ -24,9 +24,9 @@ public enum Services implements ServiceIdProvider {
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;
 
-    Services(String serviceName, ServiceIdProvider... services) {
+    Services(String serviceName, ServiceIdProvider... dependsOn) {
         this.serviceName = serviceName;
-        dependencies = ImmutableSet.copyOf(services);
+        dependencies = ImmutableSet.copyOf(dependsOn);
     }
 
     @Override
