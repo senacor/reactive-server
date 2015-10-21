@@ -14,6 +14,7 @@ import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
+import com.senacor.reactile.hystrix.metrics.eventstream.MetricsBridge;
 import com.senacor.reactile.service.account.AccountService;
 import com.senacor.reactile.service.account.AccountServiceImpl;
 import com.senacor.reactile.service.account.TransactionService;
@@ -59,6 +60,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
+            bind(MetricsBridge.class);
 
             // Install  HystrixComand Factories
             install(new FactoryModuleBuilder()
