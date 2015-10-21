@@ -7,12 +7,11 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.http.HttpResponseStream;
 import com.senacor.reactile.http.HttpTestClient;
+import com.senacor.reactile.hystrix.HystrixRule;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.http.HttpClient;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import rx.Observable;
@@ -28,6 +27,9 @@ public class HystrixMetricsStreamVerticleTest {
     private static final Logger logger = LoggerFactory.getLogger(HystrixMetricsStreamVerticleTest.class);
 
     @Rule
+    public final HystrixRule hystrixRule = new HystrixRule();
+
+    @Rule
     public final VertxRule vertxRule = new VertxRule(Services.HystrixMetricsStreamVerticle);
 
     private final HttpClient httpClientHystrixStream = vertxRule.vertx().createHttpClient(
@@ -35,8 +37,6 @@ public class HystrixMetricsStreamVerticleTest {
     private final HttpTestClient testHttpClientHystrixStream = new HttpTestClient(httpClientHystrixStream);
 
     @Test
-    @Ignore("TODO (ak) lauft im build nicht, lokal in der IDE schon")
-    // TODO (ak) lauft im build nicht, lokal in der IDE schon
     public void thatRequestsAreHandled() throws Exception {
         // 1. create an execute a HystricCommand to get some data
         String testCommandRes = new HystrixObservableCommand<String>(HystrixObservableCommand.Setter

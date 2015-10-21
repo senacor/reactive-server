@@ -49,7 +49,6 @@ public class InitialDataVerticle extends AbstractVerticle {
                 .of("customers, accounts, transactions, creditcards")
                 .map(coll -> mongoService.dropCollectionObservable(coll).asObservable())
                 .reduce(Observable::concat).get()
-                .subscribeOn(scheduler(vertx))
                 .doOnCompleted(stopFuture::complete)
                 .doOnError(stopFuture::fail)
                 .subscribe();

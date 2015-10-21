@@ -1,6 +1,7 @@
 package com.senacor.reactile.hystrix.metrics.eventstream;
 
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsPoller;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -53,10 +54,12 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void stop() throws Exception {
-        server.close();
+    public void stop(Future<Void> stopFuture) throws Exception {
+        server.closeObservable()
+                .doOnCompleted(stopFuture::complete)
+                .doOnError(stopFuture::fail)
+                .subscribe();
     }
-
 
     private HttpServerOptions newServerConfig() {
         return new HttpServerOptions()
