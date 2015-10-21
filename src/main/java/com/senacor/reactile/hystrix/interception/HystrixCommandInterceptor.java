@@ -106,7 +106,7 @@ public class HystrixCommandInterceptor implements MethodInterceptor {
 
     }
 
-    private String toSignatureString(MethodInvocation invocation) {
+    private static String toSignatureString(MethodInvocation invocation) {
         return invocation.getThis().getClass().getName() + "#" + invocation.getMethod().getName()
                 + Arrays.toString(invocation.getMethod().getParameterTypes());
     }
