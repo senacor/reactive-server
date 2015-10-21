@@ -19,19 +19,13 @@ import com.senacor.reactile.service.account.AccountServiceImpl;
 import com.senacor.reactile.service.account.TransactionService;
 import com.senacor.reactile.service.account.TransactionServiceImpl;
 import com.senacor.reactile.service.appointment.AppointmentDatabase;
-import com.senacor.reactile.service.appointment.AppointmentService;
-import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
 import com.senacor.reactile.service.appointment.BranchDatabase;
-import com.senacor.reactile.service.appointment.BranchService;
-import com.senacor.reactile.service.appointment.BranchServiceImpl;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.CustomerServiceImpl;
 import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommand;
 import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommandFactory;
-import com.senacor.reactile.service.newsticker.NewsService;
-import com.senacor.reactile.service.newsticker.NewsServiceImpl;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -110,8 +104,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        CreditCardService provideCreditCardService(Vertx vertx) {
-            return ProxyHelper.createProxy(CreditCardService.class, vertx, CreditCardService.ADDRESS);
+        com.senacor.reactile.rxjava.service.creditcard.CreditCardService provideCreditCardService(Vertx vertx) {
+            CreditCardService proxy = ProxyHelper.createProxy(CreditCardService.class, vertx, CreditCardService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.creditcard.CreditCardService(proxy);
         }
 
         @Provides
