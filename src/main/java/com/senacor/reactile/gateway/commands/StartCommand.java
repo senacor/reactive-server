@@ -2,15 +2,17 @@ package com.senacor.reactile.gateway.commands;
 
 import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.rxjava.service.account.AccountService;
+import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
 import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
 import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.account.TransactionList;
-import com.senacor.reactile.service.creditcard.CreditCardService;
+import com.senacor.reactile.service.creditcard.CreditCardList;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.json.JsonArray;
@@ -53,7 +55,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         @Assisted CustomerId customerId) {
 
 
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Start"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Gateway"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("Start"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));
@@ -73,7 +76,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonObjects::toJson);
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
                     .map(JsonArray::new);
-            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
+            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomerObservable(customerId)
+                    .map(CreditCardList::getCreditCardList)
                     .map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomerObservable(customerId)
                     .map(TransactionList::getTransactionList)

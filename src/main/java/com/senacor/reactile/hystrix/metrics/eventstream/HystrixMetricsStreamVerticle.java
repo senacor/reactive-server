@@ -1,6 +1,7 @@
 package com.senacor.reactile.hystrix.metrics.eventstream;
 
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsPoller;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -8,6 +9,8 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerResponse;
+
+import javax.inject.Inject;
 
 /**
  * Verticle which streams Hystrix Metrics
@@ -22,18 +25,26 @@ import io.vertx.rxjava.core.http.HttpServerResponse;
  */
 public class HystrixMetricsStreamVerticle extends AbstractVerticle {
 
-    private static final Logger logger = LoggerFactory.getLogger(HystrixMetricsStreamVerticle.class);
+    private final Logger logger = LoggerFactory.getLogger(HystrixMetricsStreamVerticle.class);
+    private HttpServer server;
+
+    private final MetricsBridge metricsBridge;
+
+    @Inject
+    public HystrixMetricsStreamVerticle(MetricsBridge metricsBridge) {
+        this.metricsBridge = metricsBridge;
+    }
 
     @Override
     public void start() {
         HttpServerOptions serverOptions = newServerConfig();
-        HttpServer server = vertx.createHttpServer(serverOptions);
+        server = vertx.createHttpServer(serverOptions);
         int defaultDelay = config().getInteger("delay", 5000);
 
         server.requestHandler(request -> {
             if ("/hystrix.stream".equals(request.path())) {
                 String delay = request.getParam("delay");
-                stream(request, null != delay ? Integer.parseInt(delay) : defaultDelay);
+                metricsBridge.stream(request, null != delay ? Integer.parseInt(delay) : defaultDelay);
             } else {
                 request.response().setStatusCode(404).setStatusMessage("not found").end();
             }
@@ -43,30 +54,11 @@ public class HystrixMetricsStreamVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void stop() throws Exception {
-
-    }
-
-    private void stream(HttpServerRequest request, int delay) {
-        final HttpServerResponse response = request.response();
-
-        response.setChunked(true);
-
-        response.headers().add("Content-Type", "text/event-stream;charset=UTF-8");
-        response.headers().add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
-        response.headers().add("Pragma", "no-cache");
-
-        final HystrixMetricsPoller poller = new HystrixMetricsPoller(json -> response.write("data: " + json + "\n\n"), delay);
-        logger.info("Starting poller with delay=" + delay + "ms");
-        poller.start();
-        response.closeHandler(res -> {
-            logger.info("closeHandler: Shutting down poller");
-            poller.shutdown();
-        });
-        response.exceptionHandler(res -> {
-            logger.info("exceptionHandler: Shutting down poller");
-            poller.shutdown();
-        });
+    public void stop(Future<Void> stopFuture) throws Exception {
+        server.closeObservable()
+                .doOnCompleted(stopFuture::complete)
+                .doOnError(stopFuture::fail)
+                .subscribe();
     }
 
     private HttpServerOptions newServerConfig() {

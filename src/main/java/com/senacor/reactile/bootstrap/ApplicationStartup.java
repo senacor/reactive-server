@@ -1,7 +1,6 @@
 package com.senacor.reactile.bootstrap;
 
 import com.senacor.reactile.Services;
-import com.senacor.reactile.codec.Codecs;
 import com.senacor.reactile.gateway.InitialDataVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
@@ -60,7 +59,7 @@ public class ApplicationStartup extends AbstractVerticle {
     }
 
     private Observable<Services> services() {
-        return Observable.from(EnumSet.range(Services.NewsService, Services.GatewayService));
+        return Observable.from(EnumSet.complementOf(EnumSet.of(Services.EmbeddedMongo)));
     }
 
     private Observable<String> startVerticle(String identifier) {
@@ -68,8 +67,4 @@ public class ApplicationStartup extends AbstractVerticle {
                 .doOnNext(id -> logger.info("Starting verticle with identifier " + identifier + " and deploymentId " + id));
     }
 
-    private Observable<Void> stopVerticle(String deploymentId) {
-        logger.info("Stopping verticle with deploymentId " + deploymentId);
-        return vertx.undeployObservable(deploymentId);
-    }
 }

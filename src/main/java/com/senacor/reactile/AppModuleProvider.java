@@ -6,22 +6,6 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.senacor.reactile.service.account.AccountService;
-import com.senacor.reactile.service.account.AccountServiceImpl;
-import com.senacor.reactile.service.account.TransactionService;
-import com.senacor.reactile.service.account.TransactionServiceImpl;
-import com.senacor.reactile.service.appointment.AppointmentDatabase;
-import com.senacor.reactile.service.appointment.AppointmentService;
-import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
-import com.senacor.reactile.service.appointment.BranchDatabase;
-import com.senacor.reactile.service.appointment.BranchService;
-import com.senacor.reactile.service.appointment.BranchServiceImpl;
-import com.senacor.reactile.service.creditcard.CreditCardService;
-import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
-import com.senacor.reactile.service.customer.CustomerService;
-import com.senacor.reactile.service.customer.CustomerServiceImpl;
-import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommand;
-import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommand;
@@ -30,8 +14,19 @@ import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.hystrix.interception.HystrixCommandInterceptor;
-import com.senacor.reactile.service.newsticker.NewsService;
-import com.senacor.reactile.service.newsticker.NewsServiceImpl;
+import com.senacor.reactile.hystrix.metrics.eventstream.MetricsBridge;
+import com.senacor.reactile.service.account.AccountService;
+import com.senacor.reactile.service.account.AccountServiceImpl;
+import com.senacor.reactile.service.account.TransactionService;
+import com.senacor.reactile.service.account.TransactionServiceImpl;
+import com.senacor.reactile.service.appointment.AppointmentDatabase;
+import com.senacor.reactile.service.appointment.BranchDatabase;
+import com.senacor.reactile.service.creditcard.CreditCardService;
+import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
+import com.senacor.reactile.service.customer.CustomerService;
+import com.senacor.reactile.service.customer.CustomerServiceImpl;
+import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommand;
+import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommandFactory;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -63,11 +58,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
-            bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
-            bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
-            bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
+            bind(MetricsBridge.class);
 
             // Install  HystrixComand Factories
             install(new FactoryModuleBuilder()
@@ -113,8 +106,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        CreditCardService provideCreditCardService(Vertx vertx) {
-            return ProxyHelper.createProxy(CreditCardService.class, vertx, CreditCardService.ADDRESS);
+        com.senacor.reactile.rxjava.service.creditcard.CreditCardService provideCreditCardService(Vertx vertx) {
+            CreditCardService proxy = ProxyHelper.createProxy(CreditCardService.class, vertx, CreditCardService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.creditcard.CreditCardService(proxy);
         }
 
         @Provides

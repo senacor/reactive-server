@@ -87,7 +87,7 @@ public class HystrixCommandInterceptorTest {
     /**
      * Test Module to handle Test-specific guice stuff
      */
-    private class TestModule extends AbstractModule {
+    private static class TestModule extends AbstractModule {
         @Override
         protected void configure() {
             // Install  HystrixComand Factories

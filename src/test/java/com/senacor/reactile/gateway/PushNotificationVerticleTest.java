@@ -29,9 +29,7 @@ public class PushNotificationVerticleTest {
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticleTest.class);
 
     @ClassRule
-    public final static VertxRule vertxRule = new VertxRule(Services.CustomerService)
-            .deployVerticle(PushNotificationVerticle.class)
-            .deployVerticle(Services.NewsService);
+    public final static VertxRule vertxRule = new VertxRule(Services.CustomerService).deployVerticle(PushNotificationVerticle.class);
 
     @Rule
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);

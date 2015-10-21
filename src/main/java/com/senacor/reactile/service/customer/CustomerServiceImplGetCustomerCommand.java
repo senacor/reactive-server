@@ -1,6 +1,7 @@
 package com.senacor.reactile.service.customer;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableCommand;
 
@@ -15,7 +16,8 @@ import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableC
  */
 public class CustomerServiceImplGetCustomerCommand extends InterceptableHystrixObservableCommand<Customer> {
     public CustomerServiceImplGetCustomerCommand() {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CustomerServiceImplGetCustomer"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Service"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("LoadCustomer"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));

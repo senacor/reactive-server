@@ -1,9 +1,9 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
+import com.senacor.reactile.service.customer.Address;
+import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;

@@ -1,20 +1,18 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.rxjava.service.account.AccountService;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
+import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
+import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import com.senacor.reactile.service.account.Account;
 import com.senacor.reactile.service.account.AccountFixtures;
 import com.senacor.reactile.service.account.Product;
 import com.senacor.reactile.service.account.Transaction;
+import com.senacor.reactile.service.account.TransactionFixtures;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
-import com.senacor.reactile.service.creditcard.CreditCardService;
-import com.senacor.reactile.service.account.TransactionFixtures;
 import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.rxjava.service.account.AccountService;
-import com.senacor.reactile.rxjava.service.customer.CustomerService;
-import io.vertx.rxjava.core.RxHelper;
-import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -53,7 +51,7 @@ public class InitialData {
     }
 
     private Observable<CreditCard> createCreditCardWithTransactions(CreditCard creditCard) {
-        return withTransactions(creditCardService.createCreditCard(creditCard))
+        return withTransactions(creditCardService.createCreditCardObservable(creditCard))
                 .flatMap(transaction -> Observable.just(creditCard));
     }
 

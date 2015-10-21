@@ -18,10 +18,15 @@ import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static com.senacor.reactile.service.customer.CustomerFixtures.randomCustomer;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
+import static com.senacor.reactile.service.customer.CustomerFixtures.randomCustomer;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CustomerServiceTest {
 
@@ -90,6 +95,7 @@ public class CustomerServiceTest {
 
     @Test
     public void testReceiveCustomerAddressChangedEvt() throws Exception {
+        //TODO use blocking eventbus
         final LinkedBlockingQueue<CustomerAddressChangedEvt> queue = new LinkedBlockingQueue<>();
 
         // listen to events
@@ -109,6 +115,5 @@ public class CustomerServiceTest {
         assertNotNull("No Event Received", event);
         assertNotNull("event.id must not be null", event.getId());
         assertNotNull("event.newAddress must not be null", event.getNewAddress());
-        assertNull("event.userId must be null", event.getUserId());
     }
 }

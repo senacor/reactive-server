@@ -1,6 +1,7 @@
 package com.senacor.reactile.service.creditcard;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableCommand;
 
@@ -16,7 +17,8 @@ import com.senacor.reactile.hystrix.interception.InterceptableHystrixObservableC
 public class CreditCardServiceImplGetCreditCardsForCustomerCommand extends InterceptableHystrixObservableCommand {
 
     public CreditCardServiceImplGetCreditCardsForCustomerCommand() {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CreditCardServiceImplGetCreditCardsForCustomer"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Service"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("GetCreditCardsForCustomer"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));

@@ -9,7 +9,7 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface AppointmentService {
 
-    static final String ADDRESS = "AppointmentService";
+    String ADDRESS = "AppointmentService";
 
     void getAllAppointments(Handler<AsyncResult<AppointmentList>> resultHandler);
 
@@ -17,7 +17,7 @@ public interface AppointmentService {
 
     void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler);
 
-    void getAppointmentsByBranch(String branchId, String eventAddress, Handler<AsyncResult<String>> resultHandler);
+    void getAppointmentsByBranch(String branchId, Handler<AsyncResult<Appointment>> resultHandler);
 
     void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler);
 

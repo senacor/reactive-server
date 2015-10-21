@@ -15,7 +15,7 @@ import static io.vertx.rxjava.core.RxHelper.scheduler;
 
 public class InitialDataVerticle extends AbstractVerticle {
 
-    public static final int COUNT = 100;
+    public static final int COUNT = 50;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;
@@ -30,7 +30,6 @@ public class InitialDataVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         initialData.initialize(generateCustomerIds())
-                .subscribeOn(scheduler(vertx))
                 .subscribe(
                         id -> logger.info("Generated customer with " + id),
                         throwable -> {
@@ -50,7 +49,6 @@ public class InitialDataVerticle extends AbstractVerticle {
                 .of("customers, accounts, transactions, creditcards")
                 .map(coll -> mongoService.dropCollectionObservable(coll).asObservable())
                 .reduce(Observable::concat).get()
-                .subscribeOn(scheduler(vertx))
                 .doOnCompleted(stopFuture::complete)
                 .doOnError(stopFuture::fail)
                 .subscribe();
