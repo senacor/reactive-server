@@ -1,5 +1,7 @@
 package com.senacor.reactile.service.customer;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.senacor.reactile.domain.Jsonizable;
 import com.senacor.reactile.event.Event;
 import com.senacor.reactile.service.user.User;
@@ -12,16 +14,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @DataObject
 public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable {
     private final CustomerId id;
-    // TODO (ak) die property wuerde ich entfernen
-    private final UserId userId;
     private final Address newAddress;
 
     public CustomerAddressChangedEvt() {
-        this(null, null, null);
+        this(null, null);
     }
 
     public CustomerAddressChangedEvt(CustomerAddressChangedEvt event) {
-        this(event.userId, event.id, event.newAddress);
+        this(event.id, event.newAddress);
     }
 
     public CustomerAddressChangedEvt(JsonObject jsonObject) {
@@ -29,24 +29,18 @@ public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable 
     }
 
     public CustomerAddressChangedEvt(
-            UserId userId,
             CustomerId id,
             Address newAddress) {
-        this.userId = userId;
         this.id = id;
         this.newAddress = newAddress;
     }
 
     private CustomerAddressChangedEvt(Builder builder) {
-        this(builder.userId, builder.id, builder.newAddress);
+        this(builder.id, builder.newAddress);
     }
 
     public static Builder newBuilder() {
         return new Builder();
-    }
-
-    public UserId getUserId() {
-        return userId;
     }
 
     public Address getNewAddress() {
@@ -55,25 +49,15 @@ public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable 
 
     public JsonObject toJson() {
         return new JsonObject()
-                .put("userId", null == userId ? null : userId.getId())
                 .put("id", null == id ? null : id.getId())
                 .put("address", null == newAddress ? null : newAddress.toJson());
     }
 
     public static CustomerAddressChangedEvt fromJson(JsonObject json) {
-        String userId = json.getString("userId");
         return newBuilder()
                 .withId(new CustomerId(json.getString("id")))
-                .withUserId(null == userId ? null : new UserId(userId))
                 .withNewAddress(Address.fromJson(json.getJsonObject("address")))
                 .build();
-    }
-
-    // TODO (ak) sollte man sowas machen?!?
-    public JsonObject replaceUser(User user) {
-        JsonObject res = toJson().put("user", user.toJson());
-        res.remove("userId");
-        return res;
     }
 
     @Override
@@ -83,8 +67,12 @@ public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable 
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("newAddress", newAddress)
+                .toString();
     }
+
 
     public static final class Builder {
         private CustomerId id;
@@ -96,11 +84,6 @@ public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable 
 
         public Builder withId(CustomerId id) {
             this.id = id;
-            return this;
-        }
-
-        public Builder withUserId(UserId userId) {
-            this.userId = userId;
             return this;
         }
 
