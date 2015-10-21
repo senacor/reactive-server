@@ -170,7 +170,7 @@
             <scope>test</scope>
         </dependency>
 
-        //TODO use guava
+        <!--TODO use guava-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
