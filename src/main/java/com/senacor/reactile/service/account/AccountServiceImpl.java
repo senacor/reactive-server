@@ -23,14 +23,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler) {
-        mongoService.findOneObservable(COLLECTION, accountId.toJson(), null)
-                .map(Account::fromJson)
-                .subscribe(Rx.toSubscriber(resultHandler));
+        Observable<Account> accountObservable = mongoService.findOneObservable(COLLECTION, accountId.toJson(), null).map(Account::fromJson);
+        Rx.bridgeHandler(accountObservable, resultHandler);
     }
 
     @Override
     public void getAccountsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
-        getAccountsForCustomer(customerId).subscribe(Rx.toSubscriber(resultHandler));
+        Rx.bridgeHandler(getAccountsForCustomer(customerId), resultHandler);
     }
 
     private Observable<List<JsonObject>> getAccountsForCustomer(CustomerId customerId) {
@@ -41,10 +40,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void createAccount(Account account, Handler<AsyncResult<Account>> resultHandler) {
         JsonObject doc = account.toJson().put("_id", account.getId().toValue());
-        mongoService.insertObservable(COLLECTION, doc)
-                .flatMap(id -> Observable.just(account))
-                .subscribe(Rx.toSubscriber(resultHandler))
-        ;
+        Observable<Account> accountObservable = mongoService.insertObservable(COLLECTION, doc)
+                .flatMap(id -> Observable.just(account));
+        Rx.bridgeHandler(accountObservable, resultHandler);
     }
 
 }
