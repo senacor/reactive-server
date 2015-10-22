@@ -15,4 +15,7 @@ public interface UserService {
     void getUser(UserId userId, Handler<AsyncResult<User>> resultHandler);
 
     void login(UserId userId, Handler<AsyncResult<User>> resultHandler);
+
+    void createUser(User user, Handler<AsyncResult<User>> resultHandler);
+
 }
