@@ -1,4 +1,4 @@
-package com.senacor.reactile.service.appointment;
+package com.senacor.reactile.service.branch;
 
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;

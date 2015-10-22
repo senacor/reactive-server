@@ -1,9 +1,9 @@
-package com.senacor.reactile.service.appointment;
+package com.senacor.reactile.service.branch;
 
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.service.appointment.Branch;
-import com.senacor.reactile.service.appointment.BranchDatabase;
+import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchDatabase;
 import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Rule;

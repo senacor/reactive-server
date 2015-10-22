@@ -1,4 +1,4 @@
-package com.senacor.reactile.service.appointment;
+package com.senacor.reactile.service.branch;
 
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Country;
