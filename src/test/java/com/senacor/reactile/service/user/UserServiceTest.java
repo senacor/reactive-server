@@ -35,20 +35,20 @@ public class UserServiceTest {
 
     @Test
     public void thatUserIsReturned() {
-        mongoInitializer.writeBlocking(new User(new UserId("cust-asdfghjk"), "Walter", "Sion"));
+        mongoInitializer.writeBlocking(new User(new UserId("cust-asdfghjk"), "Walter", "Sion","2"));
         User user = service.getUserObservable(new UserId("cust-asdfghjk")).toBlocking().first();
         assertThat(user, hasId("cust-asdfghjk"));
     }
 
     @Test
     public void thatUserCanBeCreated() {
-        User user = service.createUserObservable(new User(new UserId("cust-254"), "Walter", "Sion")).toBlocking().first();
+        User user = service.createUserObservable(new User(new UserId("cust-254"), "Walter", "Sion","2")).toBlocking().first();
         assertThat(user, hasId("cust-254"));
     }
 
     @Test
     public void thatUserCanBeLoggedIn() {
-        mongoInitializer.writeBlocking(new User(new UserId("momann"),"Michael", "Omann"));
+        mongoInitializer.writeBlocking(new User(new UserId("momann"),"Michael", "Omann","1"));
         User user = service.loginObservable(new UserId("momann")).toBlocking().first();
         assertIsUser(user);
     }
@@ -58,5 +58,6 @@ public class UserServiceTest {
         assertThat(user.getId().getId(), is(equalTo("momann")));
         assertThat(user.getFirstName(), is(equalTo("Michael")));
         assertThat(user.getLastName(), is(equalTo("Omann")));
+        assertThat(user.getBranchId(), is(equalTo("1")));
     }
 }
