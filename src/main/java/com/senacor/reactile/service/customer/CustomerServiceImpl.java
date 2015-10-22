@@ -39,12 +39,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(Customer::fromJson);
     }
 
-    public void getCustomer_differentApproach(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
-        mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
-                .map(Customer::fromJson)
-                .subscribe(Rx.toSubscriber(resultHandler));
-    }
-
     @Override
     public void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler) {
         JsonObject cust = customer.toJson().put("_id", customer.getId().toValue());
@@ -56,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler) {
-        updateAddress(customerId, address).subscribe(Rx.toSubscriber(resultHandler));
+        Rx.bridgeHandler(updateAddress(customerId, address), resultHandler);
     }
 
     public Observable<Customer> updateAddress(CustomerId customerId, Address address) {
