@@ -1,0 +1,9 @@
+{
+  "main": "guice:com.senacor.reactile.service.newsticker.NewsServiceVerticle",
+  "options": {
+    "config": {
+      "address": "NewsService",
+      "collection": "news"
+    }
+  }
+}

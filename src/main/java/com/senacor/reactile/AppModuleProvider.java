@@ -27,6 +27,9 @@ import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.CustomerServiceImpl;
 import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommand;
 import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommandFactory;
+import com.senacor.reactile.service.newsticker.NewsService;
+import com.senacor.reactile.service.newsticker.NewsServiceImpl;
+import com.senacor.reactile.service.newsticker.NewsTickerStream;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -58,9 +61,11 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
+            bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
+            bind(NewsTickerStream.class);
 
             // Install  HystrixComand Factories
             install(new FactoryModuleBuilder()
@@ -127,6 +132,12 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         com.senacor.reactile.rxjava.service.user.UserService provideUserService(Vertx vertx) {
             UserService proxy = ProxyHelper.createProxy(UserService.class, vertx, UserService.ADDRESS);
             return new com.senacor.reactile.rxjava.service.user.UserService(proxy);
+        }
+
+        @Provides
+        com.senacor.reactile.rxjava.service.newsticker.NewsService provideNewsService(Vertx vertx) {
+            NewsService proxy = ProxyHelper.createProxy(NewsService.class, vertx, NewsService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.newsticker.NewsService(proxy);
         }
 
     }
