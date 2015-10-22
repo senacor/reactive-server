@@ -12,8 +12,6 @@ import rx.Observable;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
-import static io.vertx.rxjava.core.RxHelper.scheduler;
-
 public class InitialDataVerticle extends AbstractVerticle {
 
     public static final int COUNT = 100;
