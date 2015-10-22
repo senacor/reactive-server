@@ -10,6 +10,12 @@ import io.vertx.core.Handler;
 public interface NewsService {
     String ADDRESS = "NewsService";
 
+    /**
+     * Get the latest news.
+     *
+     * @param max Maximum number of latest news items per page. Must be between 1 and 1000.
+     * @param resultHandler The handler function to consume a news page.
+     */
     void getLatestNews(int max, Handler<AsyncResult<NewsCollection>> resultHandler);
 
 }

@@ -30,6 +30,7 @@ import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCom
 import com.senacor.reactile.service.newsticker.NewsService;
 import com.senacor.reactile.service.newsticker.NewsServiceImpl;
 import com.senacor.reactile.service.newsticker.NewsTickerStream;
+import com.senacor.reactile.service.newsticker.NewsTickerStreamSubject;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -66,6 +67,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
             bind(NewsTickerStream.class);
+            bind(NewsTickerStreamSubject.class);
 
             // Install  HystrixComand Factories
             install(new FactoryModuleBuilder()

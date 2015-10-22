@@ -5,6 +5,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import rx.Observable;
 
 import javax.inject.Inject;
 
@@ -12,20 +13,25 @@ public class NewsServiceImpl implements NewsService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final NewsTickerStream newsTickerStream;
+    private final NewsTickerStreamSubject newsTickerStreamSubject;
 
     @Inject
-    public NewsServiceImpl(NewsTickerStream newsTickerStream) {
-        this.newsTickerStream = newsTickerStream;
+    public NewsServiceImpl(NewsTickerStreamSubject newsTickerStreamSubject) {
+        this.newsTickerStreamSubject = newsTickerStreamSubject;
     }
 
     @Override
     public void getLatestNews(int max, Handler<AsyncResult<NewsCollection>> resultHandler) {
-        Rx.bridgeHandler(newsTickerStream.getNewsObservable()
-                        .takeLastBuffer(max)
-                        .map(NewsCollection::new)
-                        .doOnNext(log::info),
-                resultHandler);
+        if (!(0 < max && max < NewsTickerStreamSubject.MAX_LATEST_NEWS_PER_PAGE)) {
+            throw new IllegalArgumentException("Parameter max must be between 1 and " + NewsTickerStreamSubject.MAX_LATEST_NEWS_PER_PAGE + "!");
+
+        }
+
+        Rx.bridgeHandler(newsTickerStreamSubject.getNewsSubject()
+                .flatMap(col -> Observable.from(col.getNews()))
+                .buffer(max)
+                .map(NewsCollection::new)
+                , resultHandler);
     }
 
 }

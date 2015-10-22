@@ -37,7 +37,7 @@ public class NewsServiceTest {
 
         service.getLatestNews(max, list -> newsCollections.add(list.result()));
 
-        Thread.sleep(1000L);
+        Thread.sleep(10000L);
 
         assertEquals(1, newsCollections.size());
         newsCollections.stream().forEach(newsCollection -> assertTrue(newsCollection.getNews().size() <= max));
