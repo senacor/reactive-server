@@ -1,5 +1,7 @@
 package com.senacor.reactile.service.appointment;
 
+import static rx.Observable.just;
+
 import com.google.common.collect.Lists;
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
@@ -22,24 +24,24 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void getAllAppointments(Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(Observable.just(new AppointmentList(Lists.newArrayList(appointmentDatabase.findAll()))),
+        Rx.bridgeHandler(just(new AppointmentList(Lists.newArrayList(appointmentDatabase.findAll()))),
                 resultHandler);
     }
 
     @Override
     public void getAppointmentById(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(Observable.just(appointmentDatabase.findById(appointmentId)), resultHandler);
+        Rx.bridgeHandler(just(appointmentDatabase.findById(appointmentId)), resultHandler);
     }
 
     @Override
     public void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(Observable.just(new AppointmentList(appointmentDatabase.findByCustomerId(customerId))),
+        Rx.bridgeHandler(just(new AppointmentList(appointmentDatabase.findByCustomerId(customerId))),
                 resultHandler);
     }
 
     @Override
     public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(Observable.just(new AppointmentList(appointmentDatabase.findByBranchId(branchId))),
+        Rx.bridgeHandler(just(new AppointmentList(appointmentDatabase.findByBranchId(branchId))),
                 resultHandler);
     }
 
@@ -60,11 +62,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {
-
+        Rx.bridgeHandler(just(appointmentDatabase.saveOrUpdate(appointment)), resultHandler);
     }
 
     @Override
     public void deleteAppointment(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(Observable.just(appointmentDatabase.deleteById(appointmentId)), resultHandler);
+        Rx.bridgeHandler(just(appointmentDatabase.deleteById(appointmentId)), resultHandler);
     }
 }

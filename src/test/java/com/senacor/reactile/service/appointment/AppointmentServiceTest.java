@@ -6,11 +6,14 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.rxjava.service.appointment.AppointmentService;
+
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -80,6 +83,19 @@ public class AppointmentServiceTest{
     }
 
     @Test
+    public void thatAppointmentIsCreatedOrUpdated() {
+        Appointment appointment = mocks.get(3);
+        Appointment resultAppointment = Appointment.newBuilder(appointment).build();
+
+        Mockito.when(appointmentDatabase.saveOrUpdate(appointment))
+                .thenReturn(resultAppointment);
+
+        Appointment createdAppointment = service.createOrUpdateAppointmentObservable(appointment).toBlocking().first();
+
+        assertThat(createdAppointment, Matchers.is(resultAppointment));
+    }
+
+    @Test
     public void thatAppointmentIsDeleted(){
         Appointment appointmentToDelete = mocks.get(0);
         when(appointmentDatabase.deleteById("1")).thenReturn(appointmentToDelete);
@@ -93,6 +109,8 @@ public class AppointmentServiceTest{
         add(Appointment.newBuilder().withId("1").withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
         add(Appointment.newBuilder().withId("2").withName("Consulting 2").withBranchId("1").withCustomerId("2").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
         add(Appointment.newBuilder().withId("3").withName("Consulting 3").withBranchId("1").withCustomerId("3").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        add(Appointment.newBuilder().withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000")
+                .withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
     }
 
     private void add(Appointment appointment){
