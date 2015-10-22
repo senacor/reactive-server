@@ -27,27 +27,27 @@ public class AppointmentDatabase {
     private final Map<String, Appointment> dataStore = new ConcurrentHashMap<>();
 
     public AppointmentDatabase() {
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 2").withBranchId("1").withCustomerId("2").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 3").withBranchId("1").withCustomerId("3").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 4").withBranchId("1").withCustomerId("4").withUserId("akeefer").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Account 1").withBranchId("1").withCustomerId("1").withUserId("aloch").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 6").withBranchId("1").withCustomerId("4").withUserId("aloch").withStart(ZonedDateTime.now().plusHours(1)).withEnd(ZonedDateTime.now().plusHours(2)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 7").withBranchId("2").withCustomerId("5").withUserId("adick").withStart(ZonedDateTime.now().minusHours(4)).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 8").withBranchId("2").withCustomerId("6").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 9").withBranchId("2").withCustomerId("7").withUserId("aangel").withStart(ZonedDateTime.now().plusHours(1)).withEnd(ZonedDateTime.now().plusHours(3)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Question 1").withBranchId("2").withCustomerId("8").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 11").withBranchId("2").withCustomerId("cust-100000").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 12").withBranchId("2").withCustomerId("1").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 13").withBranchId("3").withCustomerId("1").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 14").withBranchId("3").withCustomerId("1").withUserId("cstar").withStart(ZonedDateTime.now().plusHours(2)).withEnd(ZonedDateTime.now().plusHours(4)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 15").withBranchId("4").withCustomerId("1").withUserId("adick").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Cal 1").withBranchId("4").withCustomerId("1").withUserId("aloch").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 17").withBranchId("5").withCustomerId("1").withUserId("aloch").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 18").withBranchId("5").withCustomerId("cust-100000").withUserId("akeefer").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 19").withBranchId("5").withCustomerId("1").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(5)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Consulting 20").withBranchId("6").withCustomerId("1").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        saveOrUpdate(Appointment.newBuilder().withName("Sales 1").withBranchId("6").withCustomerId("1").withUserId("momann").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("1").withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("2").withName("Consulting 2").withBranchId("1").withCustomerId("2").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("3").withName("Consulting 3").withBranchId("1").withCustomerId("3").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("4").withName("Consulting 4").withBranchId("1").withCustomerId("4").withUserId("akeefer").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("5").withName("Account 1").withBranchId("1").withCustomerId("1").withUserId("aloch").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("6").withName("Consulting 6").withBranchId("1").withCustomerId("4").withUserId("aloch").withStart(ZonedDateTime.now().plusHours(1)).withEnd(ZonedDateTime.now().plusHours(2)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("7").withName("Consulting 7").withBranchId("2").withCustomerId("5").withUserId("adick").withStart(ZonedDateTime.now().minusHours(4)).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("8").withName("Consulting 8").withBranchId("2").withCustomerId("6").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("9").withName("Consulting 9").withBranchId("2").withCustomerId("7").withUserId("aangel").withStart(ZonedDateTime.now().plusHours(1)).withEnd(ZonedDateTime.now().plusHours(3)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("10").withName("Question 1").withBranchId("2").withCustomerId("8").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("11").withName("Consulting 11").withBranchId("2").withCustomerId("cust-100000").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("12").withName("Consulting 12").withBranchId("2").withCustomerId("1").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("13").withName("Consulting 13").withBranchId("3").withCustomerId("1").withUserId("aangel").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("14").withName("Consulting 14").withBranchId("3").withCustomerId("1").withUserId("cstar").withStart(ZonedDateTime.now().plusHours(2)).withEnd(ZonedDateTime.now().plusHours(4)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("15").withName("Consulting 15").withBranchId("4").withCustomerId("1").withUserId("adick").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("16").withName("Cal 1").withBranchId("4").withCustomerId("1").withUserId("aloch").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("17").withName("Consulting 17").withBranchId("5").withCustomerId("1").withUserId("aloch").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("18").withName("Consulting 18").withBranchId("5").withCustomerId("cust-100000").withUserId("akeefer").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("19").withName("Consulting 19").withBranchId("5").withCustomerId("1").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(5)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("20").withName("Consulting 20").withBranchId("6").withCustomerId("1").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        saveOrUpdate(Appointment.newBuilder().withId("21").withName("Sales 1").withBranchId("6").withCustomerId("1").withUserId("momann").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
         delayEnabled = true;
     }
 
