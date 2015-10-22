@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class VerticleDeployer {
 
-    // TODO: hier temporaer DEFAULT_TIMEOUT auf z.B. 300_000 setzen, damit die lokale MongoDB herunterladen werden kann
+    // TODO: hier temporaer DEFAULT_TIMEOUT auf z.B. 10_000_000 setzen, damit die lokale MongoDB herunterladen werden kann
     private final static long DEFAULT_TIMEOUT = 5_000;
 
     private final Set<String> notStarted = new LinkedHashSet<>();
