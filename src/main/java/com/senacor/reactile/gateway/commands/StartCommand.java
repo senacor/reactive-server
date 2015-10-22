@@ -59,13 +59,15 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                 .andCommandKey(HystrixCommandKey.Factory.asKey("Start"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
-                        .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));
+                        .withExecutionIsolationSemaphoreMaxConcurrentRequests(50))
+        );
         this.userService = userService;
         this.customerService = customerService;
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
         this.userId = userId;
+
         this.customerId = customerId;
     }
 

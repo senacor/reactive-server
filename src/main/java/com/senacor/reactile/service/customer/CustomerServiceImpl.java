@@ -34,8 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
         Rx.bridgeHandler(getCustomer(customerId), resultHandler);
     }
 
-    @HystrixCmd(CustomerServiceImplGetCustomerCommand.class)
-    public Observable<Customer> getCustomer(CustomerId customerId) {
+    private Observable<Customer> getCustomer(CustomerId customerId) {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson);
     }
@@ -60,7 +59,6 @@ public class CustomerServiceImpl implements CustomerService {
         updateAddress(customerId, address).subscribe(Rx.toSubscriber(resultHandler));
     }
 
-    @HystrixCmd(CustomerServiceImplUpdateAddressCommandFactory.class)
     public Observable<Customer> updateAddress(CustomerId customerId, Address address) {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson) // 2. convert json to Objects

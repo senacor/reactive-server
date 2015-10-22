@@ -25,8 +25,6 @@ import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.CustomerServiceImpl;
-import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommand;
-import com.senacor.reactile.service.customer.CustomerServiceImplUpdateAddressCommandFactory;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -69,9 +67,6 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(StartCommand.class, StartCommand.class)
                     .build(StartCommandFactory.class));
-            install(new FactoryModuleBuilder()
-                    .implement(CustomerServiceImplUpdateAddressCommand.class, CustomerServiceImplUpdateAddressCommand.class)
-                    .build(CustomerServiceImplUpdateAddressCommandFactory.class));
 
             HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
             requestInjection(hystrixCommandInterceptor);

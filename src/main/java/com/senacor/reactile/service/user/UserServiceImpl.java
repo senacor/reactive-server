@@ -1,6 +1,5 @@
 package com.senacor.reactile.service.user;
 
-import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.rx.Rx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -26,8 +25,7 @@ public class UserServiceImpl implements UserService {
         Rx.bridgeHandler(Observable.just(database.login(userId)), resultHandler);
     }
 
-    @HystrixCmd(UserServiceImplGetUserCommand.class)
-    public Observable<User> getUser(UserId userId) {
+    private Observable<User> getUser(UserId userId) {
         return Observable.just(database.findUser(userId));
     }
 }

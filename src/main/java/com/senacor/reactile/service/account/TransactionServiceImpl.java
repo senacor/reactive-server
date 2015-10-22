@@ -3,7 +3,6 @@ package com.senacor.reactile.service.account;
 import com.senacor.reactile.rx.Rx;
 import com.senacor.reactile.service.creditcard.CreditCardId;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -45,8 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
         Rx.bridgeHandler(addTransaction(transaction), resultHandler);
     }
 
-    @HystrixCmd(TransactionServiceImplGetTransactionsForCustomerCommand.class)
-    public Observable<TransactionList> getTransactionsForCustomer(CustomerId customerId) {
+    private Observable<TransactionList> getTransactionsForCustomer(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.toValue());
         return executeQuery(query);
     }
