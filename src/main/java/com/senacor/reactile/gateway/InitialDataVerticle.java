@@ -15,7 +15,7 @@ import static io.vertx.rxjava.core.RxHelper.scheduler;
 
 public class InitialDataVerticle extends AbstractVerticle {
 
-    public static final int COUNT = 50;
+    public static final int COUNT = 100;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;

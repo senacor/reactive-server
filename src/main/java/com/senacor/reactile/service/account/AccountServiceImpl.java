@@ -33,8 +33,7 @@ public class AccountServiceImpl implements AccountService {
         getAccountsForCustomer(customerId).subscribe(Rx.toSubscriber(resultHandler));
     }
 
-    @HystrixCmd(AccountServiceImplGetAccountsForCustomerCommand.class)
-    public Observable<List<JsonObject>> getAccountsForCustomer(CustomerId customerId) {
+    private Observable<List<JsonObject>> getAccountsForCustomer(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
         return mongoService.findObservable(COLLECTION, query);
     }
