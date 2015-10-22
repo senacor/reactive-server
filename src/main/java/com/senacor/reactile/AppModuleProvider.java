@@ -21,6 +21,8 @@ import com.senacor.reactile.service.account.TransactionService;
 import com.senacor.reactile.service.account.TransactionServiceImpl;
 import com.senacor.reactile.service.appointment.AppointmentDatabase;
 import com.senacor.reactile.service.branch.BranchDatabase;
+import com.senacor.reactile.service.branch.BranchService;
+import com.senacor.reactile.service.branch.BranchServiceImpl;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
@@ -52,6 +54,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         @Override
         protected void configure() {
             bind(UserService.class).annotatedWith(Impl.class).to(UserServiceImpl.class);
+            bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
             bind(AccountService.class).annotatedWith(Impl.class).to(AccountServiceImpl.class);
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
@@ -98,6 +101,12 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         com.senacor.reactile.rxjava.service.customer.CustomerService provideCustomerService(Vertx vertx) {
             CustomerService proxy = ProxyHelper.createProxy(CustomerService.class, vertx, CustomerService.ADDRESS);
             return new com.senacor.reactile.rxjava.service.customer.CustomerService(proxy);
+        }
+
+        @Provides
+        com.senacor.reactile.rxjava.service.branch.BranchService provideBranchService(Vertx vertx) {
+            BranchService proxy = ProxyHelper.createProxy(BranchService.class, vertx, BranchService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.branch.BranchService(proxy);
         }
 
         @Provides

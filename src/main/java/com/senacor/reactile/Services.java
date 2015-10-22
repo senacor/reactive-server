@@ -10,11 +10,12 @@ public enum Services implements ServiceIdProvider {
     UserService("com.senacor.reactile.user-service"),
     CustomerService("com.senacor.reactile.customer-service", EmbeddedMongo),
     AccountService("com.senacor.reactile.account-service", EmbeddedMongo),
+    BranchService("com.senacor.reactile.branch-service"),
     CreditCardService("com.senacor.reactile.creditcard-service", EmbeddedMongo),
     TransactionService("com.senacor.reactile.transaction-service", EmbeddedMongo),
     PushNotificationService("com.senacor.reactile.pushnotification-service"),
     HystrixMetricsStreamVerticle("com.senacor.reactile.hystrix-metrics-stream-service"),
-    GatewayService("com.senacor.reactile.gateway-service", UserService, CustomerService, AccountService,
+    GatewayService("com.senacor.reactile.gateway-service", UserService, CustomerService, AccountService, BranchService,
         CreditCardService, TransactionService, PushNotificationService,
         HystrixMetricsStreamVerticle);
 

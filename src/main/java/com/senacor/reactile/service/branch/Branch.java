@@ -60,7 +60,10 @@ public class Branch implements Jsonizable {
     }
 
     public static Branch fromJson(JsonObject jsonObject) {
-        return null == jsonObject ? null : Branch.newBuilder()
+        if (null == jsonObject) {
+            throw new IllegalArgumentException("banane");
+        }
+        return Branch.newBuilder()
                 .withId(jsonObject.getString("id"))
                 .withName(jsonObject.getString("name"))
                 .withAddress(Address.fromJson(jsonObject.getJsonObject("address")))
