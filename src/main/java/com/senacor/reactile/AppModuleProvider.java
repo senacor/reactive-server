@@ -20,6 +20,8 @@ import com.senacor.reactile.service.account.AccountServiceImpl;
 import com.senacor.reactile.service.account.TransactionService;
 import com.senacor.reactile.service.account.TransactionServiceImpl;
 import com.senacor.reactile.service.appointment.AppointmentDatabase;
+import com.senacor.reactile.service.appointment.AppointmentService;
+import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
 import com.senacor.reactile.service.appointment.BranchDatabase;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
@@ -58,6 +60,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
+            bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
@@ -127,6 +130,12 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         com.senacor.reactile.rxjava.service.user.UserService provideUserService(Vertx vertx) {
             UserService proxy = ProxyHelper.createProxy(UserService.class, vertx, UserService.ADDRESS);
             return new com.senacor.reactile.rxjava.service.user.UserService(proxy);
+        }
+
+        @Provides
+        com.senacor.reactile.rxjava.service.appointment.AppointmentService provideAppointmentService(Vertx vertx) {
+            AppointmentService proxy = ProxyHelper.createProxy(AppointmentService.class, vertx, AppointmentService.ADDRESS);
+            return new com.senacor.reactile.rxjava.service.appointment.AppointmentService(proxy);
         }
 
     }
