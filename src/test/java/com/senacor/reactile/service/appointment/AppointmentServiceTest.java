@@ -1,7 +1,16 @@
 package com.senacor.reactile.service.appointment;
 
 
-import com.google.common.collect.Iterables;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
@@ -14,18 +23,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import java.time.ZonedDateTime;
-import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AppointmentServiceTest{
 
@@ -87,6 +84,19 @@ public class AppointmentServiceTest{
     }
 
     @Test(timeout = 5000)
+    public void thatGetAppointmentsByBranchAndDate() {
+        final String branchId = "1";
+        final Long date = Long.valueOf(ZonedDateTime.now().minusMinutes(5).toEpochSecond());
+
+        when(appointmentDatabase.findAll()).thenReturn(mocks);
+
+        ArrayList<Appointment> appointmentsFound = Lists.newArrayList(service.getAppointmentsByBranchAndDateObservable(
+                branchId, date).toBlocking().toIterable());
+
+        assertThat(appointmentsFound.size(), equalTo(1));
+    }
+
+    @Test(timeout = 5000)
     public void thatGetAppointmentsByUserAndDate() {
         final String userId = "mmenzel";
         final Long date = Long.valueOf(ZonedDateTime.now().minusMinutes(5).toEpochSecond());
@@ -99,6 +109,15 @@ public class AppointmentServiceTest{
         assertThat(appointmentsFound.size(), equalTo(1));
     }
 
+    @Test
+    public void thatGetAppointmentsByUser() {
+        final String userId = "mmenzel";
+        when(appointmentDatabase.findAll()).thenReturn(mocks);
+
+        AppointmentList actualResult = service.getAppointmentsByUserObservable(userId).toBlocking().first();
+
+        assertThat(actualResult.getAppointmentList().size(), equalTo(1));
+    }
 
 
     @Test
@@ -106,7 +125,7 @@ public class AppointmentServiceTest{
         Appointment appointment = mocks.get(3);
         Appointment resultAppointment = Appointment.newBuilder(appointment).build();
 
-        Mockito.when(appointmentDatabase.saveOrUpdate(appointment))
+        when(appointmentDatabase.saveOrUpdate(appointment))
                 .thenReturn(resultAppointment);
 
         Appointment createdAppointment = service.createOrUpdateAppointmentObservable(appointment).toBlocking().first();
@@ -128,7 +147,7 @@ public class AppointmentServiceTest{
         add(Appointment.newBuilder().withId("1").withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
         add(Appointment.newBuilder().withId("2").withName("Consulting 2").withBranchId("1").withCustomerId("2").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
         add(Appointment.newBuilder().withId("3").withName("Consulting 3").withBranchId("1").withCustomerId("3").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        add(Appointment.newBuilder().withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000")
+        add(Appointment.newBuilder().withName("Consulting 1").withBranchId("2").withCustomerId("cust-100000")
                 .withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
     }
 
