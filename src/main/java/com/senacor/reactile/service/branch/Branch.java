@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.branch;
 
-import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.service.customer.Address;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -57,6 +57,14 @@ public class Branch implements Jsonizable {
 
     public Address getAddress() {
         return address;
+    }
+
+    /**
+     * @param newAddress new Address
+     * @return new Branch with replaced or added Address
+     */
+    public static Branch addOrReplaceAddress(Branch branch, Address newAddress) {
+        return Branch.newBuilder(branch).withAddress(newAddress).build();
     }
 
     public static Branch fromJson(JsonObject jsonObject) {
