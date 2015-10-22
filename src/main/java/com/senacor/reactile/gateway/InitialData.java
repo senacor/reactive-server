@@ -10,7 +10,7 @@ import com.senacor.reactile.service.account.AccountFixtures;
 import com.senacor.reactile.service.account.Product;
 import com.senacor.reactile.service.account.Transaction;
 import com.senacor.reactile.service.account.TransactionFixtures;
-import com.senacor.reactile.service.appointment.Branch;
+import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
 import com.senacor.reactile.service.customer.CustomerFixtures;

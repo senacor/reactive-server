@@ -1,6 +1,6 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.service.appointment.Branch;
+import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.customer.CustomerId;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
