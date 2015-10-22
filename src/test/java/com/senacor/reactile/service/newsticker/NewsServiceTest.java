@@ -10,11 +10,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class NewsServiceTest {
 
@@ -31,16 +29,17 @@ public class NewsServiceTest {
 
     @Test
     public void thatNewsAreReturned() throws InterruptedException {
-        final int max = 10;
+        final int max = 1;
 
-        final List<NewsCollection> newsCollections = new ArrayList<>();
+        Thread.sleep(150L);
 
-        service.getLatestNews(max, list -> newsCollections.add(list.result()));
+        List<News> news = service.getLatestNewsObservable(max)
+                .map(collection -> collection.getNews())
+                .toBlocking().first();
 
-        Thread.sleep(1000L);
 
-        assertEquals(1, newsCollections.size());
-        newsCollections.stream().forEach(newsCollection -> assertTrue(newsCollection.getNews().size() <= max));
+        assertEquals(1, news.size());
+        //newsCollections.stream().forEach(newsCollection -> assertTrue(newsCollection.getNews().size() <= max));
     }
 
 }
