@@ -1,6 +1,16 @@
 package com.senacor.reactile.service.appointment;
 
+import static rx.Observable.from;
 import static rx.Observable.just;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalField;
+import java.util.Objects;
 
 import com.google.common.collect.Lists;
 import com.senacor.reactile.rx.Rx;
@@ -57,7 +67,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void getAppointmentsByUserAndDate(String userId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
+        Rx.bridgeHandler(from(appointmentDatabase.findAll())
+                .filter(appointment -> {
+                    return Objects.equals(userId, appointment.getUserId());
+                })
+                .filter(appointment -> {
+                    if(date == null) {
+                        return true;
+                    }
 
+                    if(appointment.getStart() == null || appointment.getEnd() == null) {
+                        return true;
+                    }
+
+                    long start = appointment.getStart().toEpochSecond();
+                    long end = appointment.getEnd().toEpochSecond();
+
+
+                    if(date >= start && date <= end) {
+                            return true;
+
+                    }
+                    return false;
+                }), resultHandler);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.senacor.reactile.service.appointment;
 
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
@@ -16,8 +17,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalUnit;
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -81,6 +85,21 @@ public class AppointmentServiceTest{
 
         assertThat(appointmentList.getAppointmentList(), is(mocks));
     }
+
+    @Test(timeout = 5000)
+    public void thatGetAppointmentsByUserAndDate() {
+        final String userId = "mmenzel";
+        final Long date = Long.valueOf(ZonedDateTime.now().minusMinutes(5).toEpochSecond());
+
+        when(appointmentDatabase.findAll()).thenReturn(mocks);
+
+        ArrayList<Appointment> appointmentsFound = Lists.newArrayList(service.getAppointmentsByUserAndDateObservable
+                (userId, date).toBlocking().toIterable());
+
+        assertThat(appointmentsFound.size(), equalTo(1));
+    }
+
+
 
     @Test
     public void thatAppointmentIsCreatedOrUpdated() {
