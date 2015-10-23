@@ -11,6 +11,7 @@ import com.senacor.reactile.service.account.Product;
 import com.senacor.reactile.service.account.Transaction;
 import com.senacor.reactile.service.account.TransactionFixtures;
 import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
 import com.senacor.reactile.service.customer.CustomerFixtures;
@@ -34,16 +35,18 @@ public class InitialData {
     private final TransactionService transactionService;
     private final UserService userService;
     private final Random rn = new Random();
+    private final BranchDatabase branchDatabase;
 
     @Inject
     public InitialData(Scheduler scheduler, CustomerService customerService, AccountService accountService,
-                       CreditCardService creditCardService, TransactionService transactionService, UserService userService) {
+                       CreditCardService creditCardService, TransactionService transactionService, UserService userService, BranchDatabase branchDatabase) {
         this.scheduler = scheduler;
         this.customerService = customerService;
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
         this.userService = userService;
+        this.branchDatabase = branchDatabase;
     }
 
     Observable<CustomerId> initialize(Observable<CustomerId> customerIds) {
@@ -60,7 +63,7 @@ public class InitialData {
     }
 
     Observable<UserId> initializeUser(Observable<UserId> userIDs){
-        return userIDs.flatMap(userId -> createUser(userId, randomBranchId()))
+        return userIDs.flatMap(userId -> createUser(userId, branchDatabase.randomExistingID()))
                 .map(user -> user.getId());
 
     }
@@ -88,10 +91,6 @@ public class InitialData {
                 .flatMap(transaction -> transactionService.createTransactionObservable(transaction))
                 .last()
                 ;
-    }
-
-    private String randomBranchId(){
-        return "1";
     }
 
 }
