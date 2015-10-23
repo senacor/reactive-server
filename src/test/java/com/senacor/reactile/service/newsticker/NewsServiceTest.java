@@ -33,14 +33,23 @@ public class NewsServiceTest {
     public void thatNewsAreReturned() throws InterruptedException {
         final int max = 10;
 
+        Thread.sleep(1500L);
+
         final List<NewsCollection> newsCollections = new ArrayList<>();
 
-        service.getLatestNews(max, list -> newsCollections.add(list.result()));
+        for (int i = 1; i < 100; i++) {
 
-        Thread.sleep(10000L);
+            service.getLatestNews(max, list -> newsCollections.add(list.result()));
 
-        assertEquals(1, newsCollections.size());
-        newsCollections.stream().forEach(newsCollection -> assertTrue(newsCollection.getNews().size() <= max));
+            Thread.sleep(150);
+
+            assertEquals(i, newsCollections.size());
+
+            System.out.println(i + " " + newsCollections.get(i - 1).getNews().size());
+
+            newsCollections.stream().forEach(newsCollection -> assertTrue(newsCollection.getNews().size() <= max));
+            Thread.sleep(150L);
+        }
     }
 
 }

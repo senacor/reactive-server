@@ -32,7 +32,7 @@ public class NewsTickerStream {
     private static final Random RANDOM = new Random();
 
     public Observable<News> getNewsObservable() {
-        return Observable.interval(100, TimeUnit.MILLISECONDS)
+        return Observable.interval(25, TimeUnit.MILLISECONDS)
                 .map(count -> News.newBuilder()
                         .withTitle(TITLES.get(RANDOM.nextInt(TITLES.size())))
                         .withNews(RandomStringUtils.randomAlphabetic(RANDOM.nextInt(1000)))

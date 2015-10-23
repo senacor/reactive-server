@@ -8,6 +8,7 @@ import io.vertx.core.logging.impl.LoggerFactory;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 public class NewsServiceImpl implements NewsService {
 
@@ -29,7 +30,7 @@ public class NewsServiceImpl implements NewsService {
 
         Rx.bridgeHandler(newsTickerStreamSubject.getNewsSubject()
                 .flatMap(col -> Observable.from(col.getNews()))
-                .buffer(max)
+                .buffer(20, TimeUnit.MILLISECONDS, max)
                 .map(NewsCollection::new)
                 , resultHandler);
     }

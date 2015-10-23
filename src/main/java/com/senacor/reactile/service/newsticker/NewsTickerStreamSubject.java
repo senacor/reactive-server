@@ -26,15 +26,17 @@ public class NewsTickerStreamSubject {
         newsSubject = BehaviorSubject.create();
 
         Observable<NewsCollection> observable = newsTickerStream.getNewsObservable()
-                .buffer(250, TimeUnit.MILLISECONDS, MAX_LATEST_NEWS_PER_PAGE)
+                .buffer(50, TimeUnit.MILLISECONDS, MAX_LATEST_NEWS_PER_PAGE)
                 .map(NewsCollection::new)
                 .doOnNext(newsSubject::onNext);
 
         observable.subscribe(newsSubject);
 
+        /*
         newsSubject.subscribe(col -> log.info("NewsTicker streaming NewsCollection received: " + col.toString()),
                 ex -> log.error("NewsTicker streaming failed and terminated.", ex),
                 () -> log.info("NewsTicker streaming completed."));
+        */
     }
 
     public Subject<NewsCollection, NewsCollection> getNewsSubject() {

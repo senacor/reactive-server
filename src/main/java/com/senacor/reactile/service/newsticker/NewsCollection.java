@@ -47,4 +47,9 @@ public class NewsCollection implements Jsonizable{
                 .put("news", marshal(news, News::toJson));
     }
 
+    @Override
+    public String toString() {
+        return getNews().size() + " news.";
+    }
+
 }
