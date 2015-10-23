@@ -1,5 +1,7 @@
 package com.senacor.reactile.service.newsticker;
 
+import static com.senacor.reactile.service.newsticker.NewsService.ADDRESS_NEWS_STREAM;
+
 import com.senacor.reactile.guice.Impl;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -41,7 +43,7 @@ public class NewsServiceVerticle extends AbstractVerticle {
 
     public void pushNews() {
         newsTickerStream.getNewsObservable().subscribe(
-                news -> getVertx().eventBus().publish("newsStream", news.toJson())
+                news -> getVertx().eventBus().publish(ADDRESS_NEWS_STREAM, news.toJson())
         );
     }
 

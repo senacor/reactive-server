@@ -25,7 +25,12 @@
     eb.registerHandler("PushNotification#Customer#updateAddress#customerId=cust-100000", function(msg) {
       var str = "<code>" + JSON.stringify(msg) + "</code><br>";
       $('#status').prepend(str);
-    })    
+    })
+
+    eb.registerHandler("newsfeed", function(msg) {
+      var str = "<code>" + JSON.stringify(msg) + "</code><br>";
+      $('#status').prepend(str);
+    })
   }        
 
 

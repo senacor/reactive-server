@@ -10,6 +10,8 @@ import io.vertx.core.Handler;
 public interface NewsService {
     String ADDRESS = "NewsService";
 
+    String ADDRESS_NEWS_STREAM = ADDRESS + "#Stream";
+
     void getLatestNews(int max, Handler<AsyncResult<NewsCollection>> resultHandler);
 
 }
