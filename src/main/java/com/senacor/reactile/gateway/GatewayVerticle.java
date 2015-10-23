@@ -1,6 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
 import com.senacor.reactile.service.customer.Address;
@@ -36,15 +37,18 @@ public class GatewayVerticle extends AbstractVerticle {
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
     private final StartCommandFactory startCommandFactory;
+    private final GetAppointmentCommandFactory getAppointmentCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
-            UserReadCommandFactory userReadCommandFactory) {
+            UserReadCommandFactory userReadCommandFactory,
+            GetAppointmentCommandFactory getAppointmentCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
+        this.getAppointmentCommandFactory = getAppointmentCommandFactory;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
+        router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
 
         // common handler:
         router.route().handler(this::end);
@@ -123,6 +128,19 @@ public class GatewayVerticle extends AbstractVerticle {
                         .map(customer -> writeResponse(response, customer.toJson()))
                         .subscribe(res -> routingContext.next());
             }
+        }
+    }
+
+    private void handleGetAppointment(RoutingContext routingContext) {
+        String appointmentIdString = routingContext.request().getParam("appointmentId");
+        HttpServerResponse response = routingContext.response();
+
+        if (appointmentIdString == null) {
+            logger.warn("Request Param :appointmentId is null");
+            sendError(400, "missing appointmentId parameter", routingContext);
+        } else {
+            getAppointmentCommandFactory.create(appointmentIdString).toObservable()
+                    .map(appointment -> writeResponse(response, appointment)).subscribe(res -> routingContext.next());
         }
     }
 
