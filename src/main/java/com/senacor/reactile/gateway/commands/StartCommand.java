@@ -87,8 +87,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonObjects::toJson);
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
                     .map(JsonArray::new);
-            //TODO: by what???
-            Observable<JsonObject> branchObservable = branchService.getBranchObservable("1")
+            Observable<JsonObject> branchObservable = branchService.getBranchObservable(user.getBranchId())
                     .map(JsonObjects::toJson);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomerObservable(customerId)
                     .map(CreditCardList::getCreditCardList)
@@ -109,7 +108,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                                          JsonArray accounts,
                                          JsonObject branch,
                                          JsonArray creditCards,
-                                         JsonArray transactions, JsonArray appointments) {
+                                         JsonArray transactions,
+                                         JsonArray appointments) {
         return $()
                 .put("customer", cust
                         .put("products", $()
@@ -118,7 +118,6 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         .put("transactions", transactions))
                 .put("branch", branch)
                 .put("appointments", appointments)
-                .put("recommendations", "empty")
                 ;
     }
 }

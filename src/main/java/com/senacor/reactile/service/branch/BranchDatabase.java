@@ -27,17 +27,17 @@ public class BranchDatabase {
     private final Map<String, Branch> dataStore = new ConcurrentHashMap<>();
 
     public BranchDatabase() {
-        saveOrUpdate(Branch.newBuilder().withName("Bonn").withAddress(new Address(null, "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Munich").withAddress(new Address(null, "Bar Str.", "12346", "66", "Munich", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Stuttgart").withAddress(new Address(null, "FooBar Str.", "12347", "1", "Stuttgart", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Berlin").withAddress(new Address(null, "Hof Str.", "12348", "2", "Berlin", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Hamburg").withAddress(new Address(null, "Bau Str.", "12349", "7", "Hamburg", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Nürnberg").withAddress(new Address(null, "Hafen Str.", "12340", "8", "Nürnberg", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Frankfurt").withAddress(new Address(null, "Moor Str.", "12355", "9", "Frankfurt", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Leipzig").withAddress(new Address(null, "Gold Str.", "12365", "61", "Leipzig", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Dresden").withAddress(new Address(null, "Pech Str.", "12375", "62", "Dresden", new Country("Germany", "DE"), 1)).build());
-        saveOrUpdate(Branch.newBuilder().withName("Hof").withAddress(new Address(null, "Mond Str.", "12385", "63", "Hof", new Country("Germany", "DE"), 1)).build());
-        delayEnabled = true;
+        saveOrUpdate(Branch.newBuilder("1").withName("Bonn").withAddress(new Address(null, "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("2").withName("Munich").withAddress(new Address(null, "Bar Str.", "12346", "66", "Munich", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("3").withName("Stuttgart").withAddress(new Address(null, "FooBar Str.", "12347", "1", "Stuttgart", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("4").withName("Berlin").withAddress(new Address(null, "Hof Str.", "12348", "2", "Berlin", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("5").withName("Hamburg").withAddress(new Address(null, "Bau Str.", "12349", "7", "Hamburg", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("6").withName("Nürnberg").withAddress(new Address(null, "Hafen Str.", "12340", "8", "Nürnberg", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("7").withName("Frankfurt").withAddress(new Address(null, "Moor Str.", "12355", "9", "Frankfurt", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("8").withName("Leipzig").withAddress(new Address(null, "Gold Str.", "12365", "61", "Leipzig", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("9").withName("Dresden").withAddress(new Address(null, "Pech Str.", "12375", "62", "Dresden", new Country("Germany", "DE"), 1)).build());
+        saveOrUpdate(Branch.newBuilder("10").withName("Hof").withAddress(new Address(null, "Mond Str.", "12385", "63", "Hof", new Country("Germany", "DE"), 1)).build());
+//        delayEnabled = true;
     }
 
     public Branch saveOrUpdate(final Branch branch) {
