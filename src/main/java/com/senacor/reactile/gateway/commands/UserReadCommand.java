@@ -25,7 +25,7 @@ public class UserReadCommand extends HystrixObservableCommand<User> {
     public UserReadCommand(UserService userService,
                                         @Assisted UserId userId) {
         super(HystrixObservableCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Service"))
-                .andCommandKey(HystrixCommandKey.Factory.asKey("UpdateCustomerAddress"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("GetUser"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(50)));
