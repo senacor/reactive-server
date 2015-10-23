@@ -6,16 +6,7 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.senacor.reactile.gateway.commands.AppointmentsSummaryCommand;
-import com.senacor.reactile.gateway.commands.AppointmentsSummaryCommandFactory;
-import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
-import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
-import com.senacor.reactile.gateway.commands.GetAppointmentCommand;
-import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
-import com.senacor.reactile.gateway.commands.StartCommand;
-import com.senacor.reactile.gateway.commands.StartCommandFactory;
-import com.senacor.reactile.gateway.commands.UserReadCommand;
-import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.gateway.commands.*;
 import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
@@ -85,6 +76,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(AppointmentsSummaryCommand.class, AppointmentsSummaryCommand.class)
                     .build(AppointmentsSummaryCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(BranchOverviewCommand.class, BranchOverviewCommand.class)
+                    .build(BranchCommandFactory.class));
             install(new FactoryModuleBuilder()
                     .implement(GetAppointmentCommand.class, GetAppointmentCommand.class)
                     .build(GetAppointmentCommandFactory.class));
