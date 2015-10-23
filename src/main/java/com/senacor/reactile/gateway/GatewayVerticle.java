@@ -1,6 +1,6 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.gateway.commands.BranchCommandFactory;
+import com.senacor.reactile.gateway.commands.BranchOverviewCommandFactory;
 import com.senacor.reactile.gateway.commands.AppointmentsSummaryCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
@@ -40,14 +40,14 @@ public class GatewayVerticle extends AbstractVerticle {
     private final UserReadCommandFactory userReadCommandFactory;
     private final StartCommandFactory startCommandFactory;
     private final GetAppointmentCommandFactory getAppointmentCommandFactory;
-    private final BranchCommandFactory branchCommandFactory;
+    private final BranchOverviewCommandFactory branchCommandFactory;
     private final AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
-            BranchCommandFactory branchCommandFactory,
+            BranchOverviewCommandFactory branchCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
             GetAppointmentCommandFactory getAppointmentCommandFactory,
             AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory) {

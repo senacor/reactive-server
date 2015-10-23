@@ -14,7 +14,7 @@ package com.senacor.reactile.gateway.commands;
  * @author ccharles
  * @version $LastChangedVersion$
  */
-public interface BranchCommandFactory {
+public interface BranchOverviewCommandFactory {
 
   BranchOverviewCommand overview(String branchId);
 }

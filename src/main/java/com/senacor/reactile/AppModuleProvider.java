@@ -78,7 +78,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
                     .build(AppointmentsSummaryCommandFactory.class));
             install(new FactoryModuleBuilder()
                     .implement(BranchOverviewCommand.class, BranchOverviewCommand.class)
-                    .build(BranchCommandFactory.class));
+                    .build(BranchOverviewCommandFactory.class));
             install(new FactoryModuleBuilder()
                     .implement(GetAppointmentCommand.class, GetAppointmentCommand.class)
                     .build(GetAppointmentCommandFactory.class));
