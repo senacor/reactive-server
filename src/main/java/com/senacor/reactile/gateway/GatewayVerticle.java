@@ -1,6 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.NewsCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
@@ -34,13 +35,15 @@ public class GatewayVerticle extends AbstractVerticle {
 
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final StartCommandFactory startCommandFactory;
+    private final NewsCommandFactory newsCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
-            StartCommandFactory startCommandFactory) {
+            StartCommandFactory startCommandFactory, NewsCommandFactory newsCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
+        this.newsCommandFactory = newsCommandFactory;
     }
 
     @Override
@@ -67,6 +70,9 @@ public class GatewayVerticle extends AbstractVerticle {
                 .method(HttpMethod.POST).method(HttpMethod.PUT)
                 .handler(this::handleUpdateAddress);
         router.get("/start").handler(this::handleStart);
+
+
+        router.get("/news").handler(this::handleNews);
 
         // common handler:
         router.route().handler(this::end);
@@ -108,6 +114,17 @@ public class GatewayVerticle extends AbstractVerticle {
                 .subscribe(
                         response -> routingContext.next(),
                         Throwable::printStackTrace);
+    }
+
+    private void handleNews(RoutingContext routingContext) {
+        MultiMap params = routingContext.request().params();
+
+        int number = Integer.parseInt(getParam(params, "number"));
+
+        newsCommandFactory.create(number).toObservable()
+                .map(json -> writeResponse(routingContext.response(), json)).subscribe(
+                response -> routingContext.next(),
+                Throwable::printStackTrace);
     }
 
     private Observable<HttpServerResponse> serveRequest(HttpServerResponse response, MultiMap params) {

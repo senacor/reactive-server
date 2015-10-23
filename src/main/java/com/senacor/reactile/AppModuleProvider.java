@@ -6,10 +6,7 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
-import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
-import com.senacor.reactile.gateway.commands.StartCommand;
-import com.senacor.reactile.gateway.commands.StartCommandFactory;
+import com.senacor.reactile.gateway.commands.*;
 import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
@@ -74,6 +71,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(StartCommand.class, StartCommand.class)
                     .build(StartCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(NewsCommand.class, NewsCommand.class)
+                    .build(NewsCommandFactory.class));
             install(new FactoryModuleBuilder()
                     .implement(CustomerServiceImplUpdateAddressCommand.class, CustomerServiceImplUpdateAddressCommand.class)
                     .build(CustomerServiceImplUpdateAddressCommandFactory.class));
