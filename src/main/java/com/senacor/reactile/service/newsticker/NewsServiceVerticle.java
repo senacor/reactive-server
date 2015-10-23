@@ -14,10 +14,12 @@ public class NewsServiceVerticle extends AbstractVerticle {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final NewsService newsService;
+    private final NewsTickerStream newsTickerStream;
 
     @Inject
-    public NewsServiceVerticle(@Impl NewsService newsService) {
+    public NewsServiceVerticle(@Impl NewsService newsService, NewsTickerStream newsTickerStream) {
         this.newsService = newsService;
+        this.newsTickerStream = newsTickerStream;
     }
 
     @Override
@@ -28,11 +30,19 @@ public class NewsServiceVerticle extends AbstractVerticle {
             throw new IllegalStateException("address field must be specified in config for NewsService");
         }
         ProxyHelper.registerService(NewsService.class, getVertx(), newsService, address);
+
+        pushNews();
     }
 
     @Override
     public void stop() throws Exception {
         log.info("Stopping service Verticle: " + config().getString("address"));
+    }
+
+    public void pushNews() {
+        newsTickerStream.getNewsObservable().subscribe(
+                news -> getVertx().eventBus().publish("newsStream", news.toJson())
+        );
     }
 
 }

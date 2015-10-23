@@ -37,9 +37,7 @@ public class NewsServiceTest {
                 .map(collection -> collection.getNews())
                 .toBlocking().first();
 
-
         assertEquals(1, news.size());
-        //newsCollections.stream().forEach(newsCollection -> assertTrue(newsCollection.getNews().size() <= max));
     }
 
 }
