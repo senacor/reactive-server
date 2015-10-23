@@ -12,7 +12,7 @@ public class UserFixtures {
     public static final List FIRST_NAMES = Arrays.asList("Adam", "Anneliese", "Berthold", "Berta", "Christopher", "Charlotte", "Dennis", "Dorothea");
     public static final List LAST_NAMES = Arrays.asList("Kugler", "Lurchig", "Monheim", "Naaber", "Peine", "Quaid", "Rastatt");
 
-    public static final List<String> USER_IDS = Arrays.asList("momann","mmenzel","rwinzinger","aloch","adick","aangel","cstar");
+    public static final List<String> USER_IDS = Arrays.asList("momann","mmenzel","rwinzinger","aloch","adick","aangel","cstar","akeefer", "swalter", "ttran");
 
     private static  final Random rd = new Random();
 
