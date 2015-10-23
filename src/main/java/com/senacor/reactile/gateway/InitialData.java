@@ -60,7 +60,7 @@ public class InitialData {
     }
 
     Observable<UserId> initializeUser(Observable<UserId> userIDs){
-        return userIDs.flatMap(userId -> createUser(userId, "branch-Id"))
+        return userIDs.flatMap(userId -> createUser(userId, randomBranchId()))
                 .map(user -> user.getId());
 
     }
@@ -88,6 +88,10 @@ public class InitialData {
                 .flatMap(transaction -> transactionService.createTransactionObservable(transaction))
                 .last()
                 ;
+    }
+
+    private String randomBranchId(){
+        return "1";
     }
 
 }
