@@ -33,13 +33,13 @@ public class BranchDatabaseTest {
 
     @Test
     public void testSaveOrUpdate() throws Exception {
-        Branch saved = database.saveOrUpdate(Branch.newBuilder().withName("Test").build());
+        Branch saved = database.saveOrUpdate(Branch.newBuilder("1").withName("Test").build());
         assertNotNull(saved.getId());
     }
 
     @Test
     public void testFindById() throws Exception {
-        Branch saved = database.saveOrUpdate(Branch.newBuilder().withName("Test").build());
+        Branch saved = database.saveOrUpdate(Branch.newBuilder("1").withName("Test").build());
         assertNotNull(saved.getId());
 
         Branch byId = database.findById(saved.getId());
@@ -48,9 +48,9 @@ public class BranchDatabaseTest {
 
     @Test
     public void testFindByIds() throws Exception {
-        Branch saved1 = database.saveOrUpdate(Branch.newBuilder().withName("Test1").build());
+        Branch saved1 = database.saveOrUpdate(Branch.newBuilder("1").withName("Test1").build());
         assertNotNull(saved1.getId());
-        Branch saved2 = database.saveOrUpdate(Branch.newBuilder().withName("Test2").build());
+        Branch saved2 = database.saveOrUpdate(Branch.newBuilder("2").withName("Test2").build());
 
         List<Branch> res = database.findByIds(newArrayList(saved1.getId(), "gibtsNicht", saved2.getId()));
         assertThat(res, contains(saved1, saved2));
@@ -58,7 +58,7 @@ public class BranchDatabaseTest {
 
     @Test
     public void testDeleteById() throws Exception {
-        Branch saved = database.saveOrUpdate(Branch.newBuilder().withName("Test").build());
+        Branch saved = database.saveOrUpdate(Branch.newBuilder("1").withName("Test").build());
         assertNotNull(saved.getId());
 
         Branch byId = database.deleteById(saved.getId());
@@ -69,7 +69,7 @@ public class BranchDatabaseTest {
 
     @Test
     public void testFindAll() throws Exception {
-        Branch saved = database.saveOrUpdate(Branch.newBuilder().withName("Test").build());
+        Branch saved = database.saveOrUpdate(Branch.newBuilder("1").withName("Test").build());
         assertNotNull(saved.getId());
 
         assertThat(database.findAll(), Matchers.hasItem(saved));

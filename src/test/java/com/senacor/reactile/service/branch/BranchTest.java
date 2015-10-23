@@ -17,8 +17,7 @@ public class BranchTest {
 
     @Test
     public void testToAndFromJson() throws Exception {
-        Branch branch = Branch.newBuilder()
-                .withId("1")
+        Branch branch = Branch.newBuilder("1")
                 .withName("foo")
                 .withAddress(new Address("co", "str", "12345", "6", "Munich", new Country("Germany", "DE"), 1))
                 .build();
@@ -31,8 +30,7 @@ public class BranchTest {
 
     @Test
     public void testToAndFromJsonWithoutAddress() throws Exception {
-        Branch branch = Branch.newBuilder()
-                .withId("1")
+        Branch branch = Branch.newBuilder("1")
                 .withName("foo")
                 .build();
         logger.info(branch);

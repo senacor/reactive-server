@@ -26,13 +26,13 @@ public class BranchServiceTest {
 
     @Test
     public void testBranch() throws Exception {
-        Branch bonn = service.getBranchObservable("0").toBlocking().first();
+        Branch bonn = service.getBranchObservable("1").toBlocking().first();
         assertThat(bonn, hasProperty("address", hasProperty("city", equalTo("Bonn"))));
     }
 
     @Test
     public void testFindBranches() throws Exception {
-        BranchList branchList = service.findBranchesObservable(Arrays.asList("0", "1")).toBlocking().first();
+        BranchList branchList = service.findBranchesObservable(Arrays.asList("1", "2")).toBlocking().first();
         assertThat(branchList.getBranches(), hasSize(2));
     }
 
