@@ -62,8 +62,10 @@ public class AppointmentsSummaryCommand extends HystrixObservableCommand<JsonObj
                     Observable<Customer> customer = customerService.getCustomerObservable(new CustomerId(
                             appointment.getCustomerId()));
                     return Observable.zip(Observable.just(appointment), branch, user, customer, this::toJson);
-
-                }).toList().map(array -> $().put("appointments", array) );
+                }).toList().map(array -> {
+                    array.sort((a, b) -> a.getString("user").compareTo(b.getString("user")));
+                    return $().put("appointments", array);
+                });
     }
 
     private JsonObject toJson(Appointment appointment, Branch branch, User user, Customer customer) {
