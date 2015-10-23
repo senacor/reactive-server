@@ -1,5 +1,6 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.gateway.commands.BranchCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
@@ -37,18 +38,21 @@ public class GatewayVerticle extends AbstractVerticle {
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
     private final StartCommandFactory startCommandFactory;
+    private final BranchCommandFactory branchCommandFactory;
     private final GetAppointmentCommandFactory getAppointmentCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
+            BranchCommandFactory branchCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
             GetAppointmentCommandFactory getAppointmentCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.getAppointmentCommandFactory = getAppointmentCommandFactory;
+        this.branchCommandFactory = branchCommandFactory;
     }
 
     @Override
@@ -80,6 +84,11 @@ public class GatewayVerticle extends AbstractVerticle {
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
         router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
+
+        // branch
+        router.route("/branches/:branchId/overview")
+              .method(HttpMethod.GET)
+              .handler(this::handleBranchOverview);
 
         // common handler:
         router.route().handler(this::end);
@@ -158,6 +167,20 @@ public class GatewayVerticle extends AbstractVerticle {
 
         return startCommandFactory.create(userId, customerId).toObservable()
                 .map(json -> writeResponse(response, json));
+    }
+
+    private void handleBranchOverview(RoutingContext routingContext) {
+        serveBranchOverviewRequest(routingContext.response(), routingContext.request().params())
+                .subscribe(
+                        response -> routingContext.next(),
+                        Throwable::printStackTrace);
+    }
+
+    private Observable<HttpServerResponse> serveBranchOverviewRequest(HttpServerResponse response, MultiMap params) {
+        String branchId = getParam(params, "branchId");
+
+        return branchCommandFactory.overview(branchId).toObservable()
+                                  .map(json -> writeResponse(response, json));
     }
 
     private void contentTypeJson(RoutingContext context) {
