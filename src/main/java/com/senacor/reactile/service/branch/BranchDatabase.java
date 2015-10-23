@@ -5,9 +5,7 @@ import com.senacor.reactile.service.customer.Country;
 import com.senacor.reactile.magic.Throttler;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.commons.lang3.Validate.notNull;
@@ -21,6 +19,8 @@ public class BranchDatabase {
 
     private final Throttler delay = new Throttler();
     private boolean delayEnabled = false;
+
+    private final Random rnd= new Random();
 
     private long nextId = 0;
 
@@ -88,5 +88,19 @@ public class BranchDatabase {
         if (delayEnabled) {
             delay.delayed(BigDecimal.valueOf(faktor));
         }
+    }
+
+    public String randomExistingID(){
+        int n =0;
+        String id;
+        int i = rnd.nextInt(dataStore.size());
+        Iterator<String> iter = dataStore.keySet().iterator();
+        while (iter.hasNext()){
+            id = iter.next();
+            if (n++ == i){
+                return id;
+            }
+        }
+        return null;
     }
 }

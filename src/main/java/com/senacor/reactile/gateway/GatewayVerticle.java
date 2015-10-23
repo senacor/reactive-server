@@ -1,6 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.BranchCommandFactory;
+import com.senacor.reactile.gateway.commands.AppointmentsSummaryCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
@@ -40,6 +41,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private final StartCommandFactory startCommandFactory;
     private final GetAppointmentCommandFactory getAppointmentCommandFactory;
     private final BranchCommandFactory branchCommandFactory;
+    private final AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory;
 
     @Inject
     public GatewayVerticle(
@@ -47,10 +49,12 @@ public class GatewayVerticle extends AbstractVerticle {
             StartCommandFactory startCommandFactory,
             BranchCommandFactory branchCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
-            GetAppointmentCommandFactory getAppointmentCommandFactory) {
+            GetAppointmentCommandFactory getAppointmentCommandFactory,
+            AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
+        this.appointmentsSummaryCommandFactory = appointmentsSummaryCommandFactory;
         this.getAppointmentCommandFactory = getAppointmentCommandFactory;
         this.branchCommandFactory = branchCommandFactory;
     }
@@ -84,6 +88,7 @@ public class GatewayVerticle extends AbstractVerticle {
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
         router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
+        router.get("/appointments-summary").method(HttpMethod.GET).handler(this::handleGetAppointmentSummary);
 
         // branch
         router.route("/branches/:branchId/overview")
@@ -120,8 +125,12 @@ public class GatewayVerticle extends AbstractVerticle {
             userReadCommandFactory.create(userId).toObservable().map(user -> writeResponse(resp, user.toJson()))
             .subscribe(res -> routingContext.next());
         }
+    }
 
-
+    private void handleGetAppointmentSummary(RoutingContext routingContext){
+        HttpServerResponse resp = routingContext.response();
+        appointmentsSummaryCommandFactory.create().toObservable().map(json -> writeResponse(resp, json))
+                .subscribe(res -> routingContext.next());
     }
 
     private void handleUpdateAddress(RoutingContext routingContext) {
