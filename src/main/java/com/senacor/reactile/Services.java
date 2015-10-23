@@ -7,7 +7,8 @@ import java.util.Set;
 public enum Services implements ServiceIdProvider {
 
     EmbeddedMongo("com.senacor.reactile.embedded-mongo"),
-    UserService("com.senacor.reactile.user-service"),
+    AppointmentService("com.senacor.reactile.appointment-service"),
+    UserService("com.senacor.reactile.user-service", EmbeddedMongo),
     CustomerService("com.senacor.reactile.customer-service", EmbeddedMongo),
     AccountService("com.senacor.reactile.account-service", EmbeddedMongo),
     BranchService("com.senacor.reactile.branch-service"),

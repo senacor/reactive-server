@@ -1,7 +1,9 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
+import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
@@ -33,14 +35,20 @@ public class GatewayVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
 
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
+    private final UserReadCommandFactory userReadCommandFactory;
     private final StartCommandFactory startCommandFactory;
+    private final GetAppointmentCommandFactory getAppointmentCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
-            StartCommandFactory startCommandFactory) {
+            StartCommandFactory startCommandFactory,
+            UserReadCommandFactory userReadCommandFactory,
+            GetAppointmentCommandFactory getAppointmentCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
+        this.userReadCommandFactory = userReadCommandFactory;
+        this.getAppointmentCommandFactory = getAppointmentCommandFactory;
     }
 
     @Override
@@ -69,6 +77,10 @@ public class GatewayVerticle extends AbstractVerticle {
                 .handler(this::handleUpdateAddress);
         router.get("/start").handler(this::handleStart);
 
+        router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
+
+        router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
+
         // common handler:
         router.route().handler(this::end);
         // StaticHandler don't call RoutingContext.next()
@@ -80,6 +92,22 @@ public class GatewayVerticle extends AbstractVerticle {
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start", failure));
+    }
+
+    private void handleGetUser(RoutingContext routingContext){
+        String userIdStr = routingContext.request().getParam("userId");
+        HttpServerResponse resp = routingContext.response();
+
+        if (userIdStr == null){
+            logger.warn("Request Param :userId is null");
+            sendError(400, "missing userId parameter", routingContext);
+        } else {
+            UserId userId = new UserId(userIdStr);
+            userReadCommandFactory.create(userId).toObservable().map(user -> writeResponse(resp, user.toJson()))
+            .subscribe(res -> routingContext.next());
+        }
+
+
     }
 
     private void handleUpdateAddress(RoutingContext routingContext) {
@@ -101,6 +129,19 @@ public class GatewayVerticle extends AbstractVerticle {
                         .map(customer -> writeResponse(response, customer.toJson()))
                         .subscribe(res -> routingContext.next());
             }
+        }
+    }
+
+    private void handleGetAppointment(RoutingContext routingContext) {
+        String appointmentIdString = routingContext.request().getParam("appointmentId");
+        HttpServerResponse response = routingContext.response();
+
+        if (appointmentIdString == null) {
+            logger.warn("Request Param :appointmentId is null");
+            sendError(400, "missing appointmentId parameter", routingContext);
+        } else {
+            getAppointmentCommandFactory.create(appointmentIdString).toObservable()
+                    .map(appointment -> writeResponse(response, appointment)).subscribe(res -> routingContext.next());
         }
     }
 

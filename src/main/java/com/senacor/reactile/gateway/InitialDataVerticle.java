@@ -1,5 +1,6 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.customer.CustomerId;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
@@ -11,11 +12,9 @@ import rx.Observable;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
-import static io.vertx.rxjava.core.RxHelper.scheduler;
-
 public class InitialDataVerticle extends AbstractVerticle {
 
-    public static final int COUNT = 100;
+    public static final int COUNT = 30;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;
@@ -29,7 +28,24 @@ public class InitialDataVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        initialData.initialize(generateCustomerIds())
+
+        Observable.merge(initialData.initialize(generateCustomerIds()),
+                initialData.initializeUser(Observable.just(Branch.newBuilder("1").build())))
+                .subscribe(
+                        idObject -> logger.info("blub" + idObject.getId()),
+                        throwable -> {
+                            logger.error("Error generating: " + throwable);
+                            startFuture.fail(throwable);
+                        },
+                        () -> {
+                            logger.info("Finished generating " + COUNT + " ");
+                            startFuture.complete();
+                        }
+
+
+        );
+
+        /*initialData.initialize(generateCustomerIds())
                 .subscribe(
                         id -> logger.info("Generated customer with " + id),
                         throwable -> {
@@ -41,6 +57,12 @@ public class InitialDataVerticle extends AbstractVerticle {
                             startFuture.complete();
                         }
                 );
+
+        initialData.initializeUser(Observable.just(Branch.newBuilder().withId("branchID").build()))
+            .subscribe(
+
+            );       */
+
     }
 
     @Override
