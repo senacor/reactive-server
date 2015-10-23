@@ -88,6 +88,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(GetAppointmentCommand.class, GetAppointmentCommand.class)
                     .build(GetAppointmentCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(UserFindCommand.class, UserFindCommand.class)
+                    .build(UserFindCommandFactory.class));
 
             HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
             requestInjection(hystrixCommandInterceptor);

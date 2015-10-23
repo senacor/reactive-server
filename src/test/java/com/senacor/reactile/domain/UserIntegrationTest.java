@@ -6,6 +6,7 @@ import com.senacor.reactile.gateway.InitialDataVerticle;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -16,6 +17,8 @@ import org.junit.Test;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 
@@ -47,5 +50,40 @@ public class UserIntegrationTest {
         assertThat(json, hasProperties("firstName", "lastName", "branchId"));
     }
 
+    @Test
+    public void thatUserFindOne() throws Exception {
+        HttpResponse response = httpClient.get("/users/?firstName=Omann");
+        assertThat(response, hasStatus(200));
+        logger.info("header: " + response.headersAsString());
+        assertThat(response, hasHeader("content-length"));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("x-response-time"));
+
+        JsonObject json = response.asJson();
+        logger.info("response json: " + json.encodePrettily());
+
+        JsonArray users = json.getJsonArray("users");
+        assertEquals(1,users.size());
+        assertNotNull(users);
+        assertThat(users.getJsonObject(0), hasProperties("firstName", "lastName", "branchId"));
+    }
+
+    @Test
+    public void thatUserFindAll() throws Exception {
+        HttpResponse response = httpClient.get("/users/");
+        assertThat(response, hasStatus(200));
+        logger.info("header: " + response.headersAsString());
+        assertThat(response, hasHeader("content-length"));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("x-response-time"));
+
+        JsonObject json = response.asJson();
+        logger.info("response json: " + json.encodePrettily());
+
+        JsonArray users = json.getJsonArray("users");
+        assertEquals(2,users.size());
+        assertNotNull(users);
+        assertThat(users.getJsonObject(0), hasProperties("firstName", "lastName", "branchId"));
+    }
 
 }

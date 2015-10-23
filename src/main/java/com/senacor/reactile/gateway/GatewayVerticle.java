@@ -1,15 +1,12 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.gateway.commands.AppointmentsSummaryCommandFactory;
-import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
-import com.senacor.reactile.gateway.commands.GetAppointmentCommandFactory;
-import com.senacor.reactile.gateway.commands.StartCommandFactory;
-import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.gateway.commands.*;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -37,6 +34,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
+    private final UserFindCommandFactory userFindCommandFactory;
     private final StartCommandFactory startCommandFactory;
     private final GetAppointmentCommandFactory getAppointmentCommandFactory;
     private final AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory;
@@ -47,12 +45,14 @@ public class GatewayVerticle extends AbstractVerticle {
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
             GetAppointmentCommandFactory getAppointmentCommandFactory,
-            AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory) {
+            AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory, 
+            UserFindCommandFactory userFindCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.appointmentsSummaryCommandFactory = appointmentsSummaryCommandFactory;
         this.getAppointmentCommandFactory = getAppointmentCommandFactory;
+        this.userFindCommandFactory = userFindCommandFactory;
     }
 
     @Override
@@ -84,6 +84,8 @@ public class GatewayVerticle extends AbstractVerticle {
 
         router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
         router.get("/appointments-summary").method(HttpMethod.GET).handler(this::handleGetAppointmentSummary);
+        router.get("/users/").method(HttpMethod.GET).handler(this::handleFindUser);
+
 
         // common handler:
         router.route().handler(this::end);
@@ -96,6 +98,14 @@ public class GatewayVerticle extends AbstractVerticle {
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start", failure));
+    }
+
+    private void handleFindUser(RoutingContext routingContext) {
+        logger.debug("Find user: " + routingContext.request().params());
+        HttpServerResponse resp = routingContext.response();
+        userFindCommandFactory.create().toObservable()
+                .map(users -> writeResponse(resp, new JsonObject().put("users", users)))
+                .subscribe(res -> routingContext.next());
     }
 
     private void handleGetUser(RoutingContext routingContext){
