@@ -38,8 +38,8 @@ public class GatewayVerticle extends AbstractVerticle {
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
     private final StartCommandFactory startCommandFactory;
-    private final BranchCommandFactory branchCommandFactory;
     private final GetAppointmentCommandFactory getAppointmentCommandFactory;
+    private final BranchCommandFactory branchCommandFactory;
 
     @Inject
     public GatewayVerticle(
@@ -84,6 +84,11 @@ public class GatewayVerticle extends AbstractVerticle {
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
         router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
+
+        // branch
+        router.route("/branches/:branchId/overview")
+              .method(HttpMethod.GET)
+              .handler(this::handleBranchOverview);
 
         // branch
         router.route("/branches/:branchId/overview")
