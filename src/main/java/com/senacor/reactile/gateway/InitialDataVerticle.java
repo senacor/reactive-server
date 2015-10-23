@@ -1,7 +1,11 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.service.appointment.AppointmentDatabase;
 import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.user.UserFixtures;
+import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -14,7 +18,7 @@ import java.util.stream.Stream;
 
 public class InitialDataVerticle extends AbstractVerticle {
 
-    public static final int COUNT = 30;
+    public static final int COUNT = 100;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;
@@ -30,17 +34,17 @@ public class InitialDataVerticle extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
 
         Observable.merge(initialData.initialize(generateCustomerIds()),
-                initialData.initializeUser(Observable.just(Branch.newBuilder("1").build())))
+                initialData.initializeUser(generateUserIds()))
                 .subscribe(
-                        idObject -> logger.info("blub" + idObject.getId()),
-                        throwable -> {
-                            logger.error("Error generating: " + throwable);
-                            startFuture.fail(throwable);
-                        },
-                        () -> {
-                            logger.info("Finished generating " + COUNT + " ");
-                            startFuture.complete();
-                        }
+                idObject -> logger.info("blub" + idObject.getId()),
+                throwable -> {
+                    logger.error("Error generating: " + throwable);
+                    startFuture.fail(throwable);
+                },
+                () -> {
+                    logger.info("Finished generating " + COUNT + " ");
+                    startFuture.complete();
+                }
 
 
         );
@@ -56,13 +60,7 @@ public class InitialDataVerticle extends AbstractVerticle {
                             logger.info("Finished generating " + COUNT + " customers");
                             startFuture.complete();
                         }
-                );
-
-        initialData.initializeUser(Observable.just(Branch.newBuilder().withId("branchID").build()))
-            .subscribe(
-
-            );       */
-
+                ); */
     }
 
     @Override
@@ -80,4 +78,9 @@ public class InitialDataVerticle extends AbstractVerticle {
     private Observable<CustomerId> generateCustomerIds() {
         return Observable.range(100_000, COUNT).map(id -> new CustomerId("cust-" + id));
     }
+
+    private Observable<UserId> generateUserIds() {
+        return Observable.from(UserFixtures.USER_IDS).map(id -> new UserId(id));
+    }
+
 }

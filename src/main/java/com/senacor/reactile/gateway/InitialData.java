@@ -17,6 +17,7 @@ import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.User;
 
+import com.senacor.reactile.service.user.UserFixtures;
 import com.senacor.reactile.service.user.UserId;
 import rx.Observable;
 import rx.Scheduler;
@@ -58,11 +59,11 @@ public class InitialData {
 
     }
 
-    Observable<UserId> initializeUser(Observable<Branch> branches){
-        return branches.flatMap(branch -> createUser(branch))
+    Observable<UserId> initializeUser(Observable<UserId> userIDs){
+        return userIDs.flatMap(userId -> createUser(userId, "branch-Id"))
                 .map(user -> user.getId());
-    }
 
+    }
 
 
     private Observable<CreditCard> createCreditCardWithTransactions(CreditCard creditCard) {
@@ -75,8 +76,8 @@ public class InitialData {
                 .flatMap(transaction -> Observable.just(account));
     }
 
-    private Observable<User> createUser(Branch branch){
-         return userService.createUserObservable(new User(new UserId("momann"), "Michael", "Omann", branch.getId()));
+    private Observable<User> createUser(UserId userId, String branch){
+        return userService.createUserObservable(UserFixtures.createUser(userId, branch));
 
     }
 
