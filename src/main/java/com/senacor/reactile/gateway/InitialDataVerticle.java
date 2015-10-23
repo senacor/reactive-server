@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 public class InitialDataVerticle extends AbstractVerticle {
 
-    public static final int COUNT = 100;
+    public static final int COUNT = 50;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;
