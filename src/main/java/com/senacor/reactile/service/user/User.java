@@ -89,7 +89,7 @@ public class User implements Identity<UserId>, Jsonizable {
     @Override
     public JsonObject toJson() {
         return new JsonObject()
-                .put("id", id.toValue())
+                .put("id", id!=null?id.toValue():null)
                 .put("firstName", firstName)
                 .put("lastName", lastName)
                 .put("branchId", branchId);
