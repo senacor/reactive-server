@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public class InitialDataVerticle extends AbstractVerticle {
 
-    public static final int COUNT = 100;
+    public static final int COUNT = 30;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InitialData initialData;
@@ -30,7 +30,7 @@ public class InitialDataVerticle extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
 
         Observable.merge(initialData.initialize(generateCustomerIds()),
-                initialData.initializeUser(Observable.just(Branch.newBuilder().withId("branchID").build())))
+                initialData.initializeUser(Observable.just(Branch.newBuilder("1").build())))
                 .subscribe(
                         idObject -> logger.info("blub" + idObject.getId()),
                         throwable -> {

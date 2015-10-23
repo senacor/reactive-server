@@ -48,7 +48,7 @@ public class AppointmentDatabase {
         saveOrUpdate(Appointment.newBuilder().withId("19").withName("Consulting 19").withBranchId("5").withCustomerId("1").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(5)).build());
         saveOrUpdate(Appointment.newBuilder().withId("20").withName("Consulting 20").withBranchId("6").withCustomerId("1").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
         saveOrUpdate(Appointment.newBuilder().withId("21").withName("Sales 1").withBranchId("6").withCustomerId("1").withUserId("momann").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
-        delayEnabled = true;
+//        delayEnabled = true;
     }
 
     public Appointment saveOrUpdate(final Appointment appointment) {
