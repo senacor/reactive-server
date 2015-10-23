@@ -52,7 +52,7 @@ public class UserIntegrationTest {
 
     @Test
     public void thatUserFindOne() throws Exception {
-        HttpResponse response = httpClient.get("/users/?firstName=Omann");
+        HttpResponse response = httpClient.get("/users/?id=swalter");
         assertThat(response, hasStatus(200));
         logger.info("header: " + response.headersAsString());
         assertThat(response, hasHeader("content-length"));
@@ -63,8 +63,8 @@ public class UserIntegrationTest {
         logger.info("response json: " + json.encodePrettily());
 
         JsonArray users = json.getJsonArray("users");
-        assertEquals(1,users.size());
         assertNotNull(users);
+        assertEquals(1,users.size());
         assertThat(users.getJsonObject(0), hasProperties("firstName", "lastName", "branchId"));
     }
 
@@ -81,7 +81,7 @@ public class UserIntegrationTest {
         logger.info("response json: " + json.encodePrettily());
 
         JsonArray users = json.getJsonArray("users");
-        assertEquals(2,users.size());
+        assertEquals(10,users.size());
         assertNotNull(users);
         assertThat(users.getJsonObject(0), hasProperties("firstName", "lastName", "branchId"));
     }

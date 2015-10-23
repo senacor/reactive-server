@@ -27,6 +27,8 @@ import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GatewayVerticle extends AbstractVerticle {
 
@@ -101,9 +103,13 @@ public class GatewayVerticle extends AbstractVerticle {
     }
 
     private void handleFindUser(RoutingContext routingContext) {
-        logger.debug("Find user: " + routingContext.request().params());
+        MultiMap params = routingContext.request().params();
+        Map<String,String> map = new HashMap<>();
+        for(String p : params.names()) {
+            map.put(p, params.get(p));
+        }
         HttpServerResponse resp = routingContext.response();
-        userFindCommandFactory.create().toObservable()
+        userFindCommandFactory.create(map).toObservable()
                 .map(users -> writeResponse(resp, new JsonObject().put("users", users)))
                 .subscribe(res -> routingContext.next());
     }
