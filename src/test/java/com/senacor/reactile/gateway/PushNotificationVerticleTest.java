@@ -4,14 +4,12 @@ import com.google.common.base.Throwables;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.service.customer.Customer;
-import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
-import com.senacor.reactile.service.customer.CustomerFixtures;
+import com.senacor.reactile.service.customer.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.eventbus.Message;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +33,7 @@ public class PushNotificationVerticleTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private com.senacor.reactile.rxjava.service.customer.CustomerService service;
+    private CustomerService service;
 
     @Test
     public void testCustomerUpdateEvent() throws Exception {
@@ -55,13 +53,13 @@ public class PushNotificationVerticleTest {
                         throwable -> fail(throwable.getMessage() + Throwables.getStackTraceAsString(throwable)));
 
         // create customer and update Address
-        service.createCustomerObservable(customer)
+        service.createCustomer(customer)
                 .map(customerCreated -> Address.anAddress()
                         .withAddress(customerCreated.getAddresses().get(0))
                         .withZipCode("00815")
                         .withCity("NewCity")
                         .build())
-                .flatMap(newAddress -> service.updateAddressObservable(customer.getId(), newAddress))
+                .flatMap(newAddress -> service.updateAddress(customer.getId(), newAddress))
                 .subscribe(customerWithUpdatedAddress -> logger.info("updateAddress: " + customerWithUpdatedAddress));
 
         CustomerAddressChangedEvt event = queue.poll(5L, TimeUnit.SECONDS);

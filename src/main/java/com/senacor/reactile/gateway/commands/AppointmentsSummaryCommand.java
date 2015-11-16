@@ -4,17 +4,17 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.rxjava.service.appointment.AppointmentService;
-import com.senacor.reactile.rxjava.service.branch.BranchService;
-import com.senacor.reactile.rxjava.service.customer.CustomerService;
-import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.appointment.Appointment;
 import com.senacor.reactile.service.appointment.AppointmentList;
+import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.user.User;
 import com.senacor.reactile.service.user.UserId;
+import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
@@ -53,13 +53,13 @@ public class AppointmentsSummaryCommand extends HystrixObservableCommand<JsonObj
     protected Observable<JsonObject> construct() {
 
         Observable<AppointmentList> appointmentObservable =
-                appointmentService.getAllAppointmentsObservable();
+                appointmentService.getAllAppointments();
 
         return appointmentObservable.flatMap(appointment -> Observable.from(appointment.getAppointmentList()))
                 .flatMap(appointment -> {
-                    Observable<User> user = userService.getUserObservable(new UserId(appointment.getUserId()));
-                    Observable<Branch> branch = branchService.getBranchObservable(appointment.getBranchId());
-                    Observable<Customer> customer = customerService.getCustomerObservable(new CustomerId(
+                    Observable<User> user = userService.getUser(new UserId(appointment.getUserId()));
+                    Observable<Branch> branch = branchService.getBranch(appointment.getBranchId());
+                    Observable<Customer> customer = customerService.getCustomer(new CustomerId(
                             appointment.getCustomerId()));
                     return Observable.zip(Observable.just(appointment), branch, user, customer, this::toJson);
                 }).toList().map(array -> {

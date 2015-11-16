@@ -6,10 +6,10 @@ import com.senacor.reactile.gateway.InitialDataVerticle;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
-import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerFixtures;
+import com.senacor.reactile.service.customer.CustomerService;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -78,7 +78,7 @@ public class GatewayVerticleTest {
     public void testUpdateCustomerAddress() throws Exception {
         // create customer
         Customer customer = CustomerFixtures.randomCustomer();
-        customer = service.createCustomerObservable(customer).toBlocking().first();
+        customer = service.createCustomer(customer).toBlocking().first();
         Address newAddress = Address.anAddress()
                 .withAddress(customer.getAddresses().get(0))
                 .withZipCode("00815")
@@ -94,7 +94,7 @@ public class GatewayVerticleTest {
     public void testUpdateCustomerAddressAndSleep() throws Exception {
         // create customer
         Customer customer = CustomerFixtures.randomCustomer("cust-0815");
-        customer = service.createCustomerObservable(customer).toBlocking().first();
+        customer = service.createCustomer(customer).toBlocking().first();
         Address newAddress = Address.anAddress()
                 .withAddress(customer.getAddresses().get(0))
                 .withZipCode("00815")

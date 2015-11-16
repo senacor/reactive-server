@@ -1,5 +1,7 @@
 package com.senacor.reactile.service.account;
 
+import com.senacor.reactile.abstractservice.Action;
+import com.senacor.reactile.abstractservice.JsonizableList;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.hystrix.interception.HystrixCmd;
 import com.senacor.reactile.rx.Rx;
@@ -21,28 +23,24 @@ public class AccountServiceImpl implements AccountService {
         this.mongoService = mongoService;
     }
 
+
     @Override
-    public void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler) {
-        Observable<Account> accountObservable = mongoService.findOneObservable(COLLECTION, accountId.toJson(), null).map(Account::fromJson);
-        Rx.bridgeHandler(accountObservable, resultHandler);
+    public Observable<Account> getAccount(AccountId accountId)  {
+        return mongoService.findOneObservable(COLLECTION, accountId.toJson(), null).map(Account::fromJson);
     }
 
     @Override
-    public void getAccountsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
-        Rx.bridgeHandler(getAccountsForCustomer(customerId), resultHandler);
-    }
-
-    private Observable<List<JsonObject>> getAccountsForCustomer(CustomerId customerId) {
+    public Observable<JsonizableList<JsonObject>> getAccountsForCustomer(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
-        return mongoService.findObservable(COLLECTION, query);
+        return mongoService.findObservable(COLLECTION, query)
+                .map(list -> new JsonizableList<JsonObject>(list));
     }
 
     @Override
-    public void createAccount(Account account, Handler<AsyncResult<Account>> resultHandler) {
+    public Observable<Account> createAccount(Account account) {
         JsonObject doc = account.toJson().put("_id", account.getId().toValue());
-        Observable<Account> accountObservable = mongoService.insertObservable(COLLECTION, doc)
+        return mongoService.insertObservable(COLLECTION, doc)
                 .flatMap(id -> Observable.just(account));
-        Rx.bridgeHandler(accountObservable, resultHandler);
     }
 
 }

@@ -5,19 +5,20 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
+import com.senacor.reactile.abstractservice.JsonizableList;
 import com.senacor.reactile.json.JsonObjects;
-import com.senacor.reactile.rxjava.service.account.AccountService;
-import com.senacor.reactile.rxjava.service.account.TransactionService;
-import com.senacor.reactile.rxjava.service.appointment.AppointmentService;
-import com.senacor.reactile.rxjava.service.branch.BranchService;
-import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
-import com.senacor.reactile.rxjava.service.customer.CustomerService;
-import com.senacor.reactile.rxjava.service.user.UserService;
+import com.senacor.reactile.service.account.AccountService;
 import com.senacor.reactile.service.account.TransactionList;
+import com.senacor.reactile.service.account.TransactionService;
 import com.senacor.reactile.service.appointment.AppointmentList;
+import com.senacor.reactile.service.appointment.AppointmentService;
+import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.creditcard.CreditCardList;
+import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.user.UserId;
+import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
@@ -82,17 +83,18 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
 
     @Override
     protected Observable<JsonObject> construct() {
-        return userService.getUserObservable(userId).flatMap(user -> {
-            Observable<JsonObject> customerObservable = customerService.getCustomerObservable(customerId)
+        return userService.getUser(userId).flatMap(user -> {
+            Observable<JsonObject> customerObservable = customerService.getCustomer(customerId)
                     .map(JsonObjects::toJson);
-            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
+            Observable<JsonArray> accountObservable = accountService.getAccountsForCustomer(customerId)
+                    .map(jsonizableList -> jsonizableList.toList())
                     .map(JsonArray::new);
-            Observable<JsonObject> branchObservable = branchService.getBranchObservable("1")
+            Observable<JsonObject> branchObservable = branchService.getBranch("1")
                     .map(JsonObjects::toJson);
-            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomerObservable(customerId)
+            Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
                     .map(CreditCardList::getCreditCardList)
                     .map(JsonObjects::toJsonArray);
-            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomerObservable(customerId)
+            Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId)
                     .map(TransactionList::getTransactionList)
                     .map(JsonObjects::toJsonArray);
 //            Observable<JsonArray> appointmentObservable = appointmentService.getAppointmentsByCustomerObservable(

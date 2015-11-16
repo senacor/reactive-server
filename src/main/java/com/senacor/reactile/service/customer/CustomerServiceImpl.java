@@ -30,29 +30,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void getCustomer(CustomerId customerId, Handler<AsyncResult<Customer>> resultHandler) {
-        Rx.bridgeHandler(getCustomer(customerId), resultHandler);
-    }
-
-    private Observable<Customer> getCustomer(CustomerId customerId) {
+    public Observable<Customer> getCustomer(CustomerId customerId) {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson);
     }
 
     @Override
-    public void createCustomer(Customer customer, Handler<AsyncResult<Customer>> resultHandler) {
+    public Observable<Customer> createCustomer(Customer customer) {
         JsonObject cust = customer.toJson().put("_id", customer.getId().toValue());
-        Rx.bridgeHandler(
-                mongoService.insertObservable(COLLECTION, cust)
-                        .flatMap(res -> Observable.just(customer))
-                , resultHandler);
+        return mongoService.insertObservable(COLLECTION, cust)
+               .flatMap(res -> Observable.just(customer));
     }
 
     @Override
-    public void updateAddress(CustomerId customerId, Address address, Handler<AsyncResult<Customer>> resultHandler) {
-        Rx.bridgeHandler(updateAddress(customerId, address), resultHandler);
-    }
-
     public Observable<Customer> updateAddress(CustomerId customerId, Address address) {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson) // 2. convert json to Objects
@@ -80,7 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateContact(CustomerId customerId, Contact address, Handler<AsyncResult<Customer>> resultHandler) {
-        //TODO mmenzel
+    public Observable<Customer> updateContact(CustomerId customerId, Contact address) {
+        return null;
     }
 }

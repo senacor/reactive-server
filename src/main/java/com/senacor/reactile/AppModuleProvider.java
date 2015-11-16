@@ -6,6 +6,7 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.senacor.reactile.abstractservice.ObserverProxy;
 import com.senacor.reactile.gateway.commands.*;
 import com.senacor.reactile.guice.Blocking;
 import com.senacor.reactile.guice.Impl;
@@ -33,6 +34,8 @@ import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.serviceproxy.ProxyHelper;
 import rx.Scheduler;
+
+import java.lang.reflect.Proxy;
 
 import static com.google.inject.matcher.Matchers.annotatedWith;
 import static com.google.inject.matcher.Matchers.any;
@@ -110,46 +113,61 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.customer.CustomerService provideCustomerService(Vertx vertx) {
-            CustomerService proxy = ProxyHelper.createProxy(CustomerService.class, vertx, CustomerService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.customer.CustomerService(proxy);
+        CustomerService provideCustomerService(Vertx vertx) {
+            return (CustomerService) Proxy.newProxyInstance(
+                    CustomerService.class.getClassLoader(),
+                    new Class[]{CustomerService.class},
+                    new ObserverProxy(vertx, "CustomerVerticle"));
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.branch.BranchService provideBranchService(Vertx vertx) {
-            BranchService proxy = ProxyHelper.createProxy(BranchService.class, vertx, BranchService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.branch.BranchService(proxy);
+        BranchService provideBranchService(Vertx vertx) {
+            return (BranchService) Proxy.newProxyInstance(
+                    BranchService.class.getClassLoader(),
+                    new Class[]{BranchService.class},
+                    new ObserverProxy(vertx, "BranchVerticle"));
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.creditcard.CreditCardService provideCreditCardService(Vertx vertx) {
-            CreditCardService proxy = ProxyHelper.createProxy(CreditCardService.class, vertx, CreditCardService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.creditcard.CreditCardService(proxy);
+        CreditCardService provideCreditCardService(Vertx vertx) {
+            return (CreditCardService) Proxy.newProxyInstance(
+                    CreditCardService.class.getClassLoader(),
+                    new Class[]{CreditCardService.class},
+                    new ObserverProxy(vertx, "CreditCardVerticle"));
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.account.AccountService provideAccountService(Vertx vertx) {
-            AccountService proxy = ProxyHelper.createProxy(AccountService.class, vertx, AccountService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.account.AccountService(proxy);
+        AccountService provideAccountService(Vertx vertx) {
+            return (AccountService) Proxy.newProxyInstance(
+                    AccountService.class.getClassLoader(),
+                    new Class[]{AccountService.class},
+                    new ObserverProxy(vertx, "AccountVerticle"));
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.account.TransactionService provideTransactionService(Vertx vertx) {
-            TransactionService proxy = ProxyHelper.createProxy(TransactionService.class, vertx, TransactionService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.account.TransactionService(proxy);
+        TransactionService provideTransactionService(Vertx vertx) {
+            return (TransactionService) Proxy.newProxyInstance(
+                    TransactionService.class.getClassLoader(),
+                    new Class[]{TransactionService.class},
+                    new ObserverProxy(vertx, "TransactionVerticle"));
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.user.UserService provideUserService(Vertx vertx) {
-            UserService proxy = ProxyHelper.createProxy(UserService.class, vertx, UserService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.user.UserService(proxy);
+        UserService provideUserService(Vertx vertx) {
+            return (UserService) Proxy.newProxyInstance(
+                    UserService.class.getClassLoader(),
+                    new Class[]{UserService.class},
+                    new ObserverProxy(vertx, "UserVerticle"));
         }
 
         @Provides
-        com.senacor.reactile.rxjava.service.appointment.AppointmentService provideAppointmentService(Vertx vertx) {
-            AppointmentService proxy = ProxyHelper.createProxy(AppointmentService.class, vertx, AppointmentService.ADDRESS);
-            return new com.senacor.reactile.rxjava.service.appointment.AppointmentService(proxy);
+        AppointmentService provideAppointmentService(Vertx vertx) {
+            return (AppointmentService) Proxy.newProxyInstance(
+                    AppointmentService.class.getClassLoader(),
+                    new Class[]{AppointmentService.class},
+                    new ObserverProxy(vertx, "AppointmentVerticle"));
         }
+
 
     }
 }

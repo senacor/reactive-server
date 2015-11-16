@@ -21,6 +21,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
         registerCustomerAddressUpdateHandler();
     }
 
+
     private void registerCustomerAddressUpdateHandler() {
         vertx.eventBus().consumer(CustomerService.ADDRESS_EVENT_UPDATE_ADDRESS).toObservable()
                 .map(Message::body)

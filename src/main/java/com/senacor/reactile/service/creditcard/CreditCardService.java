@@ -1,5 +1,7 @@
 package com.senacor.reactile.service.creditcard;
 
+import com.senacor.reactile.abstractservice.Action;
+import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerId;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
@@ -15,17 +17,14 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@ProxyGen
-@VertxGen
 public interface CreditCardService {
-    String ADDRESS = "CreditCardService";
 
+    @Action(returnType = CreditCard.class)
+    public Observable<CreditCard> getCreditCard(CreditCardId creditCardId);
 
-    void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<CreditCard>> resultHandler);
+    @Action(returnType = CreditCardList.class)
+    public Observable<CreditCardList> getCreditCardsForCustomer(CustomerId customerId);
 
-    void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<CreditCardList>> resultHandler);
-
-    void createCreditCard(CreditCard creditCard, Handler<AsyncResult<CreditCard>> resultHandler);
-
-
+    @Action(returnType = CreditCard.class)
+    public Observable<CreditCard> createCreditCard(CreditCard creditCard);
 }

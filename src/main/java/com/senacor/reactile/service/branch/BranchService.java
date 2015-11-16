@@ -1,23 +1,28 @@
 package com.senacor.reactile.service.branch;
 
+import com.senacor.reactile.abstractservice.Action;
+import com.senacor.reactile.abstractservice.JsonizableList;
+import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.service.customer.Customer;
+import com.senacor.reactile.service.customer.CustomerId;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import rx.Observable;
 
 import java.util.List;
 
-@ProxyGen
-@VertxGen
 public interface BranchService {
 
-    String ADDRESS = "BranchService";
+    @Action(returnType = Branch.class)
+    public Observable<Branch> getBranch(String branchId);
 
-    void getBranch(String branchId, Handler<AsyncResult<Branch>> resultHandler);
+    @Action(returnType = BranchList.class)
+    public Observable<BranchList> findBranches(JsonizableList<String> branchIds);
 
-    void findBranches(List<String> branchIds, Handler<AsyncResult<BranchList>> resultHandler);
-
-    void getAllBranches(Handler<AsyncResult<BranchList>> resultHandler);
+    @Action(returnType = BranchList.class)
+    public Observable<BranchList> getAllBranches();
 
 
 }

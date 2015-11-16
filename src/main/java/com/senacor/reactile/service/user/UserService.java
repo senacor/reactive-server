@@ -1,26 +1,22 @@
 package com.senacor.reactile.service.user;
 
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import com.senacor.reactile.abstractservice.Action;
+import com.senacor.reactile.abstractservice.JsonizableList;
 import io.vertx.core.json.JsonObject;
+import rx.Observable;
 
-import java.util.List;
-
-@ProxyGen
-@VertxGen
 public interface UserService {
 
+    @Action(returnType = User.class)
+    public Observable<User> getUser(UserId userId);
 
-    String ADDRESS = "UserService";
+    @Action(returnType = JsonizableList.class)
+    public Observable<JsonizableList<JsonObject>> findUser(JsonObject query);
 
-    void getUser(UserId userId, Handler<AsyncResult<User>> resultHandler);
+    @Action(returnType = User.class)
+    public Observable<User> login(UserId userId);
 
-    void findUser(JsonObject query, Handler<AsyncResult<List<JsonObject>>> resultHandler);
-
-    void login(UserId userId, Handler<AsyncResult<User>> resultHandler);
-
-    void createUser(User user, Handler<AsyncResult<User>> resultHandler);
+    @Action(returnType = User.class)
+    public Observable<User> createUser(User user);
 
 }

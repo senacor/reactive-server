@@ -7,8 +7,8 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.rxjava.service.appointment.AppointmentService;
 import com.senacor.reactile.service.appointment.Appointment;
+import com.senacor.reactile.service.appointment.AppointmentService;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
@@ -34,7 +34,7 @@ public class GetAppointmentCommand extends HystrixObservableCommand<JsonObject> 
 
     @Override
     protected Observable<JsonObject> construct() {
-        return appointmentService.getAppointmentByIdObservable(appointmentId)
+        return appointmentService.getAppointmentById(appointmentId)
                 .map(Appointment::toJson);
     }
 

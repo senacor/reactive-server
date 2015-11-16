@@ -9,10 +9,12 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
+import com.senacor.reactile.abstractservice.Action;
 import com.senacor.reactile.rx.Rx;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import rx.Observable;
 
 /**
  * @author Mihael Gorupec, Senacor Technologies AG
@@ -27,59 +29,55 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void getAllAppointments(Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(just(new AppointmentList(Lists.newArrayList(appointmentDatabase.findAll()))),
-                resultHandler);
+    public Observable<AppointmentList> getAllAppointments() {
+        return just(new AppointmentList(Lists.newArrayList(appointmentDatabase.findAll())));
     }
 
     @Override
-    public void getAppointmentById(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(just(appointmentDatabase.findById(appointmentId)), resultHandler);
+    public Observable<Appointment> getAppointmentById(String appointmentId) {
+        return just(appointmentDatabase.findById(appointmentId));
     }
 
     @Override
-    public void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(just(new AppointmentList(appointmentDatabase.findByCustomerId(customerId))),
-                resultHandler);
+    public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
+        return just(new AppointmentList(appointmentDatabase.findByCustomerId(customerId)));
     }
 
     @Override
-    public void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(just(new AppointmentList(appointmentDatabase.findByBranchId(branchId))),
-                resultHandler);
+    public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
+        return just(new AppointmentList(appointmentDatabase.findByBranchId(branchId)));
     }
 
     @Override
-    public void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(from(appointmentDatabase.findAll())
+    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date) {
+        return from(appointmentDatabase.findAll())
                 .filter(appointment -> Objects.equals(branchId, appointment.getBranchId()))
-                .filter(appointment -> keep(date, appointment)), resultHandler);
+                .filter(appointment -> keep(date, appointment));
     }
 
     @Override
-    public void getAppointmentsByUser(String userId, Handler<AsyncResult<AppointmentList>> resultHandler) {
-        Rx.bridgeHandler(from(appointmentDatabase.findAll())
+    public Observable<AppointmentList> getAppointmentsByUser(String userId) {
+        return from(appointmentDatabase.findAll())
                 .filter(appointment -> Objects.equals(userId, appointment.getUserId()))
                         .collect(() -> new ArrayList<Appointment>(), ArrayList::add)
-                .map(AppointmentList::new),
-                resultHandler);
+                .map(AppointmentList::new);
     }
 
     @Override
-    public void getAppointmentsByUserAndDate(String userId, Long date, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(from(appointmentDatabase.findAll())
+    public Observable<Appointment> getAppointmentsByUserAndDate(String userId, Long date) {
+        return from(appointmentDatabase.findAll())
                 .filter(appointment -> Objects.equals(userId, appointment.getUserId()))
-                .filter(appointment -> keep(date, appointment)), resultHandler);
+                .filter(appointment -> keep(date, appointment));
     }
 
     @Override
-    public void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(just(appointmentDatabase.saveOrUpdate(appointment)), resultHandler);
+    public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
+        return just(appointmentDatabase.saveOrUpdate(appointment));
     }
 
     @Override
-    public void deleteAppointment(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler) {
-        Rx.bridgeHandler(just(appointmentDatabase.deleteById(appointmentId)), resultHandler);
+    public Observable<Appointment> deleteAppointment(String appointmentId) {
+        return(just(appointmentDatabase.deleteById(appointmentId)));
     }
 
     private boolean keep(Long date, Appointment appointment) {

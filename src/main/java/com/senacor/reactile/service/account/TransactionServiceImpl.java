@@ -1,5 +1,6 @@
 package com.senacor.reactile.service.account;
 
+import com.senacor.reactile.abstractservice.Action;
 import com.senacor.reactile.rx.Rx;
 import com.senacor.reactile.service.creditcard.CreditCardId;
 import com.senacor.reactile.service.customer.CustomerId;
@@ -25,42 +26,25 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void getTransactionsForCustomer(CustomerId customerId, Handler<AsyncResult<TransactionList>> resultHandler) {
-        Rx.bridgeHandler(getTransactionsForCustomer(customerId), resultHandler);
-    }
-
-    @Override
-    public void getTransactionsForAccount(AccountId accountId, Handler<AsyncResult<TransactionList>> resultHandler) {
-        Rx.bridgeHandler(getTransactionsForAccount(accountId), resultHandler);
-    }
-
-    @Override
-    public void getTransactionsForCreditCard(CreditCardId creditCardId, Handler<AsyncResult<TransactionList>> resultHandler) {
-        Rx.bridgeHandler(getTransactionsForCreditCard(creditCardId), resultHandler);
-    }
-
-    @Override
-    public void createTransaction(Transaction transaction, Handler<AsyncResult<Transaction>> resultHandler) {
-        Rx.bridgeHandler(addTransaction(transaction), resultHandler);
-    }
-
-    private Observable<TransactionList> getTransactionsForCustomer(CustomerId customerId) {
+    public Observable<TransactionList> getTransactionsForCustomer(CustomerId customerId){
         JsonObject query = new JsonObject().put("customerId", customerId.toValue());
         return executeQuery(query);
     }
 
-    private Observable<TransactionList> getTransactionsForAccount(AccountId accountId) {
+    @Override
+    public  Observable<TransactionList> getTransactionsForAccount(AccountId accountId) {
         JsonObject query = new JsonObject().put("accountId", accountId.getId());
         return executeQuery(query);
     }
 
-    private Observable<TransactionList> getTransactionsForCreditCard(CreditCardId creditCardId) {
+    @Override
+    public Observable<TransactionList> getTransactionsForCreditCard(CreditCardId creditCardId) {
         JsonObject query = new JsonObject().put("creditCardId", creditCardId.getId());
         return executeQuery(query);
     }
 
-
-    private Observable<Transaction> addTransaction(Transaction transaction) {
+    @Override
+    public Observable<Transaction> createTransaction(Transaction transaction){
         JsonObject doc = transaction.toJson().put("_id", transaction.getId().toValue());
         Observable<String> stringObservable = mongoService.insertObservable(COLLECTION, doc);
         return stringObservable.flatMap(id -> Observable.just(transaction));

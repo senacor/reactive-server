@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.rxjava.service.appointment.AppointmentService;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -23,6 +22,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import javax.inject.Inject;
 
 public class AppointmentServiceTest{
 
@@ -35,13 +36,14 @@ public class AppointmentServiceTest{
     @Mock
     private AppointmentDatabase appointmentDatabase;
 
-    private com.senacor.reactile.rxjava.service.appointment.AppointmentService service;
+    private AppointmentService service;
 
     @Before
     public void init(){
         initAppointmentMocks();
         initMocks(this);
-        service = new AppointmentService(new AppointmentServiceImpl(appointmentDatabase));
+
+        service = new AppointmentServiceImpl(appointmentDatabase);
     }
 
     @Test
@@ -49,7 +51,7 @@ public class AppointmentServiceTest{
         Appointment appointmentToFind = mocks.get(0);
         when(appointmentDatabase.findById("1")).thenReturn(appointmentToFind);
 
-        Appointment appointment = service.getAppointmentByIdObservable("1").toBlocking().first();
+        Appointment appointment = service.getAppointmentById("1").toBlocking().first();
 
         assertThat(appointment, is(appointmentToFind));
     }
@@ -59,7 +61,7 @@ public class AppointmentServiceTest{
 
         when(appointmentDatabase.findByBranchId("1")).thenReturn(mocks);
 
-        AppointmentList appointmentList = service.getAppointmentsByBranchObservable("1").toBlocking().first();
+        AppointmentList appointmentList = service.getAppointmentsByBranch("1").toBlocking().first();
 
         assertThat(appointmentList.getAppointmentList(), is(mocks));
     }
@@ -69,7 +71,7 @@ public class AppointmentServiceTest{
     public void thatAppointmentsAreFoundByCustomer(){
         when(appointmentDatabase.findByCustomerId("1")).thenReturn(mocks);
 
-        AppointmentList appointmentList = service.getAppointmentsByCustomerObservable("1").toBlocking().first();
+        AppointmentList appointmentList = service.getAppointmentsByCustomer("1").toBlocking().first();
 
         assertThat(appointmentList.getAppointmentList(), is(mocks));
     }
@@ -78,7 +80,7 @@ public class AppointmentServiceTest{
     public void thatAllAppointmentsAreFound(){
         when(appointmentDatabase.findAll()).thenReturn(mocks);
 
-        AppointmentList appointmentList = service.getAllAppointmentsObservable().toBlocking().first();
+        AppointmentList appointmentList = service.getAllAppointments().toBlocking().first();
 
         assertThat(appointmentList.getAppointmentList(), is(mocks));
     }
@@ -90,7 +92,7 @@ public class AppointmentServiceTest{
 
         when(appointmentDatabase.findAll()).thenReturn(mocks);
 
-        ArrayList<Appointment> appointmentsFound = Lists.newArrayList(service.getAppointmentsByBranchAndDateObservable(
+        ArrayList<Appointment> appointmentsFound = Lists.newArrayList(service.getAppointmentsByBranchAndDate(
                 branchId, date).toBlocking().toIterable());
 
         assertThat(appointmentsFound.size(), equalTo(1));
@@ -103,7 +105,7 @@ public class AppointmentServiceTest{
 
         when(appointmentDatabase.findAll()).thenReturn(mocks);
 
-        ArrayList<Appointment> appointmentsFound = Lists.newArrayList(service.getAppointmentsByUserAndDateObservable
+        ArrayList<Appointment> appointmentsFound = Lists.newArrayList(service.getAppointmentsByUserAndDate
                 (userId, date).toBlocking().toIterable());
 
         assertThat(appointmentsFound.size(), equalTo(1));
@@ -114,7 +116,7 @@ public class AppointmentServiceTest{
         final String userId = "mmenzel";
         when(appointmentDatabase.findAll()).thenReturn(mocks);
 
-        AppointmentList actualResult = service.getAppointmentsByUserObservable(userId).toBlocking().first();
+        AppointmentList actualResult = service.getAppointmentsByUser(userId).toBlocking().first();
 
         assertThat(actualResult.getAppointmentList().size(), equalTo(1));
     }
@@ -128,7 +130,7 @@ public class AppointmentServiceTest{
         when(appointmentDatabase.saveOrUpdate(appointment))
                 .thenReturn(resultAppointment);
 
-        Appointment createdAppointment = service.createOrUpdateAppointmentObservable(appointment).toBlocking().first();
+        Appointment createdAppointment = service.createOrUpdateAppointment(appointment).toBlocking().first();
 
         assertThat(createdAppointment, Matchers.is(resultAppointment));
     }
@@ -138,7 +140,7 @@ public class AppointmentServiceTest{
         Appointment appointmentToDelete = mocks.get(0);
         when(appointmentDatabase.deleteById("1")).thenReturn(appointmentToDelete);
 
-        Appointment deletedAppointment = service.deleteAppointmentObservable("1").toBlocking().first();
+        Appointment deletedAppointment = service.deleteAppointment("1").toBlocking().first();
 
         assertThat(appointmentToDelete, is(deletedAppointment));
     }

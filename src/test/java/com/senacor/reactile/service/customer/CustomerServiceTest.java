@@ -10,6 +10,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.eventbus.Message;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -39,20 +40,20 @@ public class CustomerServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private com.senacor.reactile.rxjava.service.customer.CustomerService service;
+    private CustomerService service;
 
     private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "customers");
 
     @Test
     public void thatCustomerIsReturned() {
         mongoInitializer.writeBlocking(CustomerFixtures.newCustomer("cust-asdfghjk"));
-        Customer customer = service.getCustomerObservable(new CustomerId("cust-asdfghjk")).toBlocking().first();
+        Customer customer = service.getCustomer(new CustomerId("cust-asdfghjk")).toBlocking().first();
         assertThat(customer, hasId("cust-asdfghjk"));
     }
 
     @Test
     public void thatCustomerCanBeCreated() {
-        Customer customer = service.createCustomerObservable(randomCustomer("cust-254")).toBlocking().first();
+        Customer customer = service.createCustomer(randomCustomer("cust-254")).toBlocking().first();
         assertThat(customer, hasId("cust-254"));
     }
 
@@ -63,11 +64,11 @@ public class CustomerServiceTest {
 
         int newIndex = customer.getAddresses().get(0).getIndex() + 1;
         Address newAddress = new Address("", "Teststreet", "TestPLZ", "8", "Testcity", new Country("Deutschland", "DE"), newIndex);
-        Customer customerUpdated = service.updateAddressObservable(customer.getId(), newAddress).toBlocking().first();
+        Customer customerUpdated = service.updateAddress(customer.getId(), newAddress).toBlocking().first();
 
         assertThat(customerUpdated.getAddresses(), hasSize(1 + customer.getAddresses().size()));
 
-        Customer customerLoaded = service.getCustomerObservable(customer.getId()).toBlocking().first();
+        Customer customerLoaded = service.getCustomer(customer.getId()).toBlocking().first();
 
         assertThat(customerLoaded.getAddresses(), hasSize(1 + customer.getAddresses().size()));
         Optional<Address> newAddressOptional = customerLoaded.getAddresses().stream()
@@ -83,15 +84,16 @@ public class CustomerServiceTest {
         mongoInitializer.writeBlocking(customer);
 
         Address newAddress = new Address("", "Teststreet", "TestPLZ", "8", "Testcity", new Country("Deutschland", "DE"), customer.getAddresses().get(0).getIndex());
-        Customer customerUpdated = service.updateAddressObservable(customer.getId(), newAddress).toBlocking().first();
+        Customer customerUpdated = service.updateAddress(customer.getId(), newAddress).toBlocking().first();
         assertThat(customerUpdated.getAddresses(), hasSize(customer.getAddresses().size()));
 
-        Customer customerLoaded = service.getCustomerObservable(customer.getId()).toBlocking().first();
+        Customer customerLoaded = service.getCustomer(customer.getId()).toBlocking().first();
 
         assertThat(customerLoaded.getAddresses(), hasSize(customer.getAddresses().size()));
         assertEquals("address.index", newAddress.getIndex(), customerLoaded.getAddresses().get(0).getIndex());
         assertEquals("address.city", newAddress.getCity(), customerLoaded.getAddresses().get(0).getCity());
     }
+
 
     @Test
     public void testReceiveCustomerAddressChangedEvt() throws Exception {

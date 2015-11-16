@@ -1,25 +1,19 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.rxjava.service.account.AccountService;
-import com.senacor.reactile.rxjava.service.account.TransactionService;
-import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
-import com.senacor.reactile.rxjava.service.customer.CustomerService;
-import com.senacor.reactile.rxjava.service.user.UserService;
-import com.senacor.reactile.service.account.Account;
-import com.senacor.reactile.service.account.AccountFixtures;
-import com.senacor.reactile.service.account.Product;
-import com.senacor.reactile.service.account.Transaction;
-import com.senacor.reactile.service.account.TransactionFixtures;
+import com.senacor.reactile.service.account.*;
 import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
+import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.user.User;
 
 import com.senacor.reactile.service.user.UserFixtures;
 import com.senacor.reactile.service.user.UserId;
+import com.senacor.reactile.service.user.UserService;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -53,7 +47,7 @@ public class InitialData {
         return customerIds
                 .observeOn(scheduler)
                 .map(CustomerFixtures::randomCustomer)
-                .flatMap(customer -> customerService.createCustomerObservable(customer))
+                .flatMap(customer -> customerService.createCustomer(customer))
                 .map(customer -> AccountFixtures.randomAccount(customer.getId()))
                 .flatMap(account -> createAccountWithTransactions(account))
                 .map(account -> CreditCardFixtures.randomCreditCard(account.getCustomerId()))
@@ -70,17 +64,17 @@ public class InitialData {
 
 
     private Observable<CreditCard> createCreditCardWithTransactions(CreditCard creditCard) {
-        return withTransactions(creditCardService.createCreditCardObservable(creditCard))
+        return withTransactions(creditCardService.createCreditCard(creditCard))
                 .flatMap(transaction -> Observable.just(creditCard));
     }
 
     private Observable<Account> createAccountWithTransactions(Account account) {
-        return withTransactions(accountService.createAccountObservable(account))
+        return withTransactions(accountService.createAccount(account))
                 .flatMap(transaction -> Observable.just(account));
     }
 
     private Observable<User> createUser(UserId userId, String branch){
-        return userService.createUserObservable(UserFixtures.createUser(userId, branch));
+        return userService.createUser(UserFixtures.createUser(userId, branch));
 
     }
 
@@ -88,7 +82,7 @@ public class InitialData {
     private Observable<Transaction> withTransactions(Observable<? extends Product> productObservable) {
         return productObservable
                 .flatMap(p -> TransactionFixtures.randomTransactions(p.getCustomerId(), p, rn.nextInt(12) + 3))
-                .flatMap(transaction -> transactionService.createTransactionObservable(transaction))
+                .flatMap(transaction -> transactionService.createTransaction(transaction))
                 .last()
                 ;
     }

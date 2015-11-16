@@ -5,8 +5,8 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.rxjava.service.user.UserService;
-import io.vertx.core.MultiMap;
+import com.senacor.reactile.abstractservice.JsonizableList;
+import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
 
@@ -42,7 +42,8 @@ public class UserFindCommand extends HystrixObservableCommand<List<JsonObject>> 
             query.put(e.getKey(), e.getValue());
         }
 
-        return userService.findUserObservable(query);
+        return userService.findUser(query)
+                .map(JsonizableList::toList);
     }
 
 }
