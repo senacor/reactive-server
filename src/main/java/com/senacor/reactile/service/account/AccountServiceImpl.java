@@ -1,18 +1,12 @@
 package com.senacor.reactile.service.account;
 
-import com.senacor.reactile.abstractservice.Action;
-import com.senacor.reactile.abstractservice.JsonizableList;
+import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.hystrix.interception.HystrixCmd;
-import com.senacor.reactile.rx.Rx;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.List;
 
 public class AccountServiceImpl implements AccountService {
     public static final String COLLECTION = "accounts";

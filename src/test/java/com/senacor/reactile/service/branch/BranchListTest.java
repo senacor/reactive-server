@@ -1,7 +1,5 @@
 package com.senacor.reactile.service.branch;
 
-import com.senacor.reactile.service.branch.Branch;
-import com.senacor.reactile.service.branch.BranchList;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;

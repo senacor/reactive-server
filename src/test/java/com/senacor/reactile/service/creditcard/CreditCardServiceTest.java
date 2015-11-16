@@ -2,11 +2,9 @@ package com.senacor.reactile.service.creditcard;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.service.creditcard.CreditCard;
-import com.senacor.reactile.service.creditcard.CreditCardId;
-import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
+import com.senacor.reactile.service.customer.CustomerId;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,14 +12,12 @@ import org.junit.Test;
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.senacor.reactile.service.creditcard.CreditCardFixtures.newCreditCard;
-import static com.senacor.reactile.service.creditcard.CreditCardFixtures.randomCreditCard;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperty;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasValue;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
+import static com.senacor.reactile.service.creditcard.CreditCardFixtures.newCreditCard;
+import static com.senacor.reactile.service.creditcard.CreditCardFixtures.randomCreditCard;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class CreditCardServiceTest {

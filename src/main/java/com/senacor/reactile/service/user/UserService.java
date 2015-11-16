@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.user;
 
 import com.senacor.reactile.abstractservice.Action;
-import com.senacor.reactile.abstractservice.JsonizableList;
+import com.senacor.reactile.json.JsonizableList;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
 

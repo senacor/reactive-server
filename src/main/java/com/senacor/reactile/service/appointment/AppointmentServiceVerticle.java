@@ -3,8 +3,6 @@ package com.senacor.reactile.service.appointment;
 
 import com.senacor.reactile.abstractservice.AbstractServiceVerticle;
 import com.senacor.reactile.guice.Impl;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
 

@@ -1,8 +1,8 @@
 package com.senacor.reactile.service.branch;
 
+import com.senacor.reactile.magic.Throttler;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Country;
-import com.senacor.reactile.magic.Throttler;
 
 import java.math.BigDecimal;
 import java.util.*;

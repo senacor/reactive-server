@@ -1,14 +1,11 @@
-package com.senacor.reactile.abstractservice;
+package com.senacor.reactile.json;
 
-import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.senacor.reactile.json.JsonObjects.marshal;
 
 /**
  * @author Michael Menzel

@@ -1,7 +1,5 @@
 package com.senacor.reactile.gateway.commands;
 
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
@@ -11,6 +9,8 @@ import com.senacor.reactile.service.appointment.Appointment;
 import com.senacor.reactile.service.appointment.AppointmentService;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
+
+import javax.inject.Inject;
 
 /**
  */

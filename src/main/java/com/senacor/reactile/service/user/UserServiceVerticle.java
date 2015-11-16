@@ -4,8 +4,6 @@ import com.senacor.reactile.abstractservice.AbstractServiceVerticle;
 import com.senacor.reactile.guice.Impl;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rxjava.core.AbstractVerticle;
-import io.vertx.serviceproxy.ProxyHelper;
 
 import javax.inject.Inject;
 

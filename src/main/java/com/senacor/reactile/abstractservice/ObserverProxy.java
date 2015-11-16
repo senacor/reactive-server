@@ -1,6 +1,6 @@
 package com.senacor.reactile.abstractservice;
 
-import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.json.Jsonizable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -14,7 +14,6 @@ import rx.Observable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;

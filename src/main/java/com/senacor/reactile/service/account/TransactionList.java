@@ -1,11 +1,10 @@
 package com.senacor.reactile.service.account;
 
 import com.google.common.collect.ImmutableList;
-import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.json.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

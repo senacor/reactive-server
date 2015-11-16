@@ -3,13 +3,7 @@ package com.senacor.reactile.service.account;
 import com.senacor.reactile.abstractservice.Action;
 import com.senacor.reactile.service.creditcard.CreditCardId;
 import com.senacor.reactile.service.customer.CustomerId;
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import rx.Observable;
-
-import java.util.List;
 
 public interface TransactionService {
 

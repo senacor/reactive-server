@@ -1,13 +1,9 @@
 package com.senacor.reactile.service.branch;
 
-import com.senacor.reactile.abstractservice.JsonizableList;
-import com.senacor.reactile.rx.Rx;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import com.senacor.reactile.json.JsonizableList;
 import rx.Observable;
 
 import javax.inject.Inject;
-import java.util.List;
 
 public class BranchServiceImpl implements BranchService {
 

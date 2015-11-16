@@ -1,10 +1,6 @@
 package com.senacor.reactile.service.customer;
 
 import com.senacor.reactile.abstractservice.Action;
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import rx.Observable;
 
 public interface CustomerService {

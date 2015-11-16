@@ -1,8 +1,5 @@
 package com.senacor.reactile.service.customer;
 
-import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.service.customer.Customer;
-import com.senacor.reactile.service.customer.CustomerFixtures;
 import org.junit.Test;
 
 import static com.senacor.reactile.service.customer.Customer.addOrReplaceAddress;

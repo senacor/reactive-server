@@ -1,9 +1,5 @@
 package com.senacor.reactile.service.customer;
 
-import com.senacor.reactile.hystrix.interception.HystrixCmd;
-import com.senacor.reactile.rx.Rx;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;

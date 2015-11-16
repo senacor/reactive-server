@@ -2,7 +2,7 @@ package com.senacor.reactile.mongo;
 
 import com.senacor.reactile.domain.IdObject;
 import com.senacor.reactile.domain.Identity;
-import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.json.Jsonizable;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import org.junit.rules.ExternalResource;

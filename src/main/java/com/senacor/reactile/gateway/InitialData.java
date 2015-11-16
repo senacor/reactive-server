@@ -1,7 +1,6 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.service.account.*;
-import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
@@ -10,7 +9,6 @@ import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.user.User;
-
 import com.senacor.reactile.service.user.UserFixtures;
 import com.senacor.reactile.service.user.UserId;
 import com.senacor.reactile.service.user.UserService;

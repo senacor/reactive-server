@@ -1,20 +1,14 @@
 package com.senacor.reactile.service.appointment;
 
-import static rx.Observable.from;
-import static rx.Observable.just;
+import com.google.common.collect.Lists;
+import rx.Observable;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
-import com.google.common.collect.Lists;
-import com.senacor.reactile.abstractservice.Action;
-import com.senacor.reactile.rx.Rx;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import rx.Observable;
+import static rx.Observable.from;
+import static rx.Observable.just;
 
 /**
  * @author Mihael Gorupec, Senacor Technologies AG

@@ -5,7 +5,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.abstractservice.JsonizableList;
+import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;

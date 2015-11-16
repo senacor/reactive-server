@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 
 public class JsonObjectMatchers {
 

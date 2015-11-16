@@ -1,5 +1,6 @@
 package com.senacor.reactile.domain;
 
+import com.senacor.reactile.json.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
@@ -8,7 +9,7 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 @DataObject
-public class Amount implements Jsonizable{
+public class Amount implements Jsonizable {
 
     private final BigDecimal value;
     private final String currency;

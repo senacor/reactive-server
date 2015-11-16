@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.branch;
 
+import com.senacor.reactile.json.Jsonizable;
 import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.domain.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.builder.ToStringBuilder;

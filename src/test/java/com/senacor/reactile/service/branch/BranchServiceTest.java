@@ -2,7 +2,7 @@ package com.senacor.reactile.service.branch;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.abstractservice.JsonizableList;
+import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.guice.GuiceRule;
 import org.junit.ClassRule;
 import org.junit.Rule;

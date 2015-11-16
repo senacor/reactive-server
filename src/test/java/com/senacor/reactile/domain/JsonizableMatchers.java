@@ -1,5 +1,6 @@
 package com.senacor.reactile.domain;
 
+import com.senacor.reactile.json.Jsonizable;
 import org.hamcrest.Description;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;

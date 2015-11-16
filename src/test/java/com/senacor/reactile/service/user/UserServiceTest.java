@@ -11,13 +11,10 @@ import org.junit.Test;
 import rx.Observable;
 
 import javax.inject.Inject;
-
 import java.util.ArrayList;
 
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 

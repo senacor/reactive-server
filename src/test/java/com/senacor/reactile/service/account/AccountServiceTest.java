@@ -2,12 +2,9 @@ package com.senacor.reactile.service.account;
 
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.service.account.Account;
-import com.senacor.reactile.service.account.AccountId;
-import com.senacor.reactile.service.account.AccountServiceImpl;
-import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
+import com.senacor.reactile.service.customer.CustomerId;
 import io.vertx.core.json.JsonObject;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -16,10 +13,10 @@ import org.junit.Test;
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.senacor.reactile.service.account.AccountFixtures.randomAccount;
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperty;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasValue;
+import static com.senacor.reactile.service.account.AccountFixtures.randomAccount;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;

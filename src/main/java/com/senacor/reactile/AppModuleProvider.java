@@ -32,7 +32,6 @@ import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.RxHelper;
-import io.vertx.serviceproxy.ProxyHelper;
 import rx.Scheduler;
 
 import java.lang.reflect.Proxy;
