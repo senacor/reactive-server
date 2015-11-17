@@ -14,23 +14,26 @@ public class User implements Identity<UserId>, Jsonizable {
     private final UserId id;
     private final String firstName;
     private final String lastName;
+    private final String branchId;
 
     public User() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     public User(
             @JsonProperty("id") UserId id,
             @JsonProperty("firstName") String firstName,
-            @JsonProperty("lastName") String lastName
+            @JsonProperty("lastName") String lastName,
+            @JsonProperty("branchId") String branchId
     ) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.branchId = branchId;
     }
 
     public User(User user) {
-        this(user.getId(), user.getFirstName(), user.getLastName());
+        this(user.getId(), user.getFirstName(), user.getLastName(), user.getBranchId());
     }
 
     public User(JsonObject jsonObject) {
@@ -55,7 +58,7 @@ public class User implements Identity<UserId>, Jsonizable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName);
+        return Objects.hash(id, firstName, lastName, branchId);
     }
 
     @Override
@@ -69,7 +72,8 @@ public class User implements Identity<UserId>, Jsonizable {
         final User other = (User) obj;
         return Objects.equals(this.id, other.id)
                 && Objects.equals(this.firstName, other.firstName)
-                && Objects.equals(this.lastName, other.lastName);
+                && Objects.equals(this.lastName, other.lastName)
+                && Objects.equals(this.branchId, other.branchId);
     }
 
     @Override
@@ -78,15 +82,17 @@ public class User implements Identity<UserId>, Jsonizable {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", branchId='" + branchId + '\'' +
                 '}';
     }
 
     @Override
     public JsonObject toJson() {
         return new JsonObject()
-                .put("id", id.toValue())
+                .put("id", id!=null?id.toValue():null)
                 .put("firstName", firstName)
-                .put("lastName", lastName);
+                .put("lastName", lastName)
+                .put("branchId", branchId);
     }
 
     public static User fromJson(JsonObject jsonObject) {
@@ -94,13 +100,19 @@ public class User implements Identity<UserId>, Jsonizable {
                 .withId(jsonObject.getString("id"))
                 .withFirstName(jsonObject.getString("firstName"))
                 .withLastName(jsonObject.getString("lastName"))
+                .withBranch(jsonObject.getString("branchId"))
                 .build();
+    }
+
+    public String getBranchId() {
+        return branchId;
     }
 
     public static final class Builder {
         private UserId id;
         private String firstName;
         private String lastName;
+        private String branchId;
 
         private Builder() {
         }
@@ -125,8 +137,13 @@ public class User implements Identity<UserId>, Jsonizable {
             return this;
         }
 
+        public Builder withBranch(String branch) {
+            this.branchId = branch;
+            return this;
+        }
+
         public User build() {
-            return new User(id, firstName, lastName);
+            return new User(id, firstName, lastName, branchId);
         }
     }
 }

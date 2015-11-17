@@ -22,8 +22,8 @@ public class BranchListTest {
     @Test
     public void testToAndFromJson() throws Exception {
         BranchList branchList = BranchList.newBuilder()
-                .withBranches(Arrays.asList(Branch.newBuilder().withId("1").build(),
-                        Branch.newBuilder().withId("2").build()))
+                .withBranches(Arrays.asList(Branch.newBuilder("1").build(),
+                        Branch.newBuilder("2").build()))
                 .build();
 
         JsonObject json = branchList.toJson();

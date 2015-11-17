@@ -4,15 +4,22 @@ import com.senacor.reactile.rxjava.service.account.AccountService;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
 import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
 import com.senacor.reactile.rxjava.service.customer.CustomerService;
+import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.account.Account;
 import com.senacor.reactile.service.account.AccountFixtures;
 import com.senacor.reactile.service.account.Product;
 import com.senacor.reactile.service.account.Transaction;
 import com.senacor.reactile.service.account.TransactionFixtures;
+import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
 import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.user.User;
+
+import com.senacor.reactile.service.user.UserFixtures;
+import com.senacor.reactile.service.user.UserId;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -26,15 +33,20 @@ public class InitialData {
     private final AccountService accountService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
+    private final UserService userService;
     private final Random rn = new Random();
+    private final BranchDatabase branchDatabase;
 
     @Inject
-    public InitialData(Scheduler scheduler, CustomerService customerService, AccountService accountService, CreditCardService creditCardService, TransactionService transactionService) {
+    public InitialData(Scheduler scheduler, CustomerService customerService, AccountService accountService,
+                       CreditCardService creditCardService, TransactionService transactionService, UserService userService, BranchDatabase branchDatabase) {
         this.scheduler = scheduler;
         this.customerService = customerService;
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
+        this.userService = userService;
+        this.branchDatabase = branchDatabase;
     }
 
     Observable<CustomerId> initialize(Observable<CustomerId> customerIds) {
@@ -50,6 +62,13 @@ public class InitialData {
 
     }
 
+    Observable<UserId> initializeUser(Observable<UserId> userIDs){
+        return userIDs.flatMap(userId -> createUser(userId, branchDatabase.randomExistingID()))
+                .map(user -> user.getId());
+
+    }
+
+
     private Observable<CreditCard> createCreditCardWithTransactions(CreditCard creditCard) {
         return withTransactions(creditCardService.createCreditCardObservable(creditCard))
                 .flatMap(transaction -> Observable.just(creditCard));
@@ -59,6 +78,12 @@ public class InitialData {
         return withTransactions(accountService.createAccountObservable(account))
                 .flatMap(transaction -> Observable.just(account));
     }
+
+    private Observable<User> createUser(UserId userId, String branch){
+        return userService.createUserObservable(UserFixtures.createUser(userId, branch));
+
+    }
+
 
     private Observable<Transaction> withTransactions(Observable<? extends Product> productObservable) {
         return productObservable
