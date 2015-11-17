@@ -35,26 +35,14 @@ public class GatewayVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
 
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
-    private final UserReadCommandFactory userReadCommandFactory;
-    private final UserFindCommandFactory userFindCommandFactory;
     private final StartCommandFactory startCommandFactory;
-    private final GetAppointmentCommandFactory getAppointmentCommandFactory;
-    private final AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
-            StartCommandFactory startCommandFactory,
-            UserReadCommandFactory userReadCommandFactory,
-            GetAppointmentCommandFactory getAppointmentCommandFactory,
-            AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory, 
-            UserFindCommandFactory userFindCommandFactory) {
+            StartCommandFactory startCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
-        this.userReadCommandFactory = userReadCommandFactory;
-        this.appointmentsSummaryCommandFactory = appointmentsSummaryCommandFactory;
-        this.getAppointmentCommandFactory = getAppointmentCommandFactory;
-        this.userFindCommandFactory = userFindCommandFactory;
     }
 
     @Override
@@ -82,13 +70,6 @@ public class GatewayVerticle extends AbstractVerticle {
                 .handler(this::handleUpdateAddress);
         router.get("/start").handler(this::handleStart);
 
-        router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
-
-        router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
-        router.get("/appointments-summary").method(HttpMethod.GET).handler(this::handleGetAppointmentSummary);
-        router.get("/users/").method(HttpMethod.GET).handler(this::handleFindUser);
-
-
         // common handler:
         router.route().handler(this::end);
         // StaticHandler don't call RoutingContext.next()
@@ -100,38 +81,6 @@ public class GatewayVerticle extends AbstractVerticle {
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start", failure));
-    }
-
-    private void handleFindUser(RoutingContext routingContext) {
-        MultiMap params = routingContext.request().params();
-        Map<String,String> map = new HashMap<>();
-        for(String p : params.names()) {
-            map.put(p, params.get(p));
-        }
-        HttpServerResponse resp = routingContext.response();
-        userFindCommandFactory.create(map).toObservable()
-                .map(users -> writeResponse(resp, new JsonObject().put("users", users)))
-                .subscribe(res -> routingContext.next());
-    }
-
-    private void handleGetUser(RoutingContext routingContext){
-        String userIdStr = routingContext.request().getParam("userId");
-        HttpServerResponse resp = routingContext.response();
-
-        if (userIdStr == null){
-            logger.warn("Request Param :userId is null");
-            sendError(400, "missing userId parameter", routingContext);
-        } else {
-            UserId userId = new UserId(userIdStr);
-            userReadCommandFactory.create(userId).toObservable().map(user -> writeResponse(resp, user.toJson()))
-            .subscribe(res -> routingContext.next());
-        }
-    }
-
-    private void handleGetAppointmentSummary(RoutingContext routingContext){
-        HttpServerResponse resp = routingContext.response();
-        appointmentsSummaryCommandFactory.create().toObservable().map(json -> writeResponse(resp, json))
-                .subscribe(res -> routingContext.next());
     }
 
     private void handleUpdateAddress(RoutingContext routingContext) {
@@ -153,19 +102,6 @@ public class GatewayVerticle extends AbstractVerticle {
                         .map(customer -> writeResponse(response, customer.toJson()))
                         .subscribe(res -> routingContext.next());
             }
-        }
-    }
-
-    private void handleGetAppointment(RoutingContext routingContext) {
-        String appointmentIdString = routingContext.request().getParam("appointmentId");
-        HttpServerResponse response = routingContext.response();
-
-        if (appointmentIdString == null) {
-            logger.warn("Request Param :appointmentId is null");
-            sendError(400, "missing appointmentId parameter", routingContext);
-        } else {
-            getAppointmentCommandFactory.create(appointmentIdString).toObservable()
-                    .map(appointment -> writeResponse(response, appointment)).subscribe(res -> routingContext.next());
         }
     }
 

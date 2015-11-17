@@ -8,13 +8,10 @@ import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.rxjava.service.account.AccountService;
 import com.senacor.reactile.rxjava.service.account.TransactionService;
-import com.senacor.reactile.rxjava.service.appointment.AppointmentService;
-import com.senacor.reactile.rxjava.service.branch.BranchService;
 import com.senacor.reactile.rxjava.service.creditcard.CreditCardService;
 import com.senacor.reactile.rxjava.service.customer.CustomerService;
 import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.account.TransactionList;
-import com.senacor.reactile.service.appointment.AppointmentList;
 import com.senacor.reactile.service.creditcard.CreditCardList;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
@@ -42,10 +39,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final UserService userService;
     private final CustomerService customerService;
     private final AccountService accountService;
-    private final BranchService branchService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
-    private final AppointmentService appointmentService;
 
     private final UserId userId;
     private final CustomerId customerId;
@@ -54,10 +49,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     public StartCommand(UserService userService,
                         CustomerService customerService,
                         AccountService accountService,
-                        BranchService branchService,
                         CreditCardService creditCardService,
                         TransactionService transactionService,
-                        AppointmentService appointmentService,
                         @Assisted UserId userId,
                         @Assisted CustomerId customerId) {
 
@@ -71,10 +64,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.userService = userService;
         this.customerService = customerService;
         this.accountService = accountService;
-        this.branchService = branchService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
-        this.appointmentService = appointmentService;
         this.userId = userId;
 
         this.customerId = customerId;
@@ -87,39 +78,29 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonObjects::toJson);
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomerObservable(customerId)
                     .map(JsonArray::new);
-            Observable<JsonObject> branchObservable = branchService.getBranchObservable("1")
-                    .map(JsonObjects::toJson);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomerObservable(customerId)
                     .map(CreditCardList::getCreditCardList)
                     .map(JsonObjects::toJsonArray);
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomerObservable(customerId)
                     .map(TransactionList::getTransactionList)
                     .map(JsonObjects::toJsonArray);
-//            Observable<JsonArray> appointmentObservable = appointmentService.getAppointmentsByCustomerObservable(
-//                    customerId.getId()).map(AppointmentList::getAppointmentList).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
 
-
-            return zip(customerObservable, accountObservable, branchObservable, creditCardObservable,
-                    transactionObservable, appointmentObservable, this::mergeIntoResponse);
+            return zip(customerObservable, accountObservable, creditCardObservable,
+                    transactionObservable, this::mergeIntoResponse);
         });
     }
 
 
     private JsonObject mergeIntoResponse(JsonObject cust,
                                          JsonArray accounts,
-                                         JsonObject branch,
                                          JsonArray creditCards,
-                                         JsonArray transactions,
-                                         JsonArray appointments) {
+                                         JsonArray transactions) {
         return $()
                 .put("customer", cust
                         .put("products", $()
                                 .put("accounts", accounts)
                                 .put("creditCards", creditCards))
                         .put("transactions", transactions))
-                .put("branch", branch)
-                .put("appointments", appointments)
                 ;
     }
 }

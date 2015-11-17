@@ -1,14 +1,10 @@
 package com.senacor.reactile.service.branch;
 
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.List;
 
-@ProxyGen
-@VertxGen
 public interface BranchService {
 
     String ADDRESS = "BranchService";
