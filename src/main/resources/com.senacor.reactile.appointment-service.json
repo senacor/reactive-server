@@ -3,7 +3,7 @@
 
   "options": {
     "config": {
-      "address": "AppointmentService"
+      "address": "AppointmentVerticle"
     }
   }
 }

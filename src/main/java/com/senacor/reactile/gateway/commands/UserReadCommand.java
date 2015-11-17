@@ -5,9 +5,9 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.senacor.reactile.rxjava.service.user.UserService;
 import com.senacor.reactile.service.user.User;
 import com.senacor.reactile.service.user.UserId;
+import com.senacor.reactile.service.user.UserService;
 import rx.Observable;
 
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ public class UserReadCommand extends HystrixObservableCommand<User> {
 
     @Override
     protected Observable<User> construct() {
-        return userService.getUserObservable(userId);
+        return userService.getUser(userId);
     }
 
 }

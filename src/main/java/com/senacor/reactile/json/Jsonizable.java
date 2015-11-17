@@ -1,4 +1,4 @@
-package com.senacor.reactile.domain;
+package com.senacor.reactile.json;
 
 import io.vertx.core.json.JsonObject;
 

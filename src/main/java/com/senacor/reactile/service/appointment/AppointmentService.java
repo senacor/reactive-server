@@ -1,31 +1,34 @@
 package com.senacor.reactile.service.appointment;
 
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import com.senacor.reactile.abstractservice.Action;
+import rx.Observable;
 
-@ProxyGen
-@VertxGen
 public interface AppointmentService {
 
-    String ADDRESS = "AppointmentService";
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAllAppointments();
 
-    void getAllAppointments(Handler<AsyncResult<AppointmentList>> resultHandler);
+    @Action(returnType = Appointment.class)
+    public Observable<Appointment> getAppointmentById(String appointmentId);
 
-    void getAppointmentById(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler);
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAppointmentsByCustomer(String customerId);
 
-    void getAppointmentsByCustomer(String customerId, Handler<AsyncResult<AppointmentList>> resultHandler);
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAppointmentsByBranch(String branchId);
 
-    void getAppointmentsByBranch(String branchId, Handler<AsyncResult<AppointmentList>> resultHandler);
+    @Action(returnType = Appointment.class)
+    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date);
 
-    void getAppointmentsByBranchAndDate(String branchId, Long date, Handler<AsyncResult<Appointment>> resultHandler);
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAppointmentsByUser(String userId);
 
-    void getAppointmentsByUser(String userId, Handler<AsyncResult<AppointmentList>> resultHandler);
+    @Action(returnType = Appointment.class)
+    public Observable<Appointment> getAppointmentsByUserAndDate(String userId, Long date);
 
-    void getAppointmentsByUserAndDate(String userId, Long date, Handler<AsyncResult<Appointment>> resultHandler);
+    @Action(returnType = Appointment.class)
+    public Observable<Appointment> createOrUpdateAppointment(Appointment appointment);
 
-    void createOrUpdateAppointment(Appointment appointment, Handler<AsyncResult<Appointment>> resultHandler);
-
-    void deleteAppointment(String appointmentId, Handler<AsyncResult<Appointment>> resultHandler);
+    @Action(returnType = Appointment.class)
+    public Observable<Appointment> deleteAppointment(String appointmentId);
 }

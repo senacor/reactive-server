@@ -32,7 +32,7 @@ public class TransactionServiceTest {
     public final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), TransactionServiceImpl.COLLECTION);
 
     @Inject
-    private com.senacor.reactile.rxjava.service.account.TransactionService service;
+    private TransactionService service;
 
     @Before
     public void init() {
@@ -46,29 +46,29 @@ public class TransactionServiceTest {
 
     @Test
     public void thatTransactionsAreReturned_forAccountId() {
-        TransactionList transactions = service.getTransactionsForAccountObservable(new AccountId("acc-1234567890")).toBlocking().first();
+        TransactionList transactions = service.getTransactionsForAccount(new AccountId("acc-1234567890")).toBlocking().first();
         assertThat(transactions.getTransactionList(), hasSize(2));
     }
 
     @Test
     public void thatTransactionsAreReturned_forCrediCardId() {
-        TransactionList transactions = service.getTransactionsForCreditCardObservable(new CreditCardId("cc-123")).toBlocking().first();
+        TransactionList transactions = service.getTransactionsForCreditCard(new CreditCardId("cc-123")).toBlocking().first();
         assertThat(transactions.getTransactionList(), hasSize(1));
     }
 
     @Test
     public void thatTransactionsAreReturned_forCustomerId() {
-        TransactionList transactions = service.getTransactionsForCustomerObservable(new CustomerId("cust-5678")).toBlocking().first();
+        TransactionList transactions = service.getTransactionsForCustomer(new CustomerId("cust-5678")).toBlocking().first();
         assertThat(transactions.getTransactionList(), hasSize(3));
     }
 
     @Test
     public void thatTransactionsCanBeCreated() {
-        Transaction accTransaction = service.createTransactionObservable(newAccTransaction("cust-456", "acc-555")).toBlocking().first();
+        Transaction accTransaction = service.createTransaction(newAccTransaction("cust-456", "acc-555")).toBlocking().first();
         assertThat(accTransaction, hasProperty("id"));
         assertThat(accTransaction, hasValue("customerId", "cust-456"));
         assertThat(accTransaction, hasValue("accountId", "acc-555"));
-        Transaction ccTransaction = service.createTransactionObservable(newCCTransaction("cust-456", "cc-555")).toBlocking().first();
+        Transaction ccTransaction = service.createTransaction(newCCTransaction("cust-456", "cc-555")).toBlocking().first();
         assertThat(ccTransaction, hasProperty("id"));
         assertThat(ccTransaction, hasValue("customerId", "cust-456"));
         assertThat(ccTransaction, hasValue("creditCardId", "cc-555"));

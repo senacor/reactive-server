@@ -1,15 +1,11 @@
 package com.senacor.reactile.service.customer;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
-import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.json.Jsonizable;
 import com.senacor.reactile.event.Event;
-import com.senacor.reactile.service.user.User;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 @DataObject
 public class CustomerAddressChangedEvt implements Event<CustomerId>, Jsonizable {

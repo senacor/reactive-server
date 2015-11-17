@@ -1,15 +1,12 @@
 package com.senacor.reactile.service.newsticker;
 
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import com.senacor.reactile.abstractservice.Action;
+import rx.Observable;
 
-@ProxyGen
-@VertxGen
 public interface NewsService {
     String ADDRESS = "NewsService";
 
-    void getLatestNews(int max, Handler<AsyncResult<NewsCollection>> resultHandler);
+    @Action(returnType = NewsCollection.class)
+    public Observable<NewsCollection> getLatestNews(int max);
 
 }

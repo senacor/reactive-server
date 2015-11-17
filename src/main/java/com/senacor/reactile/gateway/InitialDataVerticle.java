@@ -1,8 +1,5 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.service.appointment.AppointmentDatabase;
-import com.senacor.reactile.service.branch.Branch;
-import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserFixtures;
 import com.senacor.reactile.service.user.UserId;

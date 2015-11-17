@@ -1,6 +1,6 @@
 package com.senacor.reactile.http;
 
-import com.senacor.reactile.domain.Jsonizable;
+import com.senacor.reactile.json.Jsonizable;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;

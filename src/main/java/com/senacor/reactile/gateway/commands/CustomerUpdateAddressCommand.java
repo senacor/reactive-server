@@ -8,7 +8,7 @@ import com.netflix.hystrix.HystrixObservableCommand;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.rxjava.service.customer.CustomerService;
+import com.senacor.reactile.service.customer.CustomerService;
 import rx.Observable;
 
 import javax.inject.Inject;
@@ -39,7 +39,6 @@ public class CustomerUpdateAddressCommand extends HystrixObservableCommand<Custo
     }
 
     @Override
-    protected Observable<Customer> construct() {
-        return customerService.updateAddressObservable(customerId, address);
+    protected Observable<Customer> construct() {return customerService.updateAddress(customerId, address);
     }
 }

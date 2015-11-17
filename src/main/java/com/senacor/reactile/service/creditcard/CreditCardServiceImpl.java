@@ -1,9 +1,6 @@
 package com.senacor.reactile.service.creditcard;
 
-import com.senacor.reactile.rx.Rx;
 import com.senacor.reactile.service.customer.CustomerId;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
@@ -21,15 +18,13 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     @Override
-    public void getCreditCard(CreditCardId creditCardId, Handler<AsyncResult<CreditCard>> resultHandler) {
-        Rx.bridgeHandler(mongoService.findOneObservable(COLLECTION, creditCardId.toJson(), null).map(CreditCard::fromJson), resultHandler);
+    public Observable<CreditCard> getCreditCard(CreditCardId creditCardId) {
+        return mongoService
+                .findOneObservable(COLLECTION, creditCardId.toJson(), null)
+                .map(CreditCard::fromJson);
     }
 
     @Override
-    public void getCreditCardsForCustomer(CustomerId customerId, Handler<AsyncResult<CreditCardList>> resultHandler) {
-        Rx.bridgeHandler(getCreditCardsForCustomer(customerId), resultHandler);
-    }
-
     public Observable<CreditCardList> getCreditCardsForCustomer(CustomerId customerId) {
         JsonObject query = new JsonObject().put("customerId", customerId.getId());
         return mongoService.findObservable(COLLECTION, query)
@@ -40,9 +35,8 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     @Override
-    public void createCreditCard(CreditCard creditCard, Handler<AsyncResult<CreditCard>> resultHandler) {
+    public Observable<CreditCard> createCreditCard(CreditCard creditCard) {
         JsonObject doc = creditCard.toJson().put("_id", creditCard.getId().toValue());
-        Rx.bridgeHandler(mongoService.insertObservable(COLLECTION, doc).map(id -> creditCard), resultHandler);
-
+        return mongoService.insertObservable(COLLECTION, doc).map(id -> creditCard);
     }
 }

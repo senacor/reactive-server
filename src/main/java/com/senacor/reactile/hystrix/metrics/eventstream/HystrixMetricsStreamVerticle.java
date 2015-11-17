@@ -1,14 +1,11 @@
 package com.senacor.reactile.hystrix.metrics.eventstream;
 
-import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsPoller;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.core.http.HttpServerRequest;
-import io.vertx.rxjava.core.http.HttpServerResponse;
 
 import javax.inject.Inject;
 

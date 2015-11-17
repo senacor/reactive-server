@@ -1,6 +1,5 @@
 package com.senacor.reactile.service.branch;
 
-import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Country;
 import io.vertx.core.json.JsonObject;

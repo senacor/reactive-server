@@ -6,7 +6,6 @@ import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -38,22 +37,16 @@ public class GatewayVerticle extends AbstractVerticle {
     private final UserReadCommandFactory userReadCommandFactory;
     private final UserFindCommandFactory userFindCommandFactory;
     private final StartCommandFactory startCommandFactory;
-    private final GetAppointmentCommandFactory getAppointmentCommandFactory;
-    private final AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
-            GetAppointmentCommandFactory getAppointmentCommandFactory,
-            AppointmentsSummaryCommandFactory appointmentsSummaryCommandFactory, 
             UserFindCommandFactory userFindCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
-        this.appointmentsSummaryCommandFactory = appointmentsSummaryCommandFactory;
-        this.getAppointmentCommandFactory = getAppointmentCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
     }
 
@@ -84,8 +77,6 @@ public class GatewayVerticle extends AbstractVerticle {
 
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
-        router.get("/appointment/:appointmentId").handler(this::handleGetAppointment);
-        router.get("/appointments-summary").method(HttpMethod.GET).handler(this::handleGetAppointmentSummary);
         router.get("/users/").method(HttpMethod.GET).handler(this::handleFindUser);
 
 
@@ -128,11 +119,6 @@ public class GatewayVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleGetAppointmentSummary(RoutingContext routingContext){
-        HttpServerResponse resp = routingContext.response();
-        appointmentsSummaryCommandFactory.create().toObservable().map(json -> writeResponse(resp, json))
-                .subscribe(res -> routingContext.next());
-    }
 
     private void handleUpdateAddress(RoutingContext routingContext) {
         String customerIdString = routingContext.request().getParam("customerId");
@@ -156,18 +142,6 @@ public class GatewayVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleGetAppointment(RoutingContext routingContext) {
-        String appointmentIdString = routingContext.request().getParam("appointmentId");
-        HttpServerResponse response = routingContext.response();
-
-        if (appointmentIdString == null) {
-            logger.warn("Request Param :appointmentId is null");
-            sendError(400, "missing appointmentId parameter", routingContext);
-        } else {
-            getAppointmentCommandFactory.create(appointmentIdString).toObservable()
-                    .map(appointment -> writeResponse(response, appointment)).subscribe(res -> routingContext.next());
-        }
-    }
 
     private void handleStart(RoutingContext routingContext) {
         serveRequest(routingContext.response(), routingContext.request().params())

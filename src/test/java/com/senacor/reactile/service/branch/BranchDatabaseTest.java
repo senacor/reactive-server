@@ -2,15 +2,12 @@ package com.senacor.reactile.service.branch;
 
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.service.branch.Branch;
-import com.senacor.reactile.service.branch.BranchDatabase;
 import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;

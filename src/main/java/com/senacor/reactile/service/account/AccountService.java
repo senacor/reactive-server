@@ -1,22 +1,19 @@
 package com.senacor.reactile.service.account;
 
+import com.senacor.reactile.abstractservice.Action;
+import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.service.customer.CustomerId;
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import rx.Observable;
 
-import java.util.List;
-
-@ProxyGen
-@VertxGen
 public interface AccountService {
-    String ADDRESS = "AccountService";
 
-    void getAccount(AccountId accountId, Handler<AsyncResult<Account>> resultHandler);
+    @Action(returnType = Account.class)
+    public Observable<Account> getAccount(AccountId accountId);
 
-    void getAccountsForCustomer(CustomerId customerId, Handler<AsyncResult<List<JsonObject>>> resultHandler);
+    @Action(returnType = JsonizableList.class)
+    public Observable<JsonizableList<JsonObject>> getAccountsForCustomer(CustomerId customerId);
 
-    void createAccount(Account account, Handler<AsyncResult<Account>> resultHandler);
+    @Action(returnType = Account.class)
+    public Observable<Account> createAccount(Account account);
 }
