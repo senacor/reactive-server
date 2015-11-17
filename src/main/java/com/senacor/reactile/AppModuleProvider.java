@@ -18,11 +18,7 @@ import com.senacor.reactile.service.account.AccountServiceImpl;
 import com.senacor.reactile.service.account.TransactionService;
 import com.senacor.reactile.service.account.TransactionServiceImpl;
 import com.senacor.reactile.service.appointment.AppointmentDatabase;
-import com.senacor.reactile.service.appointment.AppointmentService;
-import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
 import com.senacor.reactile.service.branch.BranchDatabase;
-import com.senacor.reactile.service.branch.BranchService;
-import com.senacor.reactile.service.branch.BranchServiceImpl;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
@@ -55,12 +51,10 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         @Override
         protected void configure() {
             bind(UserService.class).annotatedWith(Impl.class).to(UserServiceImpl.class);
-            bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
             bind(AccountService.class).annotatedWith(Impl.class).to(AccountServiceImpl.class);
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
-            bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
@@ -75,12 +69,6 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(UserReadCommand.class, UserReadCommand.class)
                     .build(UserReadCommandFactory.class));
-            install(new FactoryModuleBuilder()
-                    .implement(AppointmentsSummaryCommand.class, AppointmentsSummaryCommand.class)
-                    .build(AppointmentsSummaryCommandFactory.class));
-            install(new FactoryModuleBuilder()
-                    .implement(GetAppointmentCommand.class, GetAppointmentCommand.class)
-                    .build(GetAppointmentCommandFactory.class));
             install(new FactoryModuleBuilder()
                     .implement(UserFindCommand.class, UserFindCommand.class)
                     .build(UserFindCommandFactory.class));
@@ -120,14 +108,6 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         }
 
         @Provides
-        BranchService provideBranchService(Vertx vertx) {
-            return (BranchService) Proxy.newProxyInstance(
-                    BranchService.class.getClassLoader(),
-                    new Class[]{BranchService.class},
-                    new ObserverProxy(vertx, "BranchVerticle"));
-        }
-
-        @Provides
         CreditCardService provideCreditCardService(Vertx vertx) {
             return (CreditCardService) Proxy.newProxyInstance(
                     CreditCardService.class.getClassLoader(),
@@ -157,14 +137,6 @@ public class AppModuleProvider implements BootstrapModuleProvider {
                     UserService.class.getClassLoader(),
                     new Class[]{UserService.class},
                     new ObserverProxy(vertx, "UserVerticle"));
-        }
-
-        @Provides
-        AppointmentService provideAppointmentService(Vertx vertx) {
-            return (AppointmentService) Proxy.newProxyInstance(
-                    AppointmentService.class.getClassLoader(),
-                    new Class[]{AppointmentService.class},
-                    new ObserverProxy(vertx, "AppointmentVerticle"));
         }
 
 

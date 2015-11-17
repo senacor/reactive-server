@@ -41,10 +41,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final UserService userService;
     private final CustomerService customerService;
     private final AccountService accountService;
-    private final BranchService branchService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
-    private final AppointmentService appointmentService;
 
     private final UserId userId;
     private final CustomerId customerId;
@@ -53,10 +51,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     public StartCommand(UserService userService,
                         CustomerService customerService,
                         AccountService accountService,
-                        BranchService branchService,
                         CreditCardService creditCardService,
                         TransactionService transactionService,
-                        AppointmentService appointmentService,
                         @Assisted UserId userId,
                         @Assisted CustomerId customerId) {
 
@@ -70,10 +66,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.userService = userService;
         this.customerService = customerService;
         this.accountService = accountService;
-        this.branchService = branchService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
-        this.appointmentService = appointmentService;
         this.userId = userId;
 
         this.customerId = customerId;
@@ -87,8 +81,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> accountObservable = accountService.getAccountsForCustomer(customerId)
                     .map(jsonizableList -> jsonizableList.toList())
                     .map(JsonArray::new);
-            Observable<JsonObject> branchObservable = branchService.getBranch("1")
-                    .map(JsonObjects::toJson);
+//            Observable<JsonObject> branchObservable = branchService.getBranch("1")
+//                    .map(JsonObjects::toJson);
             Observable<JsonArray> creditCardObservable = creditCardService.getCreditCardsForCustomer(customerId)
                     .map(CreditCardList::getCreditCardList)
                     .map(JsonObjects::toJsonArray);
@@ -100,7 +94,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
 
 
-            return zip(customerObservable, accountObservable, branchObservable, creditCardObservable,
+            return zip(customerObservable, accountObservable, creditCardObservable,
                     transactionObservable, appointmentObservable, this::mergeIntoResponse);
         });
     }
@@ -108,7 +102,6 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
 
     private JsonObject mergeIntoResponse(JsonObject cust,
                                          JsonArray accounts,
-                                         JsonObject branch,
                                          JsonArray creditCards,
                                          JsonArray transactions,
                                          JsonArray appointments) {
@@ -118,7 +111,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                                 .put("accounts", accounts)
                                 .put("creditCards", creditCards))
                         .put("transactions", transactions))
-                .put("branch", branch)
+               // .put("branch", branch)
                 .put("appointments", appointments)
                 ;
     }

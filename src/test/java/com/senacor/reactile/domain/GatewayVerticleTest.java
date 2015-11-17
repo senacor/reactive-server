@@ -58,7 +58,7 @@ public class GatewayVerticleTest {
         JsonObject json = response.asJson();
         logger.info("response json: " + json.encodePrettily());
 
-        assertThat(json, hasProperties("customer", "branch"));
+        assertThat(json, hasProperties("customer", "customer"));
         JsonObject jsonCustomer = json.getJsonObject("customer");
         assertThat(jsonCustomer, hasProperties("products", "transactions"));
         assertThat(jsonCustomer.getJsonObject("products"), hasProperties("accounts", "creditCards"));
