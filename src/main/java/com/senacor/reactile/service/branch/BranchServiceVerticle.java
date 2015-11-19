@@ -10,9 +10,6 @@ import javax.inject.Inject;
 
 
 public class BranchServiceVerticle extends AbstractServiceVerticle {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Inject
     public BranchServiceVerticle(@Impl BranchService branchService) {
         super(branchService);
