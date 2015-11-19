@@ -1,5 +1,6 @@
 package com.senacor.reactile.service.appointment;
 
+import com.senacor.reactile.domain.Identity;
 import com.senacor.reactile.json.Jsonizable;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
@@ -15,9 +16,9 @@ import static com.senacor.reactile.json.JsonObjects.unmarshalZonedDateTime;
  * @author Andreas Keefer
  */
 @DataObject
-public class Appointment implements Jsonizable {
+public class Appointment implements Jsonizable ,Identity<AppointmentId> {
 
-    private final String id;
+    private final AppointmentId id;
     private final String name;
     private final String customerId;
     private final String branchId;
@@ -66,7 +67,7 @@ public class Appointment implements Jsonizable {
         return builder;
     }
 
-    public String getId() {
+    public AppointmentId getId() {
         return id;
     }
 
@@ -114,7 +115,7 @@ public class Appointment implements Jsonizable {
     @Override
     public JsonObject toJson() {
         return new JsonObject()
-                .put("id", id)
+                .put("id", id.getId())
                 .put("name", name)
                 .put("customerId", customerId)
                 .put("branchId", branchId)
@@ -130,7 +131,7 @@ public class Appointment implements Jsonizable {
     }
 
     public static final class Builder {
-        private String id;
+        private AppointmentId id;
         private String name;
         private String customerId;
         private String branchId;
@@ -143,7 +144,7 @@ public class Appointment implements Jsonizable {
         }
 
         public Builder withId(String id) {
-            this.id = id;
+            this.id = new AppointmentId(id);
             return this;
         }
 

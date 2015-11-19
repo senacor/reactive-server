@@ -25,6 +25,8 @@ import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.CustomerServiceImpl;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
+import com.senacor.reactile.service.appointment.AppointmentService;
+import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
 import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoService;
 import io.vertx.rx.java.RxHelper;
@@ -52,6 +54,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
         protected void configure() {
             bind(UserService.class).annotatedWith(Impl.class).to(UserServiceImpl.class);
             bind(AccountService.class).annotatedWith(Impl.class).to(AccountServiceImpl.class);
+            bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
             bind(CreditCardService.class).annotatedWith(Impl.class).to(CreditCardServiceImpl.class);
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
@@ -121,6 +124,12 @@ public class AppModuleProvider implements BootstrapModuleProvider {
                     AccountService.class.getClassLoader(),
                     new Class[]{AccountService.class},
                     new ObserverProxy(vertx, "AccountVerticle"));
+        }
+
+        @Provides
+        AppointmentService provideAppointmentService(Vertx vertx) {
+            return (AppointmentService) Proxy.newProxyInstance
+                    (AppointmentService.class.getClassLoader(), new Class [] {AppointmentService.class}, new ObserverProxy(vertx, "AppointmentVerticle"));
         }
 
         @Provides

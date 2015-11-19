@@ -24,7 +24,7 @@ public class AppointmentDatabase {
 
     private long nextId = 0;
 
-    private final Map<String, Appointment> dataStore = new ConcurrentHashMap<>();
+    private final Map<AppointmentId, Appointment> dataStore = new ConcurrentHashMap<>();
 
     public AppointmentDatabase() {
         saveOrUpdate(Appointment.newBuilder().withId("1").withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
@@ -66,12 +66,12 @@ public class AppointmentDatabase {
         return save;
     }
 
-    public Appointment findById(final String appointmentId) {
+    public Appointment findById(final AppointmentId appointmentId) {
         delay(0.1);
         return dataStore.get(appointmentId);
     }
 
-    public Appointment deleteById(final String appointmentId) {
+    public Appointment deleteById(final AppointmentId appointmentId) {
         delay(0.2);
         return dataStore.remove(appointmentId);
     }

@@ -28,9 +28,9 @@ public class AppointmentDatabaseTest {
 
     @Test
     public void testFindById() throws Exception {
-        Appointment byId = DATABASE.findById("1");
+        Appointment byId = DATABASE.findById(new AppointmentId("1"));
         assertNotNull("Appointment not found", byId);
-        assertEquals("id", "1", byId.getId());
+        assertEquals("id", "1", byId.getId().getId());
     }
 
     @Test
