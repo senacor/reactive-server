@@ -25,6 +25,8 @@ import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.CustomerServiceImpl;
+import com.senacor.reactile.service.newsticker.NewsService;
+import com.senacor.reactile.service.newsticker.NewsServiceImpl;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -58,6 +60,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
+            bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
@@ -132,6 +135,14 @@ public class AppModuleProvider implements BootstrapModuleProvider {
                     AccountService.class.getClassLoader(),
                     new Class[]{AccountService.class},
                     new ObserverProxy(vertx, "AccountVerticle"));
+        }
+
+        @Provides
+        NewsService provideNewsService(Vertx vertx) {
+            return (NewsService) Proxy.newProxyInstance(
+                    NewsService.class.getClassLoader(),
+                    new Class[]{NewsService.class},
+                    new ObserverProxy(vertx, "NewsVerticle"));
         }
 
         @Provides

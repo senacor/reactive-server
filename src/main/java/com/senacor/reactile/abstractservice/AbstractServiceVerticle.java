@@ -165,7 +165,7 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle {
                 .subscribe(
                         message::reply,
                         throwable -> {
-                            message.fail(1, "Error invoking abstractService method " + serviceMethod + "(Cause: " + throwable.getMessage() + ")");
+                            message.fail(1, "Error invoking abstractService method " + serviceMethod + "(Cause: " + throwable + ")");
                         }
                 );
     }

@@ -7,6 +7,9 @@ public interface NewsService {
     String ADDRESS = "NewsService";
 
     @Action(returnType = NewsCollection.class)
-    public Observable<NewsCollection> getLatestNews(int max);
+    public Observable<NewsCollection> getLatestNews(Integer max);
+
+    @Action(returnType = News.class, pattern = Action.MessagePattern.PublishSubsrcribe)
+    public Observable<News> streamNews();
 
 }

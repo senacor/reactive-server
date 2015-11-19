@@ -50,4 +50,14 @@ public class BranchServiceTest {
         assertEquals(3, branchList.getBranches().size());
 
     }
+
+    @Test
+    public void testThatBranchesForNonexistantIdCanBeRead() throws Exception {
+
+        final BranchList branchList = service.findBranches(new JsonizableList<>(Arrays.asList("6663"))).toBlocking().first();
+        assertEquals(0, branchList.getBranches().size());
+
+    }
+
 }
+
