@@ -30,7 +30,7 @@ public class AppointmentDatabaseTest {
     public void testFindById() throws Exception {
         Appointment byId = DATABASE.findById("1");
         assertNotNull("Appointment not found", byId);
-        assertEquals("id", "1", byId.getId());
+        assertEquals("id", new AppointmentId("1"), (byId).getId());
     }
 
     @Test
@@ -68,10 +68,10 @@ public class AppointmentDatabaseTest {
         Appointment saved = DATABASE.saveOrUpdate(Appointment.newBuilder().withName("test1").build());
         assertNotNull(saved.getId());
 
-        saved = DATABASE.deleteById(saved.getId());
+        saved = DATABASE.deleteById(saved.getId().getId());
         assertNotNull(saved);
         assertNotNull(saved.getId());
 
-        assertNull(DATABASE.findById(saved.getId()));
+        assertNull(DATABASE.findById(saved.getId().getId()));
     }
 }
