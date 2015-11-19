@@ -43,6 +43,10 @@ public class BranchList implements Jsonizable {
         return builder;
     }
 
+    public BranchList(List<Branch> branches) {
+        this.branches = branches;
+    }
+
     public List<Branch> getBranches() {
         return branches;
     }
