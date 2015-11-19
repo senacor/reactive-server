@@ -42,7 +42,11 @@ public class AppointmentServiceTest {
 
     @Test
     public void testGetAppointmentsByCustomer() throws Exception {
-
+        AppointmentList appointments = appointmentService.getAppointmentsByCustomer("cust-100000").toBlocking().first();
+        assertNotNull(appointments);
+        for (Appointment appointment : appointments.getAppointmentList()) {
+            assertEquals(appointment.getCustomerId(), "cust-100000");
+        }
     }
 
     @Test

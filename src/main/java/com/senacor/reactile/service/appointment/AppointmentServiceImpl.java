@@ -5,6 +5,7 @@ import io.vertx.core.logging.impl.LoggerFactory;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by sbode on 19.11.15.
@@ -32,7 +33,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
-        return null;
+        return Observable.defer(() -> Observable.just(
+                AppointmentList.newBuilder().withAppointments(appointmentDatabase.findByCustomerId(customerId)).build()));
     }
 
     @Override
