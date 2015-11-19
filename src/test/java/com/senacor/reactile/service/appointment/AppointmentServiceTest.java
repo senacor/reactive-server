@@ -39,6 +39,7 @@ public class AppointmentServiceTest {
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.AppointmentService);
+
     public static final String ID = "22";
     public static final String NAME = "Techies 1";
     public static final String BRANCH_ID = "3.14";
