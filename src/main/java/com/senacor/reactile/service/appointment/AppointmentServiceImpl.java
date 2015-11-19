@@ -60,7 +60,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<AppointmentList> getAppointmentsByUser(String userId) {
-        return null;
+        Verify.verifyNotNull(userId, "userId must be provided");
+
+        return getAllAppointments()
+                .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))
+                .filter(appointment -> userId.equals(appointment.getUserId()))
+                .collect(() -> Lists.<Appointment>newArrayList(), (list, a) -> list.add(a))
+                .map(AppointmentList::new);
     }
 
     @Override

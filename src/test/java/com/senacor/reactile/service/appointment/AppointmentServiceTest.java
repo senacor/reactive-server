@@ -141,12 +141,26 @@ public class AppointmentServiceTest {
         service.createOrUpdateAppointment(null);
     }
 
+    @Test
+    public void shouldReturnAppointmentsByUserId() {
+        AppointmentList fetchedAppointments = service.getAppointmentsByUser("user-10042").toBlocking().first();
+
+        assertThat(fetchedAppointments.getAppointmentList(), hasSize(1));
+        assertThat(fetchedAppointments.getAppointmentList().get(0).getId(), is(appointment.getId()));
+    }
+
+    @Test(expected = VerifyException.class)
+    public void shouldThrowExceptionOnFindByUserId() {
+        service.getAppointmentById(null);
+    }
+
     private Appointment initializeAppointment() {
         Appointment appointment = Appointment.newBuilder().withId("42")
                 .withCustomerId("cust-10042")
                 .withBranchId("42")
                 .withStart(ZonedDateTime.now())
                 .withEnd(ZonedDateTime.now().plusHours(4))
+                .withUserId("user-10042")
                 .build();
         appointmentDatabase.saveOrUpdate(appointment);
 
