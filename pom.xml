@@ -24,6 +24,7 @@
         <catch-exception.version>1.2.0</catch-exception.version>
         <system-rules.version>1.8.0</system-rules.version>
         <guice.version>4.0-beta5</guice.version>
+        <assertj.version>3.2.0</assertj.version>
 
         <generatedSourcesVertxProxy>${project.build.directory}/generated-sources/vertx-proxy</generatedSourcesVertxProxy>
         <commons-lang3.version>3.1</commons-lang3.version>
@@ -222,6 +223,13 @@
                     <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

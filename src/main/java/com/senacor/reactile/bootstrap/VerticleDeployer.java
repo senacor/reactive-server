@@ -1,17 +1,22 @@
 package com.senacor.reactile.bootstrap;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.senacor.reactile.ServiceIdProvider;
+
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.core.Vertx;
-
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class VerticleDeployer {
 
@@ -47,7 +52,7 @@ public class VerticleDeployer {
     private <T> T waitForCompletion(CompletableFuture<T> future, long timeoutInMillis) {
         try {
             // TODO: hier temporaer DEFAULT_TIMEOUT verwenden, damit die lokale MongoDB herunterladen werden kann
-            return future.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            return future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }

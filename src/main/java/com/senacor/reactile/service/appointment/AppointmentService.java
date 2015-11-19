@@ -5,6 +5,9 @@ import rx.Observable;
 
 public interface AppointmentService {
 
+    String APPOINTMENT_EVENT_UPDATE_APPOINTMENT = "AppointmentService#updateAppointment";
+    String APPOINTMENT_EVENT_DELETE_APPOINTMENT = "AppointmentService#deleteAppointment";
+
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAllAppointments();
 
@@ -17,14 +20,14 @@ public interface AppointmentService {
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId);
 
-    @Action(returnType = Appointment.class)
-    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date);
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAppointmentsByBranchAndDate(String branchId, Long date);
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAppointmentsByUser(String userId);
 
-    @Action(returnType = Appointment.class)
-    public Observable<Appointment> getAppointmentsByUserAndDate(String userId, Long date);
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAppointmentsByUserAndDate(String userId, Long date);
 
     @Action(returnType = Appointment.class)
     public Observable<Appointment> createOrUpdateAppointment(Appointment appointment);
