@@ -1,5 +1,10 @@
 package com.senacor.reactile.gateway.commands;
 
+import static com.senacor.reactile.json.JsonObjects.$;
+import static rx.Observable.zip;
+
+import javax.inject.Inject;
+
 import com.google.inject.assistedinject.Assisted;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
@@ -9,22 +14,18 @@ import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.service.account.AccountService;
 import com.senacor.reactile.service.account.TransactionList;
 import com.senacor.reactile.service.account.TransactionService;
+import com.senacor.reactile.service.appointment.AppointmentList;
 import com.senacor.reactile.service.appointment.AppointmentService;
-import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.creditcard.CreditCardList;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.user.UserId;
 import com.senacor.reactile.service.user.UserService;
+
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import rx.Observable;
-
-import javax.inject.Inject;
-
-import static com.senacor.reactile.json.JsonObjects.$;
-import static rx.Observable.zip;
 
 /**
  * Command to collect the start-page data
@@ -43,18 +44,20 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final AccountService accountService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
+    private final AppointmentService appointmentService;
 
     private final UserId userId;
     private final CustomerId customerId;
 
     @Inject
     public StartCommand(UserService userService,
-                        CustomerService customerService,
-                        AccountService accountService,
-                        CreditCardService creditCardService,
-                        TransactionService transactionService,
-                        @Assisted UserId userId,
-                        @Assisted CustomerId customerId) {
+            CustomerService customerService,
+            AccountService accountService,
+            CreditCardService creditCardService,
+            TransactionService transactionService,
+            AppointmentService appointmentService,
+            @Assisted UserId userId,
+            @Assisted CustomerId customerId) {
 
 
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Gateway"))
@@ -68,6 +71,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
+        this.appointmentService = appointmentService;
         this.userId = userId;
 
         this.customerId = customerId;
@@ -89,10 +93,10 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId)
                     .map(TransactionList::getTransactionList)
                     .map(JsonObjects::toJsonArray);
-//            Observable<JsonArray> appointmentObservable = appointmentService.getAppointmentsByCustomerObservable(
-//                    customerId.getId()).map(AppointmentList::getAppointmentList).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
-
+            Observable<JsonArray> appointmentObservable = appointmentService.
+                    getAppointmentsByCustomer(customerId.getId()).map(AppointmentList::getAppointmentList)
+                    .map(JsonObjects::toJsonArray);
+//            Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
 
             return zip(customerObservable, accountObservable, creditCardObservable,
                     transactionObservable, appointmentObservable, this::mergeIntoResponse);
