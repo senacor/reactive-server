@@ -49,7 +49,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date) {
-        return null;
+        Verify.verifyNotNull(branchId, "branchId must be provided");
+        Verify.verifyNotNull(date, "date must be provided");
+
+        return getAppointmentsByBranch(branchId)
+                .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))
+                .filter(appointment -> date > appointment.getStart().toEpochSecond() &&
+                        date < appointment.getEnd().toEpochSecond());
     }
 
     @Override

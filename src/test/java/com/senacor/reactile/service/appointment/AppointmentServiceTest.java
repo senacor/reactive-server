@@ -3,9 +3,12 @@ package com.senacor.reactile.service.appointment;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+
+import java.time.ZonedDateTime;
 
 import com.google.common.base.VerifyException;
 
@@ -78,10 +81,42 @@ public class AppointmentServiceTest {
         service.getAppointmentsByBranch(null);
     }
 
+    @Test
+    public void shouldReturnAppointmentThatIsWithinTheGivenDateInTheGivenBranch() {
+        Appointment fetchedAppointment = service.getAppointmentsByBranchAndDate("42", ZonedDateTime.now().plusHours(1)
+                .toEpochSecond()).toBlocking().first();
+
+        assertThat(fetchedAppointment, is(notNullValue()));
+        assertThat(fetchedAppointment.getId(), is(appointment.getId()));
+    }
+
+    @Test
+    public void shouldNotReturnAnyAppointmentsFromNonExistingBranch() {
+        Appointment fetchedAppointment = service.getAppointmentsByBranchAndDate("100", ZonedDateTime.now().plusHours(1)
+                .toEpochSecond()).toBlocking().firstOrDefault(null);
+
+        assertThat(fetchedAppointment, is(nullValue()));
+    }
+
+    @Test
+    public void shouldNotReturnAnyAppointmentsForDateOutsideAnyAppointments() {
+        Appointment fetchedAppointment = service.getAppointmentsByBranchAndDate("42", ZonedDateTime.now().minusHours(3)
+                .toEpochSecond()).toBlocking().firstOrDefault(null);
+
+        assertThat(fetchedAppointment, is(nullValue()));
+    }
+
+    @Test(expected = VerifyException.class)
+    public void shouldThrowExceptionOnInvalidBranchIdAndDate() {
+        service.getAppointmentsByBranchAndDate(null, null);
+    }
+
     private Appointment initializeAppointment() {
         Appointment appointment = Appointment.newBuilder().withId("42")
                 .withCustomerId("cust-10042")
                 .withBranchId("42")
+                .withStart(ZonedDateTime.now())
+                .withEnd(ZonedDateTime.now().plusHours(4))
                 .build();
         appointmentDatabase.saveOrUpdate(appointment);
 
