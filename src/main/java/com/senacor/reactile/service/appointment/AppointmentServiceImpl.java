@@ -2,6 +2,7 @@ package com.senacor.reactile.service.appointment;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 
 import rx.Observable;
@@ -26,12 +27,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> getAppointmentById(String appointmentId) {
-        return null;
+        Verify.verifyNotNull(appointmentId, "appointmentId must be provided");
+        return Observable.just(appointmentDatabase.findById(appointmentId));
     }
 
     @Override
     public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
-        return null;
+        Verify.verifyNotNull(customerId, "customerId must be provided");
+
+        return Observable.just(new AppointmentList(Lists.newArrayList(appointmentDatabase.
+                findByCustomerId(customerId))));
     }
 
     @Override
