@@ -7,10 +7,12 @@ import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.branch.BranchList;
 import com.senacor.reactile.service.branch.BranchService;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -32,5 +34,11 @@ public class NewsServiceTest {
 
     @Test
     public void thatNewsAreReturned() {
+        Observable<NewsCollection> latestNews = service.getLatestNews(5);
+
+        NewsCollection newsCollection = latestNews.toBlocking().first();
+        int numberOfNews = newsCollection.getNews().size();
+
+        assertThat(numberOfNews, CoreMatchers.equalTo(5));
     }
 }

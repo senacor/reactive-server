@@ -113,7 +113,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             return (NewsService) Proxy.newProxyInstance(
                     NewsService.class.getClassLoader(),
                     new Class[]{NewsService.class},
-                    new ObserverProxy(vertx, "NewsServiceVerticle"));
+                    new ObserverProxy(vertx, "NewsVerticle"));
         }
 
         @Provides

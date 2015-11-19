@@ -15,6 +15,7 @@ import rx.Observable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -55,7 +56,8 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle {
     }
 
     private void subscribeMethodsToMessageBus() {
-        vertx.eventBus().consumer(config().getString(ADDRESS_KEY)).toObservable().subscribe(
+        String adress = config().getString(ADDRESS_KEY);
+        vertx.eventBus().consumer(adress).toObservable().subscribe(
                 this::messageHandler,
                 this::errorHandler);
     }
@@ -63,7 +65,8 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle {
     private void subscribeMessageBusToPublishingMethods() {
 
         //ermittle alle PublishSubscribe Methoden
-        actionRegistry.getActionsForPattern(Action.MessagePattern.PublishSubsrcribe).forEach(method-> {
+        List<Method> actionsForPattern = actionRegistry.getActionsForPattern(Action.MessagePattern.PublishSubsrcribe);
+        actionsForPattern.forEach(method-> {
                     Observable<Object> publishObservable = invokeObservableMethod(method, null);
 
                     //registriere Producer
@@ -76,13 +79,15 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle {
                                 System.out.println("Send to Eventbus " + news);
                             })
                             .map(response -> serializeResponse(response))
-                            .subscribe(prod::write);
+                            .subscribe(prod::write,
+                                    throwable -> throwable.printStackTrace());
                 }
         );
 
     }
 
     private void errorHandler(Throwable throwable) {
+        System.err.println(throwable.getMessage());
         throwable.printStackTrace();
     }
 
