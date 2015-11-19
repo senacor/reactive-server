@@ -7,10 +7,10 @@ import rx.Observable;
 public interface BranchService {
 
     @Action(returnType = Branch.class)
-    public Observable<Branch> getBranch(String branchId);
+    public Observable<Branch> getBranch(BranchId branchId);
 
     @Action(returnType = BranchList.class)
-    public Observable<BranchList> findBranches(JsonizableList<String> branchIds);
+    public Observable<BranchList> findBranches(JsonizableList<BranchId> branchIds);
 
     @Action(returnType = BranchList.class)
     public Observable<BranchList> getAllBranches();
