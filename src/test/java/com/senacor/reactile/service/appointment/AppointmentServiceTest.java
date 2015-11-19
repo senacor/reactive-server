@@ -72,7 +72,11 @@ public class AppointmentServiceTest {
 
     @Test
     public void testGetAppointmentsByUser() throws Exception {
-
+        AppointmentList appointments = appointmentService.getAppointmentsByUser("momann").toBlocking().first();
+        assertThat(appointments, is(notNullValue()));
+        for (Appointment appointment : appointments.getAppointmentList()) {
+            assertThat(appointment.getUserId(), is("momann"));
+        }
     }
 
     @Test
