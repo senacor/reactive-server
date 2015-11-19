@@ -13,7 +13,11 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 public class AppointmentServiceTest {
@@ -31,13 +35,16 @@ public class AppointmentServiceTest {
 
     @Test
     public void testGetAllAppointments() throws Exception {
-
+        AppointmentList appointments = appointmentService.getAllAppointments().toBlocking().first();
+        assertThat(appointments, is(notNullValue()));
+        List<String> idList = appointments.getAppointmentList().stream().map(a -> a.getId()).collect(Collectors.toList());
+        assertThat(idList, containsInAnyOrder("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"));
     }
 
     @Test
     public void testGetAppointmentById() throws Exception {
         Appointment appointment = appointmentService.getAppointmentById("1").toBlocking().first();
-        assertThat(appointment.getId(), Matchers.is("1"));
+        assertThat(appointment.getId(), is("1"));
     }
 
     @Test

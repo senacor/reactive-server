@@ -25,7 +25,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<AppointmentList> getAllAppointments() {
-        return null;
+        return Observable.defer(() -> Observable.just(AppointmentList.newBuilder().withAppointments(
+                        new ArrayList<>(appointmentDatabase.findAll())).build()));
     }
 
     @Override
