@@ -43,14 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson) // 2. convert json to Objects
                 .map(customer -> Customer.addOrReplaceAddress(customer, address))
-                .flatMap(customer -> {
-                    // 3. execute mongo update
-                    JsonObject update = new JsonObject().put("$set", new JsonObject().put("addresses",
-                            marshal(customer.getAddresses(), Address::toJson)));
-                    JsonObject query = new JsonObject().put("id", customerId.getId());
-                    return mongoService.updateObservable(COLLECTION, query, update)
-                            .flatMap(res -> Observable.just(customer));
-                })
+                .flatMap(this::updateAllAdressesInMongo)
                 .doOnNext(customer -> {
                     // 4. publish 'updateAddress' Event
                     String eventAddress = CustomerService.ADDRESS_EVENT_UPDATE_ADDRESS;
@@ -63,6 +56,16 @@ public class CustomerServiceImpl implements CustomerService {
                     logger.info("publishing on '" + eventAddress + "' done");
                 })
                 .doOnError(throwable -> logger.error("updateAddress error", throwable));
+    }
+
+    private Observable<Customer> updateAllAdressesInMongo(Customer customer) {
+
+        JsonObject update = new JsonObject().put("$set", new JsonObject().put("addresses",
+                marshal(customer.getAddresses(), Address::toJson)));
+        JsonObject query = new JsonObject().put("id", customer.getId().getId());
+
+        return mongoService.updateObservable(COLLECTION, query, update)
+                .flatMap(res -> Observable.just(customer));
     }
 
     @Override
