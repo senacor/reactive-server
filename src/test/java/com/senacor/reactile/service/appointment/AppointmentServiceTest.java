@@ -111,6 +111,36 @@ public class AppointmentServiceTest {
         service.getAppointmentsByBranchAndDate(null, null);
     }
 
+    @Test
+    public void shouldDeleteAppointment() {
+        service.deleteAppointment(appointment.getId());
+
+        Appointment appointment = service.getAppointmentById("42").toBlocking().firstOrDefault(null);
+
+        assertThat(appointment, is(nullValue()));
+    }
+
+    @Test(expected = VerifyException.class)
+    public void shouldThrowExceptionOnInvalidIdOnDelete() {
+        service.deleteAppointment(null);
+    }
+
+    @Test
+    public void shouldUpdateAppointment() {
+        Appointment updatedAppointment = Appointment.newBuilder(appointment).withName("testAppointment").build();
+        service.createOrUpdateAppointment(updatedAppointment);
+
+        Appointment appointment = service.getAppointmentById("42").toBlocking().first();
+
+        assertThat(appointment, is(notNullValue()));
+        assertThat(appointment.getName(), is("testAppointment"));
+    }
+
+    @Test(expected = VerifyException.class)
+    public void shouldThrowExceptionOnInvalidIdAppointmentOnUpdate() {
+        service.createOrUpdateAppointment(null);
+    }
+
     private Appointment initializeAppointment() {
         Appointment appointment = Appointment.newBuilder().withId("42")
                 .withCustomerId("cust-10042")

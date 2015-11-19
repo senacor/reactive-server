@@ -70,11 +70,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
-        return null;
+        Verify.verifyNotNull(appointment, "appointment must be provided");
+
+        return Observable.just(appointmentDatabase.saveOrUpdate(appointment));
     }
 
     @Override
     public Observable<Appointment> deleteAppointment(String appointmentId) {
-        return null;
+        Verify.verifyNotNull(appointmentId, "appointmentId must be provided");
+
+        return Observable.just(appointmentDatabase.deleteById(appointmentId));
     }
 }
