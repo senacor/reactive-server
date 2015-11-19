@@ -39,7 +39,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
-        return null;
+        return Observable.defer(() -> Observable.just(
+                AppointmentList.newBuilder().withAppointments(appointmentDatabase.findByBranchId(branchId)).build()));
     }
 
     @Override

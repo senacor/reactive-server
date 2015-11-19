@@ -51,7 +51,11 @@ public class AppointmentServiceTest {
 
     @Test
     public void testGetAppointmentsByBranch() throws Exception {
-
+        AppointmentList appointments = appointmentService.getAppointmentsByBranch("2").toBlocking().first();
+        assertNotNull(appointments);
+        for (Appointment appointment : appointments.getAppointmentList()) {
+            assertEquals(appointment.getBranchId(), "2");
+        }
     }
 
     @Test
