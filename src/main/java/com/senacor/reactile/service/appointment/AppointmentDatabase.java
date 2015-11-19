@@ -3,6 +3,7 @@ package com.senacor.reactile.service.appointment;
 import com.senacor.reactile.magic.Throttler;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +28,8 @@ public class AppointmentDatabase {
     private final Map<String, Appointment> dataStore = new ConcurrentHashMap<>();
 
     public AppointmentDatabase() {
-        saveOrUpdate(Appointment.newBuilder().withId("1").withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
+        ZonedDateTime start = ZonedDateTime.of(2005, 11, 19, 16, 0, 0, 0, ZoneId.systemDefault());
+        saveOrUpdate(Appointment.newBuilder().withId("1").withName("Consulting 1").withBranchId("1").withCustomerId("cust-100000").withUserId("momann").withStart(start).withEnd(start.plusHours(1)).build());
         saveOrUpdate(Appointment.newBuilder().withId("2").withName("Consulting 2").withBranchId("1").withCustomerId("cust-100002").withUserId("rwinzinger").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());
         saveOrUpdate(Appointment.newBuilder().withId("3").withName("Consulting 3").withBranchId("1").withCustomerId("cust-100003").withUserId("mmenzel").withStart(ZonedDateTime.now().minusHours(1)).withEnd(ZonedDateTime.now().plusHours(1)).build());
         saveOrUpdate(Appointment.newBuilder().withId("4").withName("Consulting 4").withBranchId("1").withCustomerId("cust-100004").withUserId("akeefer").withStart(ZonedDateTime.now()).withEnd(ZonedDateTime.now().plusHours(1)).build());

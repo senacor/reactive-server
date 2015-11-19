@@ -5,6 +5,8 @@ import rx.Observable;
 
 public interface AppointmentService {
 
+    String EVENT_CREATE_OR_UPDATE_APPOINTMENT = "AppointmentService#createOrUpdate";
+
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAllAppointments();
 
@@ -18,7 +20,7 @@ public interface AppointmentService {
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId);
 
     @Action(returnType = Appointment.class)
-    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date);
+    public Observable<AppointmentList> getAppointmentsByBranchAndDate(String branchId, Long date);
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAppointmentsByUser(String userId);

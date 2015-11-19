@@ -1,19 +1,27 @@
 package com.senacor.reactile.service.appointment;
 
+import com.google.common.base.Throwables;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
+import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
+import com.senacor.reactile.service.customer.CustomerService;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.eventbus.Message;
 import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import rx.Observable;
 
 import javax.inject.Inject;
 
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.senacor.reactile.domain.IdentityMatchers.hasId;
@@ -38,7 +46,7 @@ public class AppointmentServiceTest {
         AppointmentList appointments = appointmentService.getAllAppointments().toBlocking().first();
         assertThat(appointments, is(notNullValue()));
         List<String> idList = appointments.getAppointmentList().stream().map(a -> a.getId()).collect(Collectors.toList());
-        assertThat(idList, containsInAnyOrder("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"));
+        assertThat(idList, Matchers.hasItems("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"));
     }
 
     @Test
@@ -67,6 +75,7 @@ public class AppointmentServiceTest {
 
     @Test
     public void testGetAppointmentsByBranchAndDate() throws Exception {
+//        AppointmentList appointments = appointmentService.getAppointmentsByBranchAndDate("2", 2015111916150000l).toBlocking().first();
 
     }
 
@@ -86,9 +95,32 @@ public class AppointmentServiceTest {
 
     @Test
     public void testCreateOrUpdateAppointment() throws Exception {
-
+        appointmentService.createOrUpdateAppointment(Appointment.newBuilder().withId("999").withUserId("team-lbbw").build()).toBlocking().first();
+        assertThat(appointmentService.getAppointmentById("999").toBlocking().first().getId(), is("999"));
     }
 
+    @Test
+    public void testReceiveAppointmentCreatedOrUpdatedEvt() throws Exception {
+        final LinkedBlockingQueue<AppointmentCreatedOrUpdatedEvt> queue = new LinkedBlockingQueue<>();
+
+        // listen to events
+        vertxRule.eventBus().consumer(AppointmentService.EVENT_CREATE_OR_UPDATE_APPOINTMENT)
+                .toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .map(AppointmentCreatedOrUpdatedEvt::fromJson)
+                .doOnError(throwable -> fail(throwable.getMessage() + Throwables.getStackTraceAsString(throwable)))
+                .subscribe(queue::add);
+
+        // send event ...
+        testCreateOrUpdateAppointment();
+
+        AppointmentCreatedOrUpdatedEvt event = queue.poll(2L, TimeUnit.SECONDS);
+        logger.info("Received Event: " + event);
+        assertNotNull("No Event Received", event);
+        assertNotNull("event.id must not be null", event.getId());
+        assertNotNull("event.appointment must not be null", event.getAppointment());
+    }
     @Test
     public void testDeleteAppointment() throws Exception {
 

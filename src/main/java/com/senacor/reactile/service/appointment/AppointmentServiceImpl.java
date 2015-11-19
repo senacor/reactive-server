@@ -1,5 +1,7 @@
 package com.senacor.reactile.service.appointment;
 
+import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
+import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import rx.Observable;
@@ -17,10 +19,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     private static final Logger logger = LoggerFactory.getLogger(AppointmentServiceImpl.class);
 
     private final AppointmentDatabase appointmentDatabase;
+    private final Vertx vertx;
 
     @Inject
-    public AppointmentServiceImpl(AppointmentDatabase appointmentDatabase) {
+    public AppointmentServiceImpl(AppointmentDatabase appointmentDatabase, Vertx vertx) {
         this.appointmentDatabase = appointmentDatabase;
+        this.vertx = vertx;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date) {
+    public Observable<AppointmentList> getAppointmentsByBranchAndDate(String branchId, Long date) {
         return null;
     }
 
@@ -69,7 +73,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
-        return null;
+        return Observable.defer(() -> Observable.just(appointmentDatabase.saveOrUpdate(appointment)))
+                .doOnNext(a -> {
+                    String eventAddress = AppointmentService.EVENT_CREATE_OR_UPDATE_APPOINTMENT;
+                    logger.info("publishing on '" + eventAddress + "'...");
+                    vertx.eventBus().publish(eventAddress, AppointmentCreatedOrUpdatedEvt.newBuilder()
+                            .withId(a.getId())
+                            .withAppointment(a)
+                            .build()
+                            .toJson());
+                    logger.info("publishing on '" + eventAddress + "' done");
+                });
     }
 
     @Override
