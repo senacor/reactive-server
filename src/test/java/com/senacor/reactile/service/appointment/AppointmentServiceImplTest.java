@@ -34,7 +34,7 @@ public class AppointmentServiceImplTest {
     @Test
     public void shouldReturnAppointmentsForBranchAndDate() {
         Long date = System.currentTimeMillis();
-        appointmentService.getAppointmentsByBranchAndDate("8", date)
+        appointmentService.getAppointmentsByBranchAndDate("1", date)
         .subscribe(p -> {
             System.out.println(p);
             assertEquals("1", p.getId());
