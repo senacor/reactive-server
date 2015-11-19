@@ -66,7 +66,7 @@ public class BranchServiceImpl implements BranchService {
 	}
 	
 	//for lists
-	public static <T, U> List<U> convertList(List<T> from, Function<T, U> func){
+	private static <T, U> List<U> convertList(List<T> from, Function<T, U> func){
 	    return from.stream().map(func).collect(Collectors.toList());
 	}
 
