@@ -61,7 +61,7 @@ public class AppointmentDatabase {
         } else {
             save = appointment;
         }
-        dataStore.put(save.getId(), save);
+        dataStore.put(save.getId().getId(), save);
         delay(0.2);
         return save;
     }
@@ -95,8 +95,8 @@ public class AppointmentDatabase {
                 .collect(Collectors.toList());
     }
 
-    private synchronized String nextId() {
-        return String.valueOf(nextId++);
+    private synchronized AppointmentId nextId() {
+        return new AppointmentId(nextId++);
     }
 
     private void delay(double faktor) {

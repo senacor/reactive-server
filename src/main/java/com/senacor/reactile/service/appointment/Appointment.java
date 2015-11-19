@@ -17,7 +17,7 @@ import static com.senacor.reactile.json.JsonObjects.unmarshalZonedDateTime;
 @DataObject
 public class Appointment implements Jsonizable {
 
-    private final String id;
+    private final AppointmentId id;
     private final String name;
     private final String customerId;
     private final String branchId;
@@ -66,7 +66,7 @@ public class Appointment implements Jsonizable {
         return builder;
     }
 
-    public String getId() {
+    public AppointmentId getId() {
         return id;
     }
 
@@ -100,7 +100,7 @@ public class Appointment implements Jsonizable {
 
     public static Appointment fromJson(JsonObject jsonObject) {
         return null == jsonObject ? null : Appointment.newBuilder()
-                .withId(jsonObject.getString("id"))
+                .withId(new AppointmentId(jsonObject.getString("id")))
                 .withName(jsonObject.getString("name"))
                 .withCustomerId(jsonObject.getString("customerId"))
                 .withBranchId(jsonObject.getString("branchId"))
@@ -114,7 +114,7 @@ public class Appointment implements Jsonizable {
     @Override
     public JsonObject toJson() {
         return new JsonObject()
-                .put("id", id)
+                .put("id", id.getId())
                 .put("name", name)
                 .put("customerId", customerId)
                 .put("branchId", branchId)
@@ -130,7 +130,7 @@ public class Appointment implements Jsonizable {
     }
 
     public static final class Builder {
-        private String id;
+        private AppointmentId id;
         private String name;
         private String customerId;
         private String branchId;
@@ -142,8 +142,13 @@ public class Appointment implements Jsonizable {
         private Builder() {
         }
 
-        public Builder withId(String id) {
+        public Builder withId(AppointmentId id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder withId(String id) {
+            this.id = new AppointmentId(id);
             return this;
         }
 

@@ -17,8 +17,8 @@ public interface AppointmentService {
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId);
 
-    @Action(returnType = Appointment.class)
-    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date);
+    @Action(returnType = AppointmentList.class)
+    public Observable<AppointmentList> getAppointmentsByBranchAndDate(String branchId, Long date);
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAppointmentsByUser(String userId);
