@@ -13,12 +13,9 @@ public class BranchServiceVerticle extends AbstractServiceVerticle {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final BranchService branchService;
-
     @Inject
     public BranchServiceVerticle(@Impl BranchService branchService) {
         super(branchService);
-        this.branchService = branchService;
     }
 
 }
