@@ -52,10 +52,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         Verify.verifyNotNull(branchId, "branchId must be provided");
         Verify.verifyNotNull(date, "date must be provided");
 
-        return getAppointmentsByBranch(branchId)
-                .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))
-                .filter(appointment -> date > appointment.getStart().toEpochSecond() &&
-                        date < appointment.getEnd().toEpochSecond());
+        return filterByDate(getAppointmentsByBranch(branchId), date);
     }
 
     @Override
@@ -71,7 +68,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> getAppointmentsByUserAndDate(String userId, Long date) {
-        return null;
+        Verify.verifyNotNull(userId, "userId must be provided");
+        Verify.verifyNotNull(date, "date must be provided");
+
+        return filterByDate(getAppointmentsByUser(userId), date);
     }
 
     @Override
@@ -86,5 +86,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         Verify.verifyNotNull(appointmentId, "appointmentId must be provided");
 
         return Observable.just(appointmentDatabase.deleteById(appointmentId));
+    }
+
+    private Observable<Appointment> filterByDate(Observable<AppointmentList> appointments, Long date) {
+        return appointments
+                .flatMap(appointmentList -> Observable.from(appointmentList.getAppointmentList()))
+                .filter(appointment -> date > appointment.getStart().toEpochSecond() &&
+                        date < appointment.getEnd().toEpochSecond());
     }
 }

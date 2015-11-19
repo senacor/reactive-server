@@ -99,7 +99,7 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void shouldNotReturnAnyAppointmentsForDateOutsideAnyAppointments() {
+    public void shouldNotReturnAnyAppointmentsForDateOutsideAnyAppointmentsByBranch() {
         Appointment fetchedAppointment = service.getAppointmentsByBranchAndDate("42", ZonedDateTime.now().minusHours(3)
                 .toEpochSecond()).toBlocking().firstOrDefault(null);
 
@@ -152,6 +152,36 @@ public class AppointmentServiceTest {
     @Test(expected = VerifyException.class)
     public void shouldThrowExceptionOnFindByUserId() {
         service.getAppointmentById(null);
+    }
+
+    @Test
+    public void shouldReturnAppointmentThatIsWithinTheGivenDateFromTheGivenUserId() {
+        Appointment fetchedAppointment = service.getAppointmentsByUserAndDate("user-10042", ZonedDateTime.now()
+                .plusHours(1).toEpochSecond()).toBlocking().first();
+
+        assertThat(fetchedAppointment, is(notNullValue()));
+        assertThat(fetchedAppointment.getId(), is(appointment.getId()));
+    }
+
+    @Test
+    public void shouldNotReturnAnyAppointmentsFromNonExistingUserId() {
+        Appointment fetchedAppointment = service.getAppointmentsByUserAndDate("user-trölf",
+                ZonedDateTime.now().plusHours(1).toEpochSecond()).toBlocking().firstOrDefault(null);
+
+        assertThat(fetchedAppointment, is(nullValue()));
+    }
+
+    @Test
+    public void shouldNotReturnAnyAppointmentsForDateOutsideAnyAppointmentsByUserId() {
+        Appointment fetchedAppointment = service.getAppointmentsByUserAndDate("user-10042",
+                ZonedDateTime.now().minusHours(3).toEpochSecond()).toBlocking().firstOrDefault(null);
+
+        assertThat(fetchedAppointment, is(nullValue()));
+    }
+
+    @Test(expected = VerifyException.class)
+    public void shouldThrowExceptionOnInvalidBranchIdAndDateByUserId() {
+        service.getAppointmentsByUserAndDate(null, null);
     }
 
     private Appointment initializeAppointment() {
