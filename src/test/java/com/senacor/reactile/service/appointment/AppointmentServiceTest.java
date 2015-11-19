@@ -19,11 +19,14 @@ public class AppointmentServiceTest {
 
     private AppointmentService service;
     private AppointmentDatabase appointmentDatabase;
+    private Appointment appointment;
 
     @Before
     public void setUp() {
         appointmentDatabase = new AppointmentDatabase();
         service = new AppointmentServiceImpl(appointmentDatabase);
+
+        appointment = initializeAppointment();
     }
 
     @Test
@@ -34,8 +37,6 @@ public class AppointmentServiceTest {
 
     @Test
     public void shouldReturnSpecificAppointmentById() {
-        Appointment appointment = initializeAppointment();
-
         Appointment fetchedAppointment = service.getAppointmentById(appointment.getId()).toBlocking().first();
 
         assertThat(fetchedAppointment, is(notNullValue()));
@@ -49,8 +50,6 @@ public class AppointmentServiceTest {
 
     @Test
     public void shouldReturnAppointmentsByCustomerId() {
-        Appointment appointment = initializeAppointment();
-
         AppointmentList fetchedAppointments = service.getAppointmentsByCustomer("cust-10042").toBlocking().first();
 
         assertThat(fetchedAppointments.getAppointmentList(), hasSize(1));
@@ -62,8 +61,19 @@ public class AppointmentServiceTest {
         service.getAppointmentsByCustomer(null);
     }
 
+    @Test
+    public void shouldReturnAppointmentsByBranchId() {
+        AppointmentList fetchedAppointments = service.getAppointmentsByBranch("42").toBlocking().first();
+
+        assertThat(fetchedAppointments.getAppointmentList(), hasSize(1));
+        assertThat(fetchedAppointments.getAppointmentList().get(0).getId(), is(appointment.getId()));
+    }
+
     private Appointment initializeAppointment() {
-        Appointment appointment = Appointment.newBuilder().withId("42").withCustomerId("cust-10042").build();
+        Appointment appointment = Appointment.newBuilder().withId("42")
+                .withCustomerId("cust-10042")
+                .withBranchId("42")
+                .build();
         appointmentDatabase.saveOrUpdate(appointment);
 
         return appointment;
