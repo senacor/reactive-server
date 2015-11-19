@@ -3,8 +3,10 @@ package com.senacor.reactile.service.appointment;
 import rx.Observable;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class AppointmentServiceImpl implements AppointmentService {
 
@@ -24,22 +26,33 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> getAppointmentById(String appointmentId) {
-        return null;
+        Appointment appointment = database.findById(appointmentId);
+        return Observable.just(appointment);
     }
 
     @Override
     public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
-        return null;
+        List<Appointment> appointments = database.findByCustomerId(customerId);
+        return Observable.just(new AppointmentList(appointments));
     }
 
     @Override
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
-        return null;
+        List<Appointment> appointments = database.findByBranchId(branchId);
+        return Observable.just(new AppointmentList(appointments));
     }
 
     @Override
-    public Observable<Appointment> getAppointmentsByBranchAndDate(String branchId, Long date) {
-        return null;
+    public Observable<AppointmentList> getAppointmentsByBranchAndDate(String branchId, Long date) {
+        List<Appointment> appointments = database.findByBranchId(branchId);
+        List<Appointment> result = new ArrayList<>();
+        Observable.from(appointments).filter(a -> matchesDate(a, date)).forEach(a -> result.add(a));
+        return Observable.just(new AppointmentList(result));
+    }
+
+    private Boolean matchesDate(Appointment a, Long longDate) {
+        LocalDate date = LocalDate.ofEpochDay(longDate);
+        return a.getStart().toLocalDate().equals(date);
     }
 
     @Override
