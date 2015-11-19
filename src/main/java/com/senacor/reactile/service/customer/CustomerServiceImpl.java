@@ -43,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
         return mongoService.findOneObservable(COLLECTION, customerId.toJson(), null)
                 .map(Customer::fromJson) // 2. convert json to Objects
                 .map(customer -> Customer.addOrReplaceAddress(customer, address))
-                .flatMap(this::updateAllAdressesInMongo)
+                .flatMap(this::updateAllAddressesInMongo)
                 .doOnNext(customer -> {
                     // 4. publish 'updateAddress' Event
                     String eventAddress = CustomerService.ADDRESS_EVENT_UPDATE_ADDRESS;
@@ -58,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .doOnError(throwable -> logger.error("updateAddress error", throwable));
     }
 
-    private Observable<Customer> updateAllAdressesInMongo(Customer customer) {
+    private Observable<Customer> updateAllAddressesInMongo(Customer customer) {
 
         JsonObject update = new JsonObject().put("$set", new JsonObject().put("addresses",
                 marshal(customer.getAddresses(), Address::toJson)));
