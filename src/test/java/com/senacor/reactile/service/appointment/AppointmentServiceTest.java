@@ -95,7 +95,7 @@ public class AppointmentServiceTest {
 
     @Test
     public void testCreateOrUpdateAppointment() throws Exception {
-        appointmentService.createOrUpdateAppointment(Appointment.newBuilder().withId("999").withUserId("team-lbbw").build()).toBlocking().first();
+        appointmentService.createOrUpdateAppointment(Appointment.newBuilder().withId("999").build()).toBlocking().first();
         assertThat(appointmentService.getAppointmentById("999").toBlocking().first().getId(), is("999"));
     }
 

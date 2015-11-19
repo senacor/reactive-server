@@ -61,9 +61,9 @@ public class AppointmentServiceImpl implements AppointmentService {
                AppointmentList.newBuilder().withAppointments(
                        appointmentDatabase.findAll()
                                .stream()
-                               .filter(appointment -> appointment.getUserId().equals(userId))
+                               .filter(appointment -> userId.equals(appointment.getUserId()))
                                .collect(Collectors.toList()))
-                       .build()));
+               .build()));
     }
 
     @Override
