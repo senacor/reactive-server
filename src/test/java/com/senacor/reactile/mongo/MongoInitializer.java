@@ -1,19 +1,22 @@
 package com.senacor.reactile.mongo;
 
-import com.senacor.reactile.domain.IdObject;
-import com.senacor.reactile.domain.Identity;
-import com.senacor.reactile.json.Jsonizable;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.ext.mongo.MongoService;
-import org.junit.rules.ExternalResource;
-import rx.Observable;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newLinkedList;
+import org.junit.rules.ExternalResource;
+
+import com.senacor.reactile.domain.IdObject;
+import com.senacor.reactile.domain.Identity;
+import com.senacor.reactile.json.Jsonizable;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.rxjava.core.Vertx;
+import io.vertx.rxjava.ext.mongo.MongoService;
+import rx.Observable;
 
 public class MongoInitializer extends ExternalResource{
 
@@ -46,11 +49,15 @@ public class MongoInitializer extends ExternalResource{
     public Observable<String> write(Iterable<? extends Jsonizable> objects) {
         return Observable.from(objects)
                 .map(o ->
-                        o instanceof IdObject ? o.toJson().put("_id", ((IdObject) o).toValue()) :
-                                o instanceof Identity ? o.toJson().put("_id", ((Identity) o).getId().toValue()) :
-                                        o.toJson())
+                        write(o))
                 .flatMap(json -> mongoService.insertObservable(collection, json));
     }
+
+	private JsonObject write(Jsonizable o)	{
+		return o instanceof IdObject ? o.toJson().put("_id", ((IdObject) o).toValue()) :
+	        o instanceof Identity ? o.toJson().put("_id", ((Identity) o).getId().toValue()) :
+	                o.toJson();
+	        }
 
     @Override
     protected void after() {

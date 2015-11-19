@@ -1,11 +1,14 @@
 package com.senacor.reactile.service.branch;
 
-import com.senacor.reactile.json.Jsonizable;
-import com.senacor.reactile.service.customer.Address;
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.json.Jsonizable;
+import com.senacor.reactile.service.customer.Address;
+
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Andreas Keefer
@@ -20,8 +23,9 @@ public class Branch implements Jsonizable {
     public Branch() {
         this(null, null, null);
     }
+    
 
-    public Branch(String id, String name, Address address) {
+    public Branch(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("adress") Address address) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -63,7 +67,8 @@ public class Branch implements Jsonizable {
 
     public static Branch fromJson(JsonObject jsonObject) {
         if (null == jsonObject) {
-            throw new IllegalArgumentException("banane");
+            //throw new IllegalArgumentException("banane");
+        	return null;
         }
         return Branch.newBuilder("id")
                 .withId(jsonObject.getString("id"))

@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class VerticleDeployer {
 
     // TODO: hier temporaer DEFAULT_TIMEOUT auf z.B. 300_000 setzen, damit die lokale MongoDB herunterladen werden kann
-    private final static long DEFAULT_TIMEOUT = 1_500_000_000;
+    private final static long DEFAULT_TIMEOUT = 300_000;//1_500_000_000;
 
     private final Set<String> notStarted = new LinkedHashSet<>();
     private final Set<String> started = new LinkedHashSet<>();
@@ -54,7 +54,7 @@ public class VerticleDeployer {
     }
 
     public void undeploy(long timeoutInMillis) {
-        reverseStarted().stream().map(this::stopVerticle).forEach(future -> waitForCompletion(future, timeoutInMillis));
+        reverseStarted().stream().map(this::stopVerticle).forEach(future -> waitForCompletion(future, DEFAULT_TIMEOUT));
     }
 
     public void undeploy(Future<Void> stopFuture) {

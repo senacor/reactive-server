@@ -1,10 +1,13 @@
 package com.senacor.reactile.service.customer;
 
-import com.senacor.reactile.json.Jsonizable;
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.senacor.reactile.json.Jsonizable;
+
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 @DataObject
 public class Address implements Jsonizable {
@@ -24,13 +27,13 @@ public class Address implements Jsonizable {
         this(null, null, null, null, null, null, null);
     }
 
-    public Address(String coHint,
-                   String street,
-                   String zipCode,
-                   String addressNumber,
-                   String city,
-                   Country country,
-                   Integer index) {
+    public Address(@JsonProperty("coHint") String coHint,
+    		@JsonProperty("street") String street,
+    		@JsonProperty("zipCode") String zipCode,
+    		@JsonProperty("addressNumber") String addressNumber,
+    		@JsonProperty("city") String city,
+    		@JsonProperty("country") Country country,
+    		@JsonProperty("index") Integer index) {
         this.coHint = coHint;
         this.street = street;
         this.zipCode = zipCode;

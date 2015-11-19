@@ -1,15 +1,17 @@
 package com.senacor.reactile.service.branch;
 
-import com.senacor.reactile.domain.IdObject;
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.senacor.reactile.domain.IdObject;
+import com.senacor.reactile.json.Jsonizable;
+
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 @DataObject
-public class BranchId implements IdObject {
+public class BranchId implements IdObject, Jsonizable {
 
     private final String id;
 

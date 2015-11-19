@@ -1,11 +1,11 @@
 package com.senacor.reactile.json;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Michael Menzel
@@ -76,7 +76,7 @@ public class JsonizableList<T> implements Jsonizable {
 
         for (Object item: this.items){
             if (item instanceof Jsonizable) {
-                jsonItemArray.add(((Jsonizable)items).toJson());
+                jsonItemArray.add(((Jsonizable)item).toJson());
             } else {
                 jsonItemArray.add(item);
             };

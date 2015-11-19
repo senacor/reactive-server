@@ -3,6 +3,8 @@ package com.senacor.reactile.service.branch;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -13,6 +15,7 @@ import org.junit.Test;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
+import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.mongo.MongoInitializer;
 
 public class BranchServiceTest {
@@ -44,6 +47,24 @@ public class BranchServiceTest {
 		assertThat(branch.getId(), equalTo("branch1"));
 	}
 
+	@Test
+	public void thatBranchesAreReturned_forBranchIds() {
+		
+		JsonizableList<BranchId> input = new JsonizableList<BranchId>(Arrays.asList(new BranchId("branch1"), new BranchId("branch2")));
+		
+		BranchList bl = service.findBranches(input).toBlocking().first();
+		assertThat(bl.getBranches().size(), equalTo(2));
+		assertThat(bl.getBranches().get(0).getId(), equalTo("branch1"));
+		assertThat(bl.getBranches().get(1).getId(), equalTo("branch2"));
+	}
+	
+	
+	@Test
+	public void thatAllBranchesAreReturned() {		
+	
+		BranchList bl = service.getAllBranches().toBlocking().first();
+		assertThat(bl.getBranches().size(), equalTo(4));
 
+	}
 
 }

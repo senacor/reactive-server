@@ -3,6 +3,8 @@ package com.senacor.reactile.service.branch;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -29,14 +31,19 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	public Observable<Branch> getBranch(BranchId branchId) {
-		logger.warn("helo!!!!");
 		return mongoService.findOneObservable(COLLECTION, branchId.toJson(), null).map(Branch::fromJson);
 	}
 
 	public Observable<BranchList> findBranches(JsonizableList<BranchId> branchIds) {
+		
+		JsonizableList<String> flatList = new JsonizableList<String>(convertList(branchIds.toList(), branchId -> branchId.getId()));
 
-		JsonObject search = new JsonObject().put("$in", branchIds.toJson().getValue("items"));
-		JsonObject query = new JsonObject().put("_id", search);
+		Object values = flatList.toJson().getValue("items");
+		
+		logger.info("findBranches "+ values);
+		
+		JsonObject search = new JsonObject().put("$in", values);
+		JsonObject query = new JsonObject().put("id", search);
 
 		return executeQuery(query);
 
@@ -57,5 +64,11 @@ public class BranchServiceImpl implements BranchService {
 			return new BranchList(branches);
 		};
 	}
+	
+	//for lists
+	public static <T, U> List<U> convertList(List<T> from, Function<T, U> func){
+	    return from.stream().map(func).collect(Collectors.toList());
+	}
+
 
 }
