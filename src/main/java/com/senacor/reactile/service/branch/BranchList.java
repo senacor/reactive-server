@@ -1,9 +1,13 @@
 package com.senacor.reactile.service.branch;
 
+import com.google.common.collect.ImmutableList;
 import com.senacor.reactile.json.Jsonizable;
+import com.senacor.reactile.service.account.Transaction;
+
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.senacor.reactile.json.JsonObjects.marshal;
@@ -27,6 +31,10 @@ public class BranchList implements Jsonizable {
 
     public BranchList(JsonObject jsonObject) {
         this(fromJson(jsonObject));
+    }
+    
+    public BranchList(List<Branch> branchList) {
+        this.branches = branchList == null ? Collections.emptyList() : ImmutableList.copyOf(branchList);
     }
 
     private BranchList(Builder builder) {
