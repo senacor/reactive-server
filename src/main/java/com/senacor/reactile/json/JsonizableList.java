@@ -76,7 +76,7 @@ public class JsonizableList<T> implements Jsonizable {
 
         for (Object item: this.items){
             if (item instanceof Jsonizable) {
-                jsonItemArray.add(((Jsonizable)items).toJson());
+                jsonItemArray.add(((Jsonizable)item).toJson());
             } else {
                 jsonItemArray.add(item);
             };

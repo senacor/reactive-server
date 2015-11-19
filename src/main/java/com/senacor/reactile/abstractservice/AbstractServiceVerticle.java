@@ -158,16 +158,19 @@ public abstract class AbstractServiceVerticle extends AbstractVerticle {
     }
 
     private void setReplyHandler(Message<Object> message, Method serviceMethod, Observable<Object> serviceResult) {
-        serviceResult
-                .map(response -> serializeResponse(response))
-                .doOnNext(System.out::println)
-                .doOnError(System.out::println)
-                .subscribe(
-                        message::reply,
-                        throwable -> {
-                            message.fail(1, "Error invoking abstractService method " + serviceMethod + "(Cause: " + throwable.getMessage() + ")");
-                        }
-                );
+        if (null == serviceResult) {
+            message.reply(null);
+        } else {
+            serviceResult
+                    .map(response -> serializeResponse(response))
+                    .doOnNext(System.out::println)
+                    .doOnError(System.out::println)
+                    .subscribe(
+                            message::reply,
+                            throwable -> message.fail(1, "Error invoking abstractService method " + serviceMethod + "(Cause: " + throwable.getMessage() + ")"),
+                            () -> message.reply(null)
+                    );
+        }
     }
 
     private Object serializeResponse(Object response){

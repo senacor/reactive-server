@@ -100,7 +100,9 @@ public class ObserverProxy implements InvocationHandler{
 
     private Object deserializeResultFromJson(Method method, Message<Object> res) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         JsonObject jsonResult = (JsonObject)res.body();
-
+        if (null == jsonResult) {
+            return null;
+        }
         Class<?> type = method.getAnnotation(Action.class).returnType();
 
         if(Jsonizable.class.isAssignableFrom(type)) {
