@@ -11,10 +11,14 @@ import com.google.common.base.VerifyException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import junitparams.JUnitParamsRunner;
 
 /**
  * @author Andreas Karoly, Senacor Technologies AG
  */
+@RunWith(JUnitParamsRunner.class)
 public class AppointmentServiceTest {
 
     private AppointmentService service;
@@ -67,6 +71,11 @@ public class AppointmentServiceTest {
 
         assertThat(fetchedAppointments.getAppointmentList(), hasSize(1));
         assertThat(fetchedAppointments.getAppointmentList().get(0).getId(), is(appointment.getId()));
+    }
+
+    @Test(expected = VerifyException.class)
+    public void shouldThrowExceptionOnInvalidBranchId() {
+        service.getAppointmentsByBranch(null);
     }
 
     private Appointment initializeAppointment() {

@@ -41,7 +41,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
-        return null;
+        Verify.verifyNotNull(branchId, "branchId must be provided");
+
+        return Observable.just(new AppointmentList(Lists.newArrayList(appointmentDatabase.
+                findByBranchId(branchId))));
     }
 
     @Override
