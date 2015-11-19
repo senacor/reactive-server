@@ -42,7 +42,7 @@ public class BranchServiceTest {
     }
 
     @Test
-    public void thatBranchesAreReturned() {
+    public void thatSomeSpecificBranchesAreReturned() {
         JsonizableList<String> branchIds = new JsonizableList<>(Arrays.asList("1", "2"));
 
         BranchList branchList = service.findBranches(branchIds).toBlocking().first();
@@ -50,5 +50,15 @@ public class BranchServiceTest {
         List<String> returnedBranchIds = branchList.getBranches().stream().map(Branch::getId).collect(Collectors.toList());
 
         assertThat(returnedBranchIds, CoreMatchers.equalTo(Arrays.asList("1", "2")));
+    }
+
+    @Test
+    public void thatAllBranchesAreReturned() {
+
+        BranchList branchList = service.getAllBranches().toBlocking().first();
+
+        List<String> returnedBranchIds = branchList.getBranches().stream().map(Branch::getId).collect(Collectors.toList());
+
+        assertThat(returnedBranchIds, CoreMatchers.equalTo(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")));
     }
 }

@@ -24,6 +24,10 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public Observable<BranchList> getAllBranches() {
-        return null;
+        return Observable.defer(()-> {
+            List<Branch> branches = branchDatabase.findAll();
+            BranchList branchList = BranchList.newBuilder().withBranches(branches).build();
+            return Observable.just(branchList);
+        });
     }
 }
