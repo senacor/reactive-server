@@ -4,12 +4,21 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import rx.Observable;
 
+import javax.inject.Inject;
+
 /**
  * Created by sbode on 19.11.15.
  */
 public class AppointmentServiceImpl implements AppointmentService {
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentServiceImpl.class);
+
+    private final AppointmentDatabase appointmentDatabase;
+
+    @Inject
+    public AppointmentServiceImpl(AppointmentDatabase appointmentDatabase) {
+        this.appointmentDatabase = appointmentDatabase;
+    }
 
     @Override
     public Observable<AppointmentList> getAllAppointments() {
@@ -18,7 +27,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> getAppointmentById(String appointmentId) {
-        return null;
+        return Observable.defer(() -> Observable.just(appointmentDatabase.findById(appointmentId)));
     }
 
     @Override

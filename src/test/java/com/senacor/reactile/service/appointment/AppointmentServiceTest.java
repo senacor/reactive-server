@@ -6,11 +6,15 @@ import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.mongo.MongoInitializer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
+import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
+import static com.senacor.reactile.domain.IdentityMatchers.hasId;
+import static org.junit.Assert.*;
 
 public class AppointmentServiceTest {
 
@@ -23,9 +27,7 @@ public class AppointmentServiceTest {
     public final GuiceRule guiceRule = new GuiceRule(vertxRule.vertx(), this);
 
     @Inject
-    private AppointmentService service;
-
-//    private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "appointments");
+    private AppointmentService appointmentService;
 
     @Test
     public void testGetAllAppointments() throws Exception {
@@ -34,7 +36,8 @@ public class AppointmentServiceTest {
 
     @Test
     public void testGetAppointmentById() throws Exception {
-
+        Appointment appointment = appointmentService.getAppointmentById("1").toBlocking().first();
+        assertThat(appointment.getId(), Matchers.is("1"));
     }
 
     @Test
