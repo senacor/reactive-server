@@ -8,6 +8,8 @@ import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.customer.CustomerService;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,9 +30,9 @@ public class BranchServiceTest {
     @Inject
     private BranchService service;
 
-    private MongoInitializer mongoInitializer = new MongoInitializer(vertxRule.vertx(), "branches");
-
     @Test
     public void thatBranchIsReturned() {
+        Branch branch = service.getBranch("1").toBlocking().first();
+        assertThat(branch.getId(), CoreMatchers.equalTo("1"));
     }
 }

@@ -4,9 +4,11 @@ import com.senacor.reactile.json.JsonizableList;
 import rx.Observable;
 
 public class BranchServiceImpl implements BranchService {
+    private final BranchDatabase branchDatabase = new BranchDatabase();
+
     @Override
     public Observable<Branch> getBranch(String branchId) {
-        return null;
+        return Observable.just(branchDatabase.findById(branchId));
     }
 
     @Override
