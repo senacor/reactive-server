@@ -28,9 +28,11 @@ public class NewsServiceImpl implements NewsService {
     public Observable<NewsCollection> getLatestNews(Integer max) {
         List<News> latestNews = new ArrayList<>();
         Iterator iterator = latestNewsQueue.iterator();
-        while (iterator.hasNext()) {
+        int count = 0;
+        while (iterator.hasNext() && count < max) {
             News next = (News) iterator.next();
             latestNews.add(next);
+            count++;
         }
         return Observable.just(new NewsCollection(latestNews));
     }
