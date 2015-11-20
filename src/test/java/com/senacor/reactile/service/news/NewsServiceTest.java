@@ -27,8 +27,10 @@ public class NewsServiceTest {
 	private NewsService service;
 
 	@Test
-	public void thatLastNewsAreReturned() {
+	public void thatLastNewsAreReturned() throws InterruptedException {
 	
+		Thread.sleep(1000);
+		
 		NewsCollection result = service.getLatestNews(10).toBlocking().first();
 		assertThat(result.getNews().size(), equalTo(10));
 
