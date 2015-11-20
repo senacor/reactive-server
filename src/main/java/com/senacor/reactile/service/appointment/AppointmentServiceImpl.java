@@ -63,7 +63,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                                .stream()
                                .filter(appointment -> userId.equals(appointment.getUserId()))
                                .collect(Collectors.toList()))
-               .build()));
+                       .build()));
     }
 
     @Override
@@ -88,6 +88,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> deleteAppointment(String appointmentId) {
-        return null;
+        return Observable.defer(
+                () -> Observable.just(appointmentDatabase.deleteById(appointmentId)));
     }
 }

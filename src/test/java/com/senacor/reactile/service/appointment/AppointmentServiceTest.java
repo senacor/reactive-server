@@ -123,6 +123,9 @@ public class AppointmentServiceTest {
     }
     @Test
     public void testDeleteAppointment() throws Exception {
-
+        Appointment deleted = appointmentService.deleteAppointment("11").toBlocking().first();
+        assertThat(deleted.getId(), is("11"));
+        Appointment appointment = appointmentService.getAppointmentById("11").toBlocking().first();
+        assertThat(appointment.getId(), is(Matchers.nullValue()));
     }
 }
