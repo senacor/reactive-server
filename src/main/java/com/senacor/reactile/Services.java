@@ -20,7 +20,7 @@ public enum Services implements ServiceIdProvider {
     HystrixMetricsStreamVerticle("com.senacor.reactile.hystrix-metrics-stream-service"),
     GatewayService("com.senacor.reactile.gateway-service", UserService, CustomerService, AccountService, BranchService,
         CreditCardService, TransactionService, PushNotificationService,
-        HystrixMetricsStreamVerticle);
+        HystrixMetricsStreamVerticle, AppointmentService);
 
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;
