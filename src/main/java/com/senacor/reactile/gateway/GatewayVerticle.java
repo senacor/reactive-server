@@ -5,6 +5,7 @@ import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
+import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -29,8 +30,6 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.senacor.reactile.json.JsonObjects.$;
-
 public class GatewayVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
@@ -41,6 +40,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private final StartCommandFactory startCommandFactory;
 
     private final BranchService branchService;
+    private final UserService userService;
 
     @Inject
     public GatewayVerticle(
@@ -48,12 +48,13 @@ public class GatewayVerticle extends AbstractVerticle {
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
             UserFindCommandFactory userFindCommandFactory,
-            BranchService branchService) {
+            BranchService branchService, UserService userService) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
         this.branchService = branchService;
+        this.userService = userService;
     }
 
     @Override
