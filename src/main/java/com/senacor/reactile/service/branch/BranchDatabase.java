@@ -1,14 +1,17 @@
 package com.senacor.reactile.service.branch;
 
+import static org.apache.commons.lang3.Validate.notNull;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.senacor.reactile.magic.Throttler;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Country;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.apache.commons.lang3.Validate.notNull;
 
 /**
  * Represents a Database with some service methods to query Branches
@@ -20,7 +23,7 @@ public class BranchDatabase {
     private final Throttler delay = new Throttler();
     private boolean delayEnabled = false;
 
-    private final Random rnd= new Random();
+    private final Random rnd = new Random();
 
     private long nextId = 0;
 
@@ -90,14 +93,11 @@ public class BranchDatabase {
         }
     }
 
-    public String randomExistingID(){
-        int n =0;
-        String id;
+    public String randomExistingID() {
+        int n = 0;
         int i = rnd.nextInt(dataStore.size());
-        Iterator<String> iter = dataStore.keySet().iterator();
-        while (iter.hasNext()){
-            id = iter.next();
-            if (n++ == i){
+        for (String id : dataStore.keySet()) {
+            if (n++ == i) {
                 return id;
             }
         }

@@ -33,6 +33,8 @@ import com.senacor.reactile.service.appointment.AppointmentDatabase;
 import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
 import com.senacor.reactile.service.branch.BranchDatabase;
+import com.senacor.reactile.service.branch.BranchService;
+import com.senacor.reactile.service.branch.BranchServiceImpl;
 import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
@@ -69,6 +71,7 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(TransactionService.class).annotatedWith(Impl.class).to(TransactionServiceImpl.class);
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
+            bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
@@ -159,6 +162,14 @@ public class AppModuleProvider implements BootstrapModuleProvider {
                     UserService.class.getClassLoader(),
                     new Class[]{UserService.class},
                     new ObserverProxy(vertx, "UserVerticle"));
+        }
+
+        @Provides
+        BranchService provideBranchService(Vertx vertx) {
+            return (BranchService) Proxy.newProxyInstance(
+                BranchService.class.getClassLoader(),
+                new Class[]{BranchService.class},
+                new ObserverProxy(vertx, "BranchVerticle"));
         }
 
         @Provides

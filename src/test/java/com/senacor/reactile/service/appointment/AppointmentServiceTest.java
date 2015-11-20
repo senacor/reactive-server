@@ -24,8 +24,6 @@ import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
 
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
@@ -34,8 +32,6 @@ import junitparams.Parameters;
  */
 @RunWith(JUnitParamsRunner.class)
 public class AppointmentServiceTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentServiceTest.class);
 
     @ClassRule
     public final static VertxRule vertxRule = new VertxRule(Services.AppointmentService);
@@ -147,9 +143,9 @@ public class AppointmentServiceTest {
         assertThat(appointments.getAppointmentList())
             .are(new Condition<>(appointment -> StringUtils.equals(appointment.getBranchId(), branchId), "branch with id " + branchId));
         assertThat(appointments.getAppointmentList())
-            .are(new Condition<Appointment>(appointment -> appointment.getStart().isBefore(zonedDate), "start at " + zonedDate));
+            .are(new Condition<>(appointment -> appointment.getStart().isBefore(zonedDate), "start at " + zonedDate));
         assertThat(appointments.getAppointmentList())
-            .are(new Condition<Appointment>(appointment -> appointment.getEnd().isAfter(zonedDate), "end at " + zonedDate));
+            .are(new Condition<>(appointment -> appointment.getEnd().isAfter(zonedDate), "end at " + zonedDate));
     }
 
     @SuppressWarnings("unused")
@@ -196,9 +192,9 @@ public class AppointmentServiceTest {
         assertThat(appointments.getAppointmentList())
             .are(new Condition<>(appointment -> StringUtils.equals(appointment.getUserId(), userId), "user with id " + userId));
         assertThat(appointments.getAppointmentList())
-            .are(new Condition<Appointment>(appointment -> appointment.getStart().isBefore(zonedDate), "start at " + zonedDate));
+            .are(new Condition<>(appointment -> appointment.getStart().isBefore(zonedDate), "start at " + zonedDate));
         assertThat(appointments.getAppointmentList())
-            .are(new Condition<Appointment>(appointment -> appointment.getEnd().isAfter(zonedDate), "end at " + zonedDate));
+            .are(new Condition<>(appointment -> appointment.getEnd().isAfter(zonedDate), "end at " + zonedDate));
     }
 
     @SuppressWarnings("unused")
@@ -227,15 +223,15 @@ public class AppointmentServiceTest {
         final int sizeAfter = appointments.getAppointmentList().size();
         assertThat(sizeBefore).isEqualTo(sizeAfter - 1);
         assertThat(appointments.getAppointmentList())
-            .areExactly(1, new Condition<Appointment>(appointment -> ID.equals(appointment.getId()), "new appointment id is included"));
+            .areExactly(1, new Condition<>(appointment -> ID.equals(appointment.getId()), "new appointment id is included"));
         assertThat(appointments.getAppointmentList())
-            .areExactly(1, new Condition<Appointment>(appointment -> NAME.equals(appointment.getName()), "new appointment name is included"));
+            .areExactly(1, new Condition<>(appointment -> NAME.equals(appointment.getName()), "new appointment name is included"));
         assertThat(appointments.getAppointmentList()).areExactly(1,
-            new Condition<Appointment>(appointment -> BRANCH_ID.equals(appointment.getBranchId()), "new appointment branch is included"));
+            new Condition<>(appointment -> BRANCH_ID.equals(appointment.getBranchId()), "new appointment branch is included"));
         assertThat(appointments.getAppointmentList()).areExactly(1,
-            new Condition<Appointment>(appointment -> CUSTOMER_ID.equals(appointment.getCustomerId()), "new appointment customer is included"));
+            new Condition<>(appointment -> CUSTOMER_ID.equals(appointment.getCustomerId()), "new appointment customer is included"));
         assertThat(appointments.getAppointmentList())
-            .areExactly(1, new Condition<Appointment>(appointment -> USER_ID.equals(appointment.getUserId()), "new appointment user is included"));
+            .areExactly(1, new Condition<>(appointment -> USER_ID.equals(appointment.getUserId()), "new appointment user is included"));
     }
 
     @Test
@@ -251,15 +247,15 @@ public class AppointmentServiceTest {
         final int sizeAfter = appointments.getAppointmentList().size();
         assertThat(sizeBefore).isEqualTo(sizeAfter);
         assertThat(appointments.getAppointmentList())
-            .areNot(new Condition<Appointment>(appointment -> ID.equals(appointment.getId()), "new appointment id is included"));
+            .areNot(new Condition<>(appointment -> ID.equals(appointment.getId()), "new appointment id is included"));
         assertThat(appointments.getAppointmentList())
-            .areExactly(1, new Condition<Appointment>(appointment -> NAME.equals(appointment.getName()), "new appointment name is included"));
+            .areExactly(1, new Condition<>(appointment -> NAME.equals(appointment.getName()), "new appointment name is included"));
         assertThat(appointments.getAppointmentList()).areExactly(1,
-            new Condition<Appointment>(appointment -> BRANCH_ID.equals(appointment.getBranchId()), "new appointment branch is included"));
+            new Condition<>(appointment -> BRANCH_ID.equals(appointment.getBranchId()), "new appointment branch is included"));
         assertThat(appointments.getAppointmentList()).areExactly(1,
-            new Condition<Appointment>(appointment -> CUSTOMER_ID.equals(appointment.getCustomerId()), "new appointment customer is included"));
+            new Condition<>(appointment -> CUSTOMER_ID.equals(appointment.getCustomerId()), "new appointment customer is included"));
         assertThat(appointments.getAppointmentList())
-            .areExactly(1, new Condition<Appointment>(appointment -> USER_ID.equals(appointment.getUserId()), "new appointment user is included"));
+            .areExactly(1, new Condition<>(appointment -> USER_ID.equals(appointment.getUserId()), "new appointment user is included"));
     }
 
     @Test
@@ -272,7 +268,7 @@ public class AppointmentServiceTest {
         final int sizeAfter = appointments.getAppointmentList().size();
         assertThat(sizeBefore).isEqualTo(sizeAfter + 1);
         assertThat(appointments.getAppointmentList())
-            .areNot(new Condition<Appointment>(appointment -> deletedAppointment.getId().equals(appointment.getId()), "new appointment id is included"));
+            .areNot(new Condition<>(appointment -> deletedAppointment.getId().equals(appointment.getId()), "new appointment id is included"));
     }
 
     private ZonedDateTime zonedDateTimeFromMillis(Long date) {
