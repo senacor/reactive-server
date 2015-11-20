@@ -9,6 +9,7 @@ import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.service.branch.BranchList;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.newsticker.NewsService;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
@@ -72,7 +73,8 @@ public class GatewayVerticle extends AbstractVerticle {
 
         // Export Eventbus
         BridgeOptions bridgeOptions = new BridgeOptions()
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"));
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"))
+                .addOutboundPermitted(new PermittedOptions().setAddress(NewsService.NEWS_STREAM));
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
 
         // common handler:

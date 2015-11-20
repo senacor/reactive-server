@@ -1,6 +1,8 @@
 package com.senacor.reactile.service.newsticker;
 
 import com.google.inject.Inject;
+import com.senacor.reactile.json.JsonObjects;
+import io.vertx.rxjava.core.Vertx;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import rx.Observable;
 
@@ -17,11 +19,17 @@ public class NewsServiceImpl implements NewsService {
 
     private CircularFifoBuffer latestNewsQueue = new CircularFifoBuffer(20);
 
+    private final Vertx vertx;
+
 
     @Inject
-    public NewsServiceImpl(NewsTickerStream newsTickerStream) {
+    public NewsServiceImpl(NewsTickerStream newsTickerStream, Vertx vertx) {
         this.newsTickerStream = newsTickerStream;
-        newsTickerStream.getNewsObservable().subscribe(latestNewsQueue::add);
+        this.vertx = vertx;
+        newsTickerStream.getNewsObservable().subscribe((element) -> {
+            latestNewsQueue.add(element);
+            vertx.eventBus().publish(NEWS_STREAM, JsonObjects.toJson(element));
+        });
     }
 
     @Override
