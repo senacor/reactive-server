@@ -81,6 +81,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(UserFindCommand.class, UserFindCommand.class)
                     .build(UserFindCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(GetBranchWithUsersCommand.class, GetBranchWithUsersCommand.class)
+                    .build(GetBranchWithUsersCommandFactory.class));
 
             HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
             requestInjection(hystrixCommandInterceptor);

@@ -1,18 +1,13 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.*;
-import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.service.branch.Branch;
-import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.service.user.User;
 import com.senacor.reactile.service.user.UserId;
-import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -44,9 +39,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private final UserReadCommandFactory userReadCommandFactory;
     private final UserFindCommandFactory userFindCommandFactory;
     private final StartCommandFactory startCommandFactory;
-
-    private final BranchService branchService;
-    private final UserService userService;
+    private final GetBranchWithUsersCommandFactory getBranchWithUsersCommandFactory;
 
     @Inject
     public GatewayVerticle(
@@ -54,13 +47,12 @@ public class GatewayVerticle extends AbstractVerticle {
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
             UserFindCommandFactory userFindCommandFactory,
-            BranchService branchService, UserService userService) {
+            GetBranchWithUsersCommandFactory getBranchWithUsersCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
-        this.branchService = branchService;
-        this.userService = userService;
+        this.getBranchWithUsersCommandFactory = getBranchWithUsersCommandFactory;
     }
 
     @Override
@@ -161,22 +153,12 @@ public class GatewayVerticle extends AbstractVerticle {
 
     private void handleGetBranchWithUsers(RoutingContext routingContext) {
         String branchId = routingContext.request().params().get("branchId");
-        HttpServerResponse resp = routingContext.response();
 
-        Observable<JsonObject> branch = branchService.getBranch(branchId).map(Branch::toJson);
-        Observable<JsonizableList<JsonObject>> usersOfBranch = userService.findUser(new JsonObject().put("branchId", branchId));
-        
-        Observable.zip(branch, usersOfBranch, this::combineBranchWithUsers)
-                .map(json -> writeResponse(resp, json))
+        getBranchWithUsersCommandFactory.create(branchId).toObservable()
+                .map(json -> writeResponse(routingContext.response(), json))
                 .subscribe(
                         response -> routingContext.next(),
                         Throwable::printStackTrace);
-    }
-
-    private JsonObject combineBranchWithUsers(JsonObject branch, JsonizableList<JsonObject> usersOfBranch) {
-        return new JsonObject()
-                .put("branch", branch)
-                .put("users", new JsonArray(usersOfBranch.toList()));
     }
 
 
