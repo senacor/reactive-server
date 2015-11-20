@@ -4,7 +4,9 @@ import javax.inject.Inject;
 
 import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
+import com.senacor.reactile.service.user.UserId;
 
+import io.vertx.rxjava.core.Vertx;
 import rx.Observable;
 
 /**
@@ -13,10 +15,12 @@ import rx.Observable;
 public class AppointmentServiceImpl implements AppointmentService {
 
     private AppointmentDatabase appointmentDatabase;
+    private Vertx vertx;
 
     @Inject
-    public AppointmentServiceImpl(AppointmentDatabase appointmentDatabase) {
+    public AppointmentServiceImpl(AppointmentDatabase appointmentDatabase, Vertx vertx) {
         this.appointmentDatabase = appointmentDatabase;
+        this.vertx = vertx;
     }
 
     @Override
@@ -78,7 +82,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
         Verify.verifyNotNull(appointment, "appointment must be provided");
 
-        return Observable.just(appointmentDatabase.saveOrUpdate(appointment));
+        return Observable.just(appointmentDatabase.saveOrUpdate(appointment))
+                .doOnNext(savedOrUpdatedAppointment -> {
+                    String eventAddress = AppointmentService.APPOINTMENT_EVENT_CREATION;
+                    vertx.eventBus().publish(eventAddress, AppointmentCreationEvt.newBuilder()
+                            .withUserId(new UserId(savedOrUpdatedAppointment.getUserId()))
+                                .withAppointment(savedOrUpdatedAppointment)
+                                .build()
+                                .toJson());
+                });
     }
 
     @Override

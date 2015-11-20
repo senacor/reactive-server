@@ -31,7 +31,7 @@ public class AppointmentServiceTest {
     @Before
     public void setUp() {
         appointmentDatabase = new AppointmentDatabase();
-        service = new AppointmentServiceImpl(appointmentDatabase);
+        service = new AppointmentServiceImpl(appointmentDatabase, null);
 
         appointment = initializeAppointment();
     }

@@ -1,5 +1,6 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.service.customer.CustomerService;
 import io.vertx.core.json.JsonObject;
@@ -12,6 +13,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
+    public static final String PUBLISH_ADDRESS_APPOINTMENT_CREATION = "PushNotification#Appointment#creation#userId=";
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
 
@@ -19,6 +21,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public void start() {
         registerEventSubcriber();
         registerCustomerAddressUpdateHandler();
+        registerAppointmentCreatedHandler();
     }
 
 
@@ -32,6 +35,18 @@ public class PushNotificationVerticle extends AbstractVerticle {
                     vertx.eventBus().publish(publishAddress, updateEvent);
                 }, throwable -> logger.error("Error while handling event from " + CustomerService
                         .ADDRESS_EVENT_UPDATE_ADDRESS, throwable));
+    }
+
+    private void registerAppointmentCreatedHandler() {
+        vertx.eventBus().consumer(AppointmentService.APPOINTMENT_EVENT_CREATION).toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .subscribe(updateEvent -> {
+                    String publishAddress = PUBLISH_ADDRESS_APPOINTMENT_CREATION + updateEvent.getJsonObject("id").getString("id");
+                    logger.info("publish event on Address: " + publishAddress);
+                    vertx.eventBus().publish(publishAddress, updateEvent);
+                }, throwable -> logger.error("Error while handling event from " + AppointmentService
+                        .APPOINTMENT_EVENT_CREATION, throwable));
     }
 
     private void registerEventSubcriber() {

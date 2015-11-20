@@ -4,6 +4,7 @@ import com.senacor.reactile.abstractservice.Action;
 import rx.Observable;
 
 public interface AppointmentService {
+    String APPOINTMENT_EVENT_CREATION = "AppointmentService#createAppointment";
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAllAppointments();
