@@ -73,7 +73,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Observable<Appointment> createOrUpdateAppointment(Appointment appointment) {
         return Observable.defer(() -> Observable.just(appointmentDatabase.saveOrUpdate(appointment)))
                 .doOnNext(a -> {
-                    String eventAddress = AppointmentService.EVENT_CREATE_OR_UPDATE_APPOINTMENT;
+                    String eventAddress = AppointmentService.ADDRESS_CREATE_OR_UPDATE_APPOINTMENT;
                     logger.info("publishing on '" + eventAddress + "'...");
                     vertx.eventBus().publish(eventAddress, AppointmentCreatedOrUpdatedEvt.newBuilder()
                             .withId(a.getId())

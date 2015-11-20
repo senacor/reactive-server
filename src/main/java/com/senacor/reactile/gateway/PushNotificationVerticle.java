@@ -1,5 +1,6 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.service.customer.CustomerService;
 import io.vertx.core.json.JsonObject;
@@ -12,6 +13,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
+    public static final String PUBLISH_ADDRESS_APPOINTMENT_CREATE_OR_UPDATE = "PushNotification#AppointmentService#createOrUpdate#customerId=";
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
 
@@ -19,6 +21,19 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public void start() {
         registerEventSubcriber();
         registerCustomerAddressUpdateHandler();
+        registerAppointmentCreationOrUpdateHandler();
+    }
+
+    private void registerAppointmentCreationOrUpdateHandler() {
+        vertx.eventBus().consumer(AppointmentService.ADDRESS_CREATE_OR_UPDATE_APPOINTMENT).toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .subscribe(event -> {
+                    String publishAddress = PUBLISH_ADDRESS_APPOINTMENT_CREATE_OR_UPDATE + event.getJsonObject("appointment").getString("customerId");
+                    logger.info("publish event on Address: " + publishAddress);
+                    vertx.eventBus().publish(publishAddress, event);
+                }, throwable -> logger.error("Error while handling event from " + AppointmentService
+                        .ADDRESS_CREATE_OR_UPDATE_APPOINTMENT, throwable));
     }
 
 

@@ -99,7 +99,7 @@ public class AppointmentServiceTest {
         final LinkedBlockingQueue<AppointmentCreatedOrUpdatedEvt> queue = new LinkedBlockingQueue<>();
 
         // listen to events
-        vertxRule.eventBus().consumer(AppointmentService.EVENT_CREATE_OR_UPDATE_APPOINTMENT)
+        vertxRule.eventBus().consumer(AppointmentService.ADDRESS_CREATE_OR_UPDATE_APPOINTMENT)
                 .toObservable()
                 .map(Message::body)
                 .cast(JsonObject.class)

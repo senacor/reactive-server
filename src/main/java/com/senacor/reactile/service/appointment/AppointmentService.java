@@ -5,7 +5,7 @@ import rx.Observable;
 
 public interface AppointmentService {
 
-    String EVENT_CREATE_OR_UPDATE_APPOINTMENT = "AppointmentService#createOrUpdate";
+    String ADDRESS_CREATE_OR_UPDATE_APPOINTMENT = "AppointmentService#createOrUpdate";
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAllAppointments();
