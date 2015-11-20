@@ -1,5 +1,17 @@
 package com.senacor.reactile.domain;
 
+import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
+import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
+import static com.senacor.reactile.domain.JsonObjectMatchers.empty;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import javax.inject.Inject;
+
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.gateway.InitialDataVerticle;
@@ -10,25 +22,18 @@ import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerService;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rxjava.core.Vertx;
+
 import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.inject.Inject;
-
-import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
-import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.Vertx;
 
 
 public class GatewayVerticleTest {
@@ -58,7 +63,7 @@ public class GatewayVerticleTest {
         JsonObject json = response.asJson();
         logger.info("response json: " + json.encodePrettily());
 
-        assertThat(json, hasProperties("customer", "customer"));
+        assertThat(json, hasProperties("customer", "appointments"));
         JsonObject jsonCustomer = json.getJsonObject("customer");
         assertThat(jsonCustomer, hasProperties("products", "transactions"));
         assertThat(jsonCustomer.getJsonObject("products"), hasProperties("accounts", "creditCards"));
@@ -72,6 +77,8 @@ public class GatewayVerticleTest {
 
         assertThat(creditCards, hasSize(1));
 
+        JsonArray appointments = json.getJsonArray("appointments");
+        assertThat(appointments, is(not(empty())));
     }
 
     @Test
