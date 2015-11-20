@@ -12,6 +12,7 @@ import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.gateway.commands.UserFindCommandFactory;
 import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
@@ -47,6 +48,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
     private final UserFindCommandFactory userFindCommandFactory;
+    private final AppointmentService appointmentService;
     private final AppointmentFindByCustomerCommandFactory appointmentFindByCustomerCommandFactory;
     private final AppointmentFindByBranchCommandFactory appointmentFindByBranchCommandFactory;
     private final BranchesReadCommandFactory branchesReadCommandFactory;
@@ -56,7 +58,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
     @Inject
     public GatewayVerticle(CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory, StartCommandFactory startCommandFactory,
-        UserReadCommandFactory userReadCommandFactory, UserFindCommandFactory userFindCommandFactory,
+        UserReadCommandFactory userReadCommandFactory, UserFindCommandFactory userFindCommandFactory, AppointmentService appointmentService,
         AppointmentFindByCustomerCommandFactory appointmentFindByCustomerCommandFactory,
         AppointmentFindByBranchCommandFactory appointmentFindByBranchCommandFactory, BranchesReadCommandFactory branchesReadCommandFactory,
         BranchService branchService, NewsService newsService) {
@@ -64,6 +66,7 @@ public class GatewayVerticle extends AbstractVerticle {
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
+        this.appointmentService = appointmentService;
         this.appointmentFindByCustomerCommandFactory = appointmentFindByCustomerCommandFactory;
         this.appointmentFindByBranchCommandFactory = appointmentFindByBranchCommandFactory;
         this.branchesReadCommandFactory = branchesReadCommandFactory;
@@ -99,6 +102,7 @@ public class GatewayVerticle extends AbstractVerticle {
 
         router.get("/appointments/customer/:customerId").method(HttpMethod.GET).handler(this::handleGetCustomerAppointments);
         router.get("/appointments/branch/:branchId").method(HttpMethod.GET).handler(this::handleGetBranchAppointments);
+        router.get("/appointments/").method(HttpMethod.GET).handler(this::handleGetAllAppointments);
 
         router.get("/branches/").method(HttpMethod.GET).handler(this::handleGetBranches);
         router.get("/branch/:branchId").method(HttpMethod.GET).handler(this::handleFindBranch);
@@ -162,6 +166,13 @@ public class GatewayVerticle extends AbstractVerticle {
                     .map(customer -> writeResponse(response, customer.toJson())).subscribe(res -> routingContext.next());
             }
         }
+    }
+
+    private void handleGetAllAppointments(RoutingContext routingContext) {
+        HttpServerResponse resp = routingContext.response();
+
+        appointmentService.getAllAppointments().map(appointments -> writeResponse(resp, new JsonObject().put("appointments", appointments.toJson())))
+            .subscribe(res -> routingContext.next());
     }
 
     private void handleGetCustomerAppointments(RoutingContext routingContext) {
