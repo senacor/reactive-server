@@ -12,6 +12,12 @@ import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.senacor.reactile.abstractservice.ObserverProxy;
+import com.senacor.reactile.gateway.commands.AppointmentFindByBranchCommand;
+import com.senacor.reactile.gateway.commands.AppointmentFindByBranchCommandFactory;
+import com.senacor.reactile.gateway.commands.AppointmentFindByCustomerCommand;
+import com.senacor.reactile.gateway.commands.AppointmentFindByCustomerCommandFactory;
+import com.senacor.reactile.gateway.commands.BranchesReadCommand;
+import com.senacor.reactile.gateway.commands.BranchesReadCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommand;
@@ -89,6 +95,15 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(UserFindCommand.class, UserFindCommand.class)
                     .build(UserFindCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(AppointmentFindByCustomerCommand.class, AppointmentFindByCustomerCommand.class)
+                    .build(AppointmentFindByCustomerCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                .implement(AppointmentFindByBranchCommand.class, AppointmentFindByBranchCommand.class)
+                .build(AppointmentFindByBranchCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                .implement(BranchesReadCommand.class, BranchesReadCommand.class)
+                .build(BranchesReadCommandFactory.class));
 
             HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
             requestInjection(hystrixCommandInterceptor);
