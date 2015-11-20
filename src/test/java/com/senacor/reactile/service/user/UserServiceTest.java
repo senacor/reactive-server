@@ -66,6 +66,22 @@ public class UserServiceTest {
     }
 
     @Test
+    public void thatUsersCanBeFoundByBranch() {
+        mongoInitializer.writeBlocking(new User(new UserId("1"), "User of Branch 1", "Find", "1"));
+        mongoInitializer.writeBlocking(new User(new UserId("2"), "User of Branch 2", "Find", "2"));
+        mongoInitializer.writeBlocking(new User(new UserId("3"), "User of Branch 1", "Find", "1"));
+
+        ArrayList<User> collect = service.findUser(new JsonObject().put("branchId", "1"))
+                .flatMap(jsonizableList -> Observable.from(jsonizableList.toList()))
+                .doOnNext(System.out::println)
+                .map(jsonObject1 -> User.fromJson(jsonObject1))
+                .collect(() -> new ArrayList<User>(), (o, user) -> o.add(user))
+                .toBlocking().first();
+        assertFalse(collect.isEmpty());
+        assertEquals(2, collect.size());
+    }
+
+    @Test
     public void thatAllUsersCanBeFound() {
         mongoInitializer.writeBlocking(new User(new UserId("Allomann"), "Michael", "Omann", "1"), new User(new UserId("swalter"), "Simon", "Walter", "2"));
         ArrayList<User> collect = service.findUser(new JsonObject())
