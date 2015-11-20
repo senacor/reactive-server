@@ -1,6 +1,5 @@
 package com.senacor.reactile.service.appointment;
 
-import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -8,7 +7,6 @@ import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -88,7 +86,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<Appointment> deleteAppointment(String appointmentId) {
-        return Observable.defer(
-                () -> Observable.just(appointmentDatabase.deleteById(appointmentId)));
+        return Observable.defer(() -> Observable.just(appointmentDatabase.deleteById(appointmentId)));
     }
 }

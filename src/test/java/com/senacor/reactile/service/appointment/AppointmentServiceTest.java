@@ -4,9 +4,6 @@ import com.google.common.base.Throwables;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.mongo.MongoInitializer;
-import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
-import com.senacor.reactile.service.customer.CustomerService;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -15,7 +12,6 @@ import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import rx.Observable;
 
 import javax.inject.Inject;
 
@@ -24,7 +20,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.senacor.reactile.domain.IdentityMatchers.hasId;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -45,7 +40,7 @@ public class AppointmentServiceTest {
     public void testGetAllAppointments() throws Exception {
         AppointmentList appointments = appointmentService.getAllAppointments().toBlocking().first();
         assertThat(appointments, is(notNullValue()));
-        List<String> idList = appointments.getAppointmentList().stream().map(a -> a.getId()).collect(Collectors.toList());
+        List<String> idList = appointments.getAppointmentList().stream().map(Appointment::getId).collect(Collectors.toList());
         assertThat(idList, Matchers.hasItems("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"));
     }
 

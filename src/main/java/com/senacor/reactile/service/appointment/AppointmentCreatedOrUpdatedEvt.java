@@ -3,9 +3,6 @@ package com.senacor.reactile.service.appointment;
 import com.google.common.base.MoreObjects;
 import com.senacor.reactile.event.Event;
 import com.senacor.reactile.json.Jsonizable;
-import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.service.customer.CustomerId;
-import com.senacor.reactile.service.user.UserId;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
