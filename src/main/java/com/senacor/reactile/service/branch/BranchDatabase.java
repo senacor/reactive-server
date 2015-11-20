@@ -1,14 +1,18 @@
 package com.senacor.reactile.service.branch;
 
+import static org.apache.commons.lang3.Validate.notNull;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.senacor.reactile.magic.Throttler;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Country;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.apache.commons.lang3.Validate.notNull;
 
 /**
  * Represents a Database with some service methods to query Branches
@@ -38,6 +42,8 @@ public class BranchDatabase {
         saveOrUpdate(Branch.newBuilder("9").withName("Dresden").withAddress(new Address(null, "Pech Str.", "12375", "62", "Dresden", new Country("Germany", "DE"), 1)).build());
         saveOrUpdate(Branch.newBuilder("10").withName("Hof").withAddress(new Address(null, "Mond Str.", "12385", "63", "Hof", new Country("Germany", "DE"), 1)).build());
 //        delayEnabled = true;
+        
+       
     }
 
     public Branch saveOrUpdate(final Branch branch) {

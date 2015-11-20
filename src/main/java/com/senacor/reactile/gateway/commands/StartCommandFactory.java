@@ -1,5 +1,6 @@
 package com.senacor.reactile.gateway.commands;
 
+import com.senacor.reactile.service.branch.BranchId;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
 
@@ -14,5 +15,5 @@ import com.senacor.reactile.service.user.UserId;
  */
 public interface StartCommandFactory {
 
-    StartCommand create(UserId userId, CustomerId customerId);
+    StartCommand create(UserId userId, CustomerId customerId, BranchId branchId);
 }

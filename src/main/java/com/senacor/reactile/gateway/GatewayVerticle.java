@@ -1,9 +1,19 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.gateway.commands.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.StartCommandFactory;
+import com.senacor.reactile.gateway.commands.UserFindCommandFactory;
+import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.service.branch.BranchId;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
+
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -24,10 +34,6 @@ import io.vertx.rxjava.ext.apex.handler.StaticHandler;
 import io.vertx.rxjava.ext.apex.handler.TimeoutHandler;
 import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
 import rx.Observable;
-
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GatewayVerticle extends AbstractVerticle {
 
@@ -73,6 +79,7 @@ public class GatewayVerticle extends AbstractVerticle {
         router.route("/customer/:customerId/addresses")
                 .method(HttpMethod.POST).method(HttpMethod.PUT)
                 .handler(this::handleUpdateAddress);
+        
         router.get("/start").handler(this::handleStart);
 
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
@@ -153,8 +160,9 @@ public class GatewayVerticle extends AbstractVerticle {
     private Observable<HttpServerResponse> serveRequest(HttpServerResponse response, MultiMap params) {
         UserId userId = new UserId(getParam(params, "user"));
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
+        BranchId branchId = new BranchId(getParam(params, "branchId"));
 
-        return startCommandFactory.create(userId, customerId).toObservable()
+        return startCommandFactory.create(userId, customerId, branchId).toObservable()
                 .map(json -> writeResponse(response, json));
     }
 

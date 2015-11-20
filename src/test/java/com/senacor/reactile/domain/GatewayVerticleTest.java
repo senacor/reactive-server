@@ -1,34 +1,41 @@
 package com.senacor.reactile.domain;
 
-import com.senacor.reactile.Services;
-import com.senacor.reactile.VertxRule;
-import com.senacor.reactile.gateway.InitialDataVerticle;
-import com.senacor.reactile.guice.GuiceRule;
-import com.senacor.reactile.http.HttpResponse;
-import com.senacor.reactile.http.HttpTestClient;
-import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.service.customer.Customer;
-import com.senacor.reactile.service.customer.CustomerFixtures;
-import com.senacor.reactile.service.customer.CustomerService;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.rxjava.core.Vertx;
-import org.hamcrest.Matchers;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
-import javax.inject.Inject;
-
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import javax.inject.Inject;
+
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+
+import com.senacor.reactile.Services;
+import com.senacor.reactile.VertxRule;
+import com.senacor.reactile.gateway.InitialDataVerticle;
+import com.senacor.reactile.guice.GuiceRule;
+import com.senacor.reactile.http.HttpResponse;
+import com.senacor.reactile.http.HttpTestClient;
+import com.senacor.reactile.mongo.MongoInitializer;
+import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchServiceImpl;
+import com.senacor.reactile.service.customer.Address;
+import com.senacor.reactile.service.customer.Country;
+import com.senacor.reactile.service.customer.Customer;
+import com.senacor.reactile.service.customer.CustomerFixtures;
+import com.senacor.reactile.service.customer.CustomerService;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.rxjava.core.Vertx;
 
 
 public class GatewayVerticleTest {
@@ -45,10 +52,18 @@ public class GatewayVerticleTest {
     private CustomerService service;
 
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
+    
+	@Rule
+	public final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), BranchServiceImpl.COLLECTION);
+
+	@Before
+	public void init() {		
+		initializer.writeBlocking(Branch.newBuilder("1").withName("Bonn").withAddress(new Address("Bla", "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
+	}
 
     @Test
     public void thatRequestsAreHandled() throws Exception {
-        HttpResponse response = httpClient.get("/start?user=momann&customerId=cust-100000");
+        HttpResponse response = httpClient.get("/start?user=momann&customerId=cust-100000&branchId=1");
         assertThat(response, hasStatus(200));
         logger.info("header: " + response.headersAsString());
         assertThat(response, hasHeader("content-length"));

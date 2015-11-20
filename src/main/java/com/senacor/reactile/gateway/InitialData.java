@@ -1,6 +1,16 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.service.account.*;
+import java.util.Random;
+
+import javax.inject.Inject;
+
+import com.senacor.reactile.service.account.Account;
+import com.senacor.reactile.service.account.AccountFixtures;
+import com.senacor.reactile.service.account.AccountService;
+import com.senacor.reactile.service.account.Product;
+import com.senacor.reactile.service.account.Transaction;
+import com.senacor.reactile.service.account.TransactionFixtures;
+import com.senacor.reactile.service.account.TransactionService;
 import com.senacor.reactile.service.branch.BranchDatabase;
 import com.senacor.reactile.service.creditcard.CreditCard;
 import com.senacor.reactile.service.creditcard.CreditCardFixtures;
@@ -12,11 +22,9 @@ import com.senacor.reactile.service.user.User;
 import com.senacor.reactile.service.user.UserFixtures;
 import com.senacor.reactile.service.user.UserId;
 import com.senacor.reactile.service.user.UserService;
+
 import rx.Observable;
 import rx.Scheduler;
-
-import javax.inject.Inject;
-import java.util.Random;
 
 public class InitialData {
 
@@ -54,8 +62,9 @@ public class InitialData {
 
     }
 
-    Observable<UserId> initializeUser(Observable<UserId> userIDs){
-        return userIDs.flatMap(userId -> createUser(userId, branchDatabase.randomExistingID()))
+    Observable<UserId> initializeUser(Observable<UserId> userIDs){    	
+    	
+        return userIDs.flatMap(userId -> createUser(userId,"1"))
                 .map(user -> user.getId());
 
     }
