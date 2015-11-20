@@ -3,6 +3,8 @@ package com.senacor.reactile.gateway;
 import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.service.customer.CustomerService;
+import com.senacor.reactile.service.newsticker.NewsChangedEvt;
+
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -14,6 +16,9 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public static final String PUBLISH_ADDRESS = "EventPump";
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
     public static final String PUBLISH_ADDRESS_CUSTOMER_APPOINTMENT_UPDATE = "PushNotification#Customer#updateAppointment#customerId=";
+    
+    public static final String PUBLISH_ADDRESS_NEWS_UPDATE = "PushNotification#News";
+    
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
 
@@ -22,6 +27,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
         registerEventSubcriber();
         registerCustomerAddressUpdateHandler();
         registerCustomerAppointmentHandler();
+        registerEventNewsHandler();
     }
 
     private void registerCustomerAppointmentHandler() {
@@ -52,6 +58,19 @@ public class PushNotificationVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(PUBLISH_ADDRESS).toObservable()
                 .map(message -> (CustomerAddressChangedEvt) message.body())
                 .subscribe(eventWithUser -> logger.info("Received event " + eventWithUser));
+    }
+    
+    private void registerEventNewsHandler() {
+        vertx.eventBus().consumer(PUBLISH_ADDRESS_NEWS_UPDATE).toObservable()
+                .map(message -> (NewsChangedEvt) message.body())
+                .subscribe(eventWithUser -> { logger.info("Received event " + eventWithUser);
+                
+                String publishAddress = PUBLISH_ADDRESS_NEWS_UPDATE;
+                logger.info("publish event on Address: " + publishAddress);
+                vertx.eventBus().publish(publishAddress, eventWithUser);
+                
+                
+                });
     }
 
 }

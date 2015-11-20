@@ -1,7 +1,9 @@
 package com.senacor.reactile.service.newsticker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -33,8 +35,22 @@ public class NewsServiceImpl implements NewsService{
                 .doOnError(throwable -> {
                     logger.error("error" + throwable.getMessage());
                 });
-        
-        o.subscribe(next -> {System.out.println("############################## queue:" + newFifQueue);});
+
+		o.subscribe(next -> {
+			System.out.println("############################## queue:" + newFifQueue);
+
+			String eventAddress = NewsService.ADDRESS;
+			logger.info("publishing on '" + eventAddress + "'...");
+
+			vertx.eventBus()
+					.publish(eventAddress,
+							NewsChangedEvt.newBuilder().withId(UUID.randomUUID().toString())
+									.withNewsCollection(
+											new NewsCollection(Arrays.asList(newFifQueue.toArray(new News[10]))))
+					.build().toJson());
+			logger.info("publishing on '" + eventAddress + "' done");
+
+		});
         
     }
 
