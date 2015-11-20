@@ -88,6 +88,10 @@ public class GatewayVerticleTest {
         JsonObject json = response.asJson();
         logger.info("response json: " + json.encodePrettily());
 
+        assertThat(json, hasProperties("id", "address"));
+        JsonObject address = json.getJsonObject("address");
+        assertThat(address, hasProperties("street", "zipCode"));
+
     }
 
     @Test

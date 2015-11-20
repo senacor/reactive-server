@@ -1,7 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.*;
-import com.senacor.reactile.service.branch.Branch;
+import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
@@ -40,16 +40,20 @@ public class GatewayVerticle extends AbstractVerticle {
     private final UserFindCommandFactory userFindCommandFactory;
     private final StartCommandFactory startCommandFactory;
 
+    private final BranchService branchService;
+
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
-            UserFindCommandFactory userFindCommandFactory) {
+            UserFindCommandFactory userFindCommandFactory,
+            BranchService branchService) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
+        this.branchService = branchService;
     }
 
     @Override
@@ -149,11 +153,15 @@ public class GatewayVerticle extends AbstractVerticle {
 
 
     private void handleGetBranchWithUsers(RoutingContext routingContext) {
-        //routingContext.request().params().get("branchId");
-
+        String branchId = routingContext.request().params().get("branchId");
         HttpServerResponse resp = routingContext.response();
-        writeResponse(resp, $());
-        routingContext.next();
+
+        branchService.getBranch(branchId)
+                .map(branch -> branch.toJson())
+                .map(json -> writeResponse(resp, json))
+                .subscribe(
+                        response -> routingContext.next(),
+                        Throwable::printStackTrace);
     }
 
 
