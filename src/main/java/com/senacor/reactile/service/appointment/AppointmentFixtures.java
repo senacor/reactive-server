@@ -29,9 +29,9 @@ public final class AppointmentFixtures {
                 .build();
     }
 
-    public static Appointment newAppointmentForCustomer(String customerId) {
+    public static Appointment newAppointmentForCustomer(String customerId, String appointId) {
         return randomAppointment()
-                .withId("08-cust-15-app-1")
+                .withId(appointId)
                 .withCustomerId(customerId)
                 .withBranchId("08-branch-1")
                 .withNote("08-note-1")

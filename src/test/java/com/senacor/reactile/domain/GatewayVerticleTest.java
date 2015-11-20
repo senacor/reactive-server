@@ -9,9 +9,7 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 
-import com.senacor.reactile.service.appointment.Appointment;
-import com.senacor.reactile.service.appointment.AppointmentFixtures;
-import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
+import com.senacor.reactile.service.appointment.*;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -54,6 +52,9 @@ public class GatewayVerticleTest {
     @Inject
     private CustomerService service;
 
+    @Inject
+    private AppointmentService appointmentService;
+
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
     
 	@Rule
@@ -62,8 +63,9 @@ public class GatewayVerticleTest {
 
 	@Before
 	public void init() {
+        appointmentService.deleteAppointment(new AppointmentId("appoint-cust-100000"));
         initializerBranch.writeBlocking(Branch.newBuilder("1").withName("Bonn").withAddress(new Address("Bla", "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
-        initializerAppointment.writeBlocking(AppointmentFixtures.newAppointmentForCustomer("cust-100000"));
+        initializerAppointment.writeBlocking(AppointmentFixtures.newAppointmentForCustomer("cust-100000", "appoint-cust-100000"));
 	}
 
     @Test
