@@ -1,6 +1,7 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.*;
+import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
@@ -23,11 +24,12 @@ import io.vertx.rxjava.ext.apex.handler.ResponseTimeHandler;
 import io.vertx.rxjava.ext.apex.handler.StaticHandler;
 import io.vertx.rxjava.ext.apex.handler.TimeoutHandler;
 import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
-import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.senacor.reactile.json.JsonObjects.$;
 
 public class GatewayVerticle extends AbstractVerticle {
 
@@ -73,11 +75,14 @@ public class GatewayVerticle extends AbstractVerticle {
         router.route("/customer/:customerId/addresses")
                 .method(HttpMethod.POST).method(HttpMethod.PUT)
                 .handler(this::handleUpdateAddress);
+
         router.get("/start").handler(this::handleStart);
 
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
         router.get("/users/").method(HttpMethod.GET).handler(this::handleFindUser);
+
+        router.get("/branchWithUsers").handler(this::handleGetBranchWithUsers);
 
 
         // common handler:
@@ -143,19 +148,25 @@ public class GatewayVerticle extends AbstractVerticle {
     }
 
 
-    private void handleStart(RoutingContext routingContext) {
-        serveRequest(routingContext.response(), routingContext.request().params())
-                .subscribe(
-                        response -> routingContext.next(),
-                        Throwable::printStackTrace);
+    private void handleGetBranchWithUsers(RoutingContext routingContext) {
+        //routingContext.request().params().get("branchId");
+
+        HttpServerResponse resp = routingContext.response();
+        writeResponse(resp, $());
+        routingContext.next();
     }
 
-    private Observable<HttpServerResponse> serveRequest(HttpServerResponse response, MultiMap params) {
+
+    private void handleStart(RoutingContext routingContext) {
+        MultiMap params = routingContext.request().params();
         UserId userId = new UserId(getParam(params, "user"));
         CustomerId customerId = new CustomerId(getParam(params, "customerId"));
 
-        return startCommandFactory.create(userId, customerId).toObservable()
-                .map(json -> writeResponse(response, json));
+        startCommandFactory.create(userId, customerId).toObservable()
+                .map(json -> writeResponse(routingContext.response(), json))
+                .subscribe(
+                        response -> routingContext.next(),
+                        Throwable::printStackTrace);
     }
 
     private void contentTypeJson(RoutingContext context) {

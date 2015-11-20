@@ -77,6 +77,20 @@ public class GatewayVerticleTest {
     }
 
     @Test
+    public void thatGetBranchWithUsers() throws Exception {
+        HttpResponse response = httpClient.get("/branchWithUsers?branchId=1");
+        assertThat(response, hasStatus(200));
+        logger.info("header: " + response.headersAsString());
+        assertThat(response, hasHeader("content-length"));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("x-response-time"));
+
+        JsonObject json = response.asJson();
+        logger.info("response json: " + json.encodePrettily());
+
+    }
+
+    @Test
     public void testUpdateCustomerAddress() throws Exception {
         // create customer
         Customer customer = CustomerFixtures.randomCustomer();
