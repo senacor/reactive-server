@@ -27,6 +27,9 @@ import com.senacor.reactile.service.creditcard.CreditCardService;
 import com.senacor.reactile.service.creditcard.CreditCardServiceImpl;
 import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.customer.CustomerServiceImpl;
+import com.senacor.reactile.service.newsticker.NewsService;
+import com.senacor.reactile.service.newsticker.NewsServiceImpl;
+import com.senacor.reactile.service.newsticker.NewsTickerStream;
 import com.senacor.reactile.service.user.UserService;
 import com.senacor.reactile.service.user.UserServiceImpl;
 import io.vertx.core.Vertx;
@@ -61,8 +64,10 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             bind(CustomerService.class).annotatedWith(Impl.class).to(CustomerServiceImpl.class);
             bind(BranchService.class).annotatedWith(Impl.class).to(BranchServiceImpl.class);
             bind(AppointmentService.class).annotatedWith(Impl.class).to(AppointmentServiceImpl.class);
+            bind(NewsService.class).annotatedWith(Impl.class).to(NewsServiceImpl.class);
             bind(AppointmentDatabase.class).in(Scopes.SINGLETON);
             bind(BranchDatabase.class).in(Scopes.SINGLETON);
+            bind(NewsTickerStream.class).in(Scopes.SINGLETON);
             bind(MetricsBridge.class);
 
             // Install  HystrixComand Factories
@@ -127,6 +132,14 @@ public class AppModuleProvider implements BootstrapModuleProvider {
                     AppointmentService.class.getClassLoader(),
                     new Class[]{AppointmentService.class},
                     new ObserverProxy(vertx, "AppointmentVerticle"));
+        }
+
+        @Provides
+        NewsService provideNewsService(Vertx vertx) {
+            return (NewsService) Proxy.newProxyInstance(
+                    NewsService.class.getClassLoader(),
+                    new Class[]{NewsService.class},
+                    new ObserverProxy(vertx, "NewsVerticle"));
         }
 
         @Provides

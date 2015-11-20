@@ -55,7 +55,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         return Observable.<Appointment>create(subscriber -> {
             try {
                 List<Appointment> byBranchId = appointmentDatabase.findByBranchId(branchId);
-                byBranchId.stream().filter(a -> {
+                byBranchId.stream().parallel().filter(a -> {
                     ZonedDateTime start = a.getStart();
                     ZonedDateTime end = a.getEnd();
                     ZonedDateTime current = new Date(date).toInstant().atZone(ZoneId.systemDefault());
