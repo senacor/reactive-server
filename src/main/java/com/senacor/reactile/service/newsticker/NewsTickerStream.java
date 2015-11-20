@@ -33,9 +33,13 @@ public class NewsTickerStream {
 
     public Observable<News> getNewsObservable() {
         return Observable.interval(100, TimeUnit.MILLISECONDS)
-                .map(count -> News.newBuilder()
-                        .withTitle(TITLES.get(RANDOM.nextInt(TITLES.size())))
-                        .withNews(RandomStringUtils.randomAlphabetic(RANDOM.nextInt(1000)))
-                        .build());
+                .map(count -> {
+                    final News news = News.newBuilder()
+                            .withTitle(TITLES.get(RANDOM.nextInt(TITLES.size())))
+                            .withNews(RandomStringUtils.randomAlphabetic(RANDOM.nextInt(1000)))
+                            .build();
+                    System.out.println("emitted news = " + news.getTitle());
+                    return news;
+                });
     }
 }
