@@ -7,8 +7,11 @@ import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import java.time.ZonedDateTime;
 
 import javax.inject.Inject;
 
@@ -18,6 +21,7 @@ import com.senacor.reactile.gateway.InitialDataVerticle;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
+import com.senacor.reactile.service.appointment.Appointment;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerFixtures;
@@ -94,6 +98,28 @@ public class GatewayVerticleTest {
 
         // update address via HTTP endpoint
         updateAddress(customer, newAddress);
+    }
+
+    @Test
+    public void testCreateAppointment() throws Exception {
+        Appointment appointment = Appointment.newBuilder()
+                .withCustomerId("cust-100000")
+                .withBranchId("42")
+                .withName("appointment")
+                .withStart(ZonedDateTime.now())
+                .withEnd(ZonedDateTime.now().plusHours(2)).build();
+
+        HttpResponse response = httpClient.post("/users/momann/appointments", appointment);
+        logger.info("header: " + response.headersAsString());
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("content-length"));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("x-response-time"));
+
+        Appointment createdAppointment = Appointment.fromJson(response.asJson());
+
+        assertThat(createdAppointment.getId(), notNullValue());
+        assertThat(createdAppointment.getUserId(), is("momann"));
     }
 
     @Test
