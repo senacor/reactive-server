@@ -1,6 +1,12 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.gateway.commands.*;
+import com.senacor.reactile.gateway.commands.BranchReadCommand;
+import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.StartCommandFactory;
+import com.senacor.reactile.gateway.commands.UserFindCommandFactory;
+import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.json.JsonObjects;
+import com.senacor.reactile.service.branch.BranchList;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
@@ -29,6 +35,8 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.senacor.reactile.json.JsonObjects.$;
+
 public class GatewayVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
@@ -37,17 +45,20 @@ public class GatewayVerticle extends AbstractVerticle {
     private final UserReadCommandFactory userReadCommandFactory;
     private final UserFindCommandFactory userFindCommandFactory;
     private final StartCommandFactory startCommandFactory;
+    private final BranchReadCommand branchReadCommand;
 
     @Inject
     public GatewayVerticle(
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
-            UserFindCommandFactory userFindCommandFactory) {
+            UserFindCommandFactory userFindCommandFactory,
+            BranchReadCommand branchReadCommand) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
+        this.branchReadCommand = branchReadCommand;
     }
 
     @Override
@@ -75,6 +86,8 @@ public class GatewayVerticle extends AbstractVerticle {
                 .handler(this::handleUpdateAddress);
         router.get("/start").handler(this::handleStart);
 
+        router.get("/branches/").method(HttpMethod.GET).handler(this::handleBranches);
+
         router.get("/users/:userId").method(HttpMethod.GET).handler(this::handleGetUser);
 
         router.get("/users/").method(HttpMethod.GET).handler(this::handleFindUser);
@@ -91,6 +104,17 @@ public class GatewayVerticle extends AbstractVerticle {
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start", failure));
+    }
+
+    private void handleBranches(RoutingContext routingContext) {
+        HttpServerResponse resp = routingContext.response();
+        branchReadCommand.toObservable()
+                .map(BranchList::getBranches)
+                .map(JsonObjects::toJsonArray)
+                .map(ja -> writeResponse(resp,$().put("branches",ja)))
+                .subscribe(res -> routingContext.next());
+//        branchReadCommand.toObservable()
+//                .map(branchList -> writeResponse(resp, $().put("branches", toJsonArray(branchList.getBranches()))));
     }
 
     private void handleFindUser(RoutingContext routingContext) {

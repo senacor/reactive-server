@@ -28,6 +28,8 @@ import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -46,6 +48,14 @@ public class GatewayVerticleTest {
     private CustomerService service;
 
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
+
+    @Test
+    public void thatBranchesCanBeRetrieved() throws Exception {
+        HttpResponse response = httpClient.get("/branches");
+        assertThat(response, hasStatus(200));
+        assertThat(response.getBody(), not(isEmptyOrNullString()));
+
+    }
 
     @Test
     public void thatRequestsAreHandled() throws Exception {
