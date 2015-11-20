@@ -1,7 +1,7 @@
 package com.senacor.reactile.service.newsticker;
 
 import com.google.inject.Inject;
-import org.apache.commons.collections.buffer.BoundedFifoBuffer;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class NewsServiceImpl implements NewsService {
 
     private final NewsTickerStream newsTickerStream;
 
-    private BoundedFifoBuffer latestNewsQueue = new BoundedFifoBuffer(20);
+    private CircularFifoBuffer latestNewsQueue = new CircularFifoBuffer(20);
 
 
     @Inject
