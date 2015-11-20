@@ -6,6 +6,7 @@ import com.senacor.reactile.service.user.UserId;
 import rx.Observable;
 
 public interface AppointmentService {
+    String APPOINTMENT_EVENT_UPDATE_ADDRESS = "CustomerService#updateAppointment";
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAllAppointments();

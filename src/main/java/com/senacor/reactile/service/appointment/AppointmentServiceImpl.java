@@ -1,7 +1,9 @@
 package com.senacor.reactile.service.appointment;
 
 import com.senacor.reactile.json.JsonizableList;
+import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.customer.CustomerService;
 import com.senacor.reactile.service.user.UserId;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -25,9 +27,8 @@ import static java.util.stream.Collectors.toList;
  * To change this template use File | Settings | File Templates.
  */
 public class AppointmentServiceImpl implements AppointmentService {
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentServiceImpl.class);
-
     public static final String COLLECTION = "appointments";
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentServiceImpl.class);
     private final MongoService mongoService;
     private final Vertx vertx;
 
@@ -60,7 +61,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             return new AppointmentList(transactions);
         };
     }
-
 
     @Override
     public Observable<AppointmentList> getAppointmentsByBranch(String branchId) {
@@ -99,7 +99,18 @@ public class AppointmentServiceImpl implements AppointmentService {
                         return mongoService.insertObservable(COLLECTION, jasonDoc)
                                 .flatMap(id -> Observable.just(appointment));
                     }
-                }).doOnError(throwable -> logger.error("createOrUpdate Appointment error", throwable));
+                })
+                .doOnNext(customerAppointment -> {
+                    // 4. publish 'updateAppointment' Event
+                    String eventAddress = AppointmentService.APPOINTMENT_EVENT_UPDATE_ADDRESS;
+                    logger.info("publishing on '" + eventAddress + "'...");
+                    vertx.eventBus().publish(eventAddress, CustomerAppointmentChangedEvt.newBuilder()
+                            .withCustomerId(customerAppointment.getCustomerId())
+                            .withAppointment(customerAppointment)
+                            .build()
+                            .toJson());
+                    logger.info("publishing on '" + eventAddress + "' done");
+                }).doOnError(throwable -> logger.error("createOrUpdate Appointment error " +  throwable.getMessage()));
 
     }
 
@@ -107,7 +118,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Observable<Appointment> deleteAppointment(AppointmentId appointmentId) {
         Observable<Appointment> deletedObservable = this.getAppointmentById(appointmentId);
         JsonObject query = new JsonObject().put("_id", appointmentId.getId());
-        mongoService.removeObservable(COLLECTION,query);
+        mongoService.removeObservable(COLLECTION, query);
         return deletedObservable;
     }
 }
