@@ -21,22 +21,25 @@ public class NewsServiceImpl implements NewsService{
     private final CircularFifoQueue<News> newFifQueue;
 
     @Inject
-    public NewsServiceImpl(NewsTickerStream newsTickerStream, Vertx vertx) {
-        this.newsTickerStream = newsTickerStream;
+    public NewsServiceImpl(Vertx vertx) {
+        this.newsTickerStream = new NewsTickerStream();
         this.vertx = vertx;
         this.newFifQueue = new CircularFifoQueue<News>(10);
 
-        newsTickerStream.getNewsObservable().subscribeOn(Schedulers.io())
+        Observable<News> o= newsTickerStream.getNewsObservable().subscribeOn(Schedulers.io())
                 .doOnEach(news -> {
                     newFifQueue.add((News)news.getValue());
                 })
                 .doOnError(throwable -> {
                     logger.error("error" + throwable.getMessage());
                 });
+        
+        o.subscribe(next -> {System.out.println("############################## queue:" + newFifQueue);});
+        
     }
 
     @Override
-	public Observable<NewsCollection> getLatestNews(int max) {
+	public Observable<NewsCollection> getLatestNews(Integer max) {
         List<News> listOfNews = new ArrayList<>();
         while ((listOfNews.size() < max) && (!newFifQueue.isEmpty())) {
             listOfNews.add(newFifQueue.peek());
