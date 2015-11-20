@@ -29,6 +29,14 @@ public final class AppointmentFixtures {
                 .build();
     }
 
+    public static Appointment newAppointmentForCustomer(String customerId) {
+        return randomAppointment()
+                .withId("08-cust-15-app-1")
+                .withCustomerId(customerId)
+                .withBranchId("08-branch-1")
+                .withNote("08-note-1")
+                .build();
+    }
 
     public static Appointment newAppointment2() {
         return randomAppointment()

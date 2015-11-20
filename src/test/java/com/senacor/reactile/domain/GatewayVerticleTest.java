@@ -9,6 +9,9 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 
+import com.senacor.reactile.service.appointment.Appointment;
+import com.senacor.reactile.service.appointment.AppointmentFixtures;
+import com.senacor.reactile.service.appointment.AppointmentServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -54,11 +57,13 @@ public class GatewayVerticleTest {
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
     
 	@Rule
-	public final MongoInitializer initializer = new MongoInitializer(vertxRule.vertx(), BranchServiceImpl.COLLECTION);
+	public final MongoInitializer initializerBranch = new MongoInitializer(vertxRule.vertx(), BranchServiceImpl.COLLECTION);
+	public final MongoInitializer initializerAppointment = new MongoInitializer(vertxRule.vertx(), AppointmentServiceImpl.COLLECTION);
 
 	@Before
-	public void init() {		
-		initializer.writeBlocking(Branch.newBuilder("1").withName("Bonn").withAddress(new Address("Bla", "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
+	public void init() {
+        initializerBranch.writeBlocking(Branch.newBuilder("1").withName("Bonn").withAddress(new Address("Bla", "Foo Str.", "12345", "6", "Bonn", new Country("Germany", "DE"), 1)).build());
+        initializerAppointment.writeBlocking(AppointmentFixtures.newAppointmentForCustomer("cust-100000"));
 	}
 
     @Test

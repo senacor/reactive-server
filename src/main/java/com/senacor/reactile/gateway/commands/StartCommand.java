@@ -103,7 +103,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                     .map(JsonObjects::toJsonArray);
             Observable<JsonArray> appointmentObservable = appointmentService.getAppointmentsByCustomer(
                     customerId).map(AppointmentList::getAppointmentList).map(JsonObjects::toJsonArray);
-            //Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
+            // Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
 
 
             return zip(customerObservable, accountObservable, creditCardObservable,
