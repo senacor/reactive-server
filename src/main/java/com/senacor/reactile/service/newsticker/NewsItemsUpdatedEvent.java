@@ -41,7 +41,7 @@ public class NewsItemsUpdatedEvent implements Event<String>, Jsonizable {
     public JsonObject toJson() {
         return new JsonObject() //
             .put("title", title) //
-            .put("news", newsItem == null ? null : newsItem.toJson());
+            .put("news", newsItem == null ? null : newsItem.getNews());
     }
 
     public static NewsItemsUpdatedEvent fromJson(JsonObject json) {

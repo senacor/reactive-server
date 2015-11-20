@@ -55,6 +55,10 @@
     eb.registerHandler("PushNotification#Appointment#delete#appointmentId=42", function(msg) {
       var str = "<code>" + JSON.stringify(msg) + "</code><br>";
       $('#appointmentDelete').prepend(str);
+    });
+    eb.registerHandler("PushNotification#News#newItems", function(msg) {
+      var str = "<code>" + JSON.stringify(msg) + "</code><br><br>";
+      $('#status').prepend(str);
     })
   }
 

@@ -2,6 +2,7 @@ package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.customer.CustomerService;
+import com.senacor.reactile.service.newsticker.NewsService;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -14,6 +15,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
     public static final String PUBLISH_ADDRESS_APPOINTMENT_UPDATE = "PushNotification#Appointment#update#appointmentId=";
     public static final String PUBLISH_ADDRESS_APPOINTMENT_DELETE = "PushNotification#Appointment#delete#appointmentId=";
+    public static final String PUBLISH_ADDRESS_NEWS_UPDATED = "PushNotification#News#newItems";
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
     @Override
@@ -21,6 +23,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
         registerCustomerAddressUpdateHandler();
         registerAppointmentUpdateHandler();
         registerAppointmentDeleteHandler();
+        registerNewsUpdatedHandler();
     }
 
     private void registerCustomerAddressUpdateHandler() {
@@ -50,4 +53,12 @@ public class PushNotificationVerticle extends AbstractVerticle {
             }, throwable -> logger.error("Error while handling event from " + AppointmentService.ADDRESS_EVENT_DELETE_APPOINTMENT, throwable));
     }
 
+    private void registerNewsUpdatedHandler() {
+        vertx.eventBus().consumer(NewsService.PUBLISH_ADDRESS_NEWS).toObservable().map(Message::body).cast(JsonObject.class)
+            .subscribe(updateEvent -> {
+                String publishAddress = PUBLISH_ADDRESS_NEWS_UPDATED;
+                logger.info("publish event on News: " + publishAddress);
+                vertx.eventBus().publish(publishAddress, updateEvent);
+            }, throwable -> logger.error("Error while handling event from " + NewsService.PUBLISH_ADDRESS_NEWS, throwable));
+    }
 }

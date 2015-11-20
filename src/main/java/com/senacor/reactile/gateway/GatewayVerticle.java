@@ -88,7 +88,8 @@ public class GatewayVerticle extends AbstractVerticle {
         BridgeOptions bridgeOptions = new BridgeOptions()
             .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"))
             .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_APPOINTMENT_UPDATE + ".*"))
-            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_APPOINTMENT_DELETE + ".*"));
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_APPOINTMENT_DELETE + ".*"))
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_NEWS_UPDATED));
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
 
         // common handler:

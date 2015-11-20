@@ -4,7 +4,7 @@ import com.senacor.reactile.abstractservice.Action;
 import rx.Observable;
 
 public interface NewsService {
-    String ADDRESS = "NewsService";
+    String PUBLISH_ADDRESS_NEWS = "NewsService";
 
     @Action(returnType = NewsCollection.class)
     public Observable<NewsCollection> getLatestNews(Integer max);

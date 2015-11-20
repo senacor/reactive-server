@@ -28,7 +28,7 @@ public class NewsServiceImpl implements NewsService {
 
         newsTickerStream.getNewsObservable() //
             .doOnNext(newsItem -> {
-                String eventAddress = NewsService.ADDRESS;
+                String eventAddress = NewsService.PUBLISH_ADDRESS_NEWS;
                 logger.debug("creating or updating on '" + eventAddress + "'...");
                 vertx.eventBus().publish( //
                     eventAddress, //

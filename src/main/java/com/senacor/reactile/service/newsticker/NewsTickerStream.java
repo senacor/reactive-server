@@ -14,7 +14,7 @@ import rx.Observable;
  */
 public class NewsTickerStream {
 
-    public static final int INTERVAL_WAIT_TIME = 100;
+    public static final int INTERVAL_WAIT_TIME = 2000;
     private static final List<String> TITLES = Arrays.asList("DGAP-News: Global PVQ",
             "Gabriel und Seehofer stellen Bedingungen an Griechenland",
             "DGAP-Adhoc: Energiedienst Holding AG: Halbjahresergebnis unter dem Vorjahr",
