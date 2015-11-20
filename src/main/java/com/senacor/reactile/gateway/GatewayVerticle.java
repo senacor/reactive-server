@@ -1,9 +1,13 @@
 package com.senacor.reactile.gateway;
 
 import com.senacor.reactile.gateway.commands.*;
+import com.senacor.reactile.json.JsonObjects;
+import com.senacor.reactile.json.JsonizableList;
+import com.senacor.reactile.service.branch.Branch;
 import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.user.User;
 import com.senacor.reactile.service.user.UserId;
 import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.http.HttpMethod;
@@ -25,6 +29,7 @@ import io.vertx.rxjava.ext.apex.handler.ResponseTimeHandler;
 import io.vertx.rxjava.ext.apex.handler.StaticHandler;
 import io.vertx.rxjava.ext.apex.handler.TimeoutHandler;
 import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
+import rx.Observable;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -157,12 +162,20 @@ public class GatewayVerticle extends AbstractVerticle {
         String branchId = routingContext.request().params().get("branchId");
         HttpServerResponse resp = routingContext.response();
 
-        branchService.getBranch(branchId)
-                .map(branch -> branch.toJson())
+        Observable<JsonObject> branch = branchService.getBranch(branchId).map(Branch::toJson);
+        Observable<JsonizableList<JsonObject>> usersOfBranch = userService.findUser(new JsonObject().put("branchId", branchId));
+        
+        Observable.zip(branch, usersOfBranch, this::combineBranchWithUsers)
                 .map(json -> writeResponse(resp, json))
                 .subscribe(
                         response -> routingContext.next(),
                         Throwable::printStackTrace);
+    }
+
+    private JsonObject combineBranchWithUsers(JsonObject branch, JsonizableList<JsonObject> usersOfBranch) {
+        return new JsonObject()
+                .put("branch", branch)
+                .put("users", usersOfBranch.toList().size()+"");
     }
 
 
