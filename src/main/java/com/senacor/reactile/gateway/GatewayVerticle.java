@@ -1,9 +1,20 @@
 package com.senacor.reactile.gateway;
 
-import com.senacor.reactile.gateway.commands.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import com.senacor.reactile.gateway.commands.AppointmentCreationCommandFactory;
+import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
+import com.senacor.reactile.gateway.commands.StartCommandFactory;
+import com.senacor.reactile.gateway.commands.UserFindCommandFactory;
+import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.service.appointment.Appointment;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserId;
+
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -25,10 +36,6 @@ import io.vertx.rxjava.ext.apex.handler.TimeoutHandler;
 import io.vertx.rxjava.ext.apex.handler.sockjs.SockJSHandler;
 import rx.Observable;
 
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-
 public class GatewayVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
@@ -36,6 +43,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
     private final UserFindCommandFactory userFindCommandFactory;
+    private final AppointmentCreationCommandFactory appointmentCreationCommandFactory;
     private final StartCommandFactory startCommandFactory;
 
     @Inject
@@ -43,11 +51,13 @@ public class GatewayVerticle extends AbstractVerticle {
             CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory,
             StartCommandFactory startCommandFactory,
             UserReadCommandFactory userReadCommandFactory,
-            UserFindCommandFactory userFindCommandFactory) {
+            UserFindCommandFactory userFindCommandFactory,
+            AppointmentCreationCommandFactory appointmentCreationCommandFactory) {
         this.customerUpdateAddressCommandFactory = customerUpdateAddressCommandFactory;
         this.startCommandFactory = startCommandFactory;
         this.userReadCommandFactory = userReadCommandFactory;
         this.userFindCommandFactory = userFindCommandFactory;
+        this.appointmentCreationCommandFactory = appointmentCreationCommandFactory;
     }
 
     @Override
@@ -79,6 +89,8 @@ public class GatewayVerticle extends AbstractVerticle {
 
         router.get("/users/").method(HttpMethod.GET).handler(this::handleFindUser);
 
+        router.post("/users/:userId/appointments").handler(this::handleCreateAppointment);
+
 
         // common handler:
         router.route().handler(this::end);
@@ -91,6 +103,21 @@ public class GatewayVerticle extends AbstractVerticle {
                 .listenObservable()
                 .subscribe(server -> logger.info("Router Listening at " + serverOptions.getHost() + ":" + serverOptions.getPort()),
                         failure -> logger.error("Router Failed to start", failure));
+    }
+
+    private void handleCreateAppointment(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+        String userIdStr = routingContext.request().getParam("userId");
+        JsonObject newAppointmentJson = routingContext.getBodyAsJson();
+        if (newAppointmentJson == null) {
+            logger.warn("body is null");
+            sendError(400, "body is null", routingContext);
+        } else {
+            Appointment appointment = Appointment.newBuilder(Appointment.fromJson(newAppointmentJson)).withUserId(userIdStr).build();
+            appointmentCreationCommandFactory.create(appointment).toObservable()
+                    .map(customer -> writeResponse(response, customer.toJson()))
+                    .subscribe(res -> routingContext.next());
+        }
     }
 
     private void handleFindUser(RoutingContext routingContext) {

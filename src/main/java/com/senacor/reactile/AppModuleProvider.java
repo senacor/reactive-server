@@ -12,6 +12,8 @@ import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.senacor.reactile.abstractservice.ObserverProxy;
+import com.senacor.reactile.gateway.commands.AppointmentCreationCommand;
+import com.senacor.reactile.gateway.commands.AppointmentCreationCommandFactory;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommand;
 import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory;
 import com.senacor.reactile.gateway.commands.StartCommand;
@@ -83,6 +85,9 @@ public class AppModuleProvider implements BootstrapModuleProvider {
             install(new FactoryModuleBuilder()
                     .implement(UserFindCommand.class, UserFindCommand.class)
                     .build(UserFindCommandFactory.class));
+            install(new FactoryModuleBuilder()
+                    .implement(AppointmentCreationCommand.class, AppointmentCreationCommand.class)
+                    .build(AppointmentCreationCommandFactory.class));
 
             HystrixCommandInterceptor hystrixCommandInterceptor = new HystrixCommandInterceptor();
             requestInjection(hystrixCommandInterceptor);
