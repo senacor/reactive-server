@@ -1,5 +1,20 @@
 package com.senacor.reactile.domain;
 
+import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
+import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
+import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import javax.inject.Inject;
+
+import org.hamcrest.Matchers;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.gateway.InitialDataVerticle;
@@ -10,25 +25,12 @@ import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.Customer;
 import com.senacor.reactile.service.customer.CustomerFixtures;
 import com.senacor.reactile.service.customer.CustomerService;
+
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.Vertx;
-import org.hamcrest.Matchers;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
-import javax.inject.Inject;
-
-import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
-import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
-import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 
 public class GatewayVerticleTest {
@@ -64,14 +66,18 @@ public class GatewayVerticleTest {
         assertThat(jsonCustomer.getJsonObject("products"), hasProperties("accounts", "creditCards"));
 
         JsonObject products = jsonCustomer.getJsonObject("products");
+
         JsonArray accounts = products.getJsonArray("accounts");
         assertThat("accounts", accounts, hasSize(1));
 
         JsonArray creditCards = products.getJsonArray("creditCards");
         assertThat("creditCards", creditCards, hasSize(1));
 
-        assertThat(creditCards, hasSize(1));
+        JsonArray appointments = json.getJsonArray("appointments");
+        assertThat("appointments", appointments, hasSize(3));
 
+        JsonArray news = json.getJsonArray("news");
+        assertThat("news", news, hasSize(20));
     }
 
     @Test

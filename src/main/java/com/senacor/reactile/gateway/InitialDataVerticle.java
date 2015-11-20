@@ -1,17 +1,19 @@
 package com.senacor.reactile.gateway;
 
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import com.senacor.reactile.service.customer.CustomerId;
 import com.senacor.reactile.service.user.UserFixtures;
 import com.senacor.reactile.service.user.UserId;
+
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.ext.mongo.MongoService;
 import rx.Observable;
-
-import javax.inject.Inject;
-import java.util.stream.Stream;
 
 public class InitialDataVerticle extends AbstractVerticle {
 
@@ -77,7 +79,7 @@ public class InitialDataVerticle extends AbstractVerticle {
     }
 
     private Observable<UserId> generateUserIds() {
-        return Observable.from(UserFixtures.USER_IDS).map(id -> new UserId(id));
+        return Observable.from(UserFixtures.USER_IDS).map(UserId::new);
     }
 
 }
