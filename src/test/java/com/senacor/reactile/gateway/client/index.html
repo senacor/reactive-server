@@ -2,7 +2,7 @@
 <head>
   <title></title>
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-  <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
   <script src="vertxbus.js"></script>
 </head>
 
@@ -10,23 +10,53 @@
   .news {
     font-size: 20pt;
   }
+  .section {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-bottom-style: groove;
+  }
 </style>
 
 <body>
-
-<div class="news">Latest news: </div><br>
-<div id="status" class="news"></div>
+<div class="section">
+  <div class="news">Latest address updates: </div><br/>
+  <div id="addresses" class="news"></div>
+</div>
+<div class="section">
+  <div class="news">Latest appointment updates: </div><br/>
+  <div id="appointmentUpdate" class="news"></div>
+</div>
+<div class="section">
+  <div class="news">Latest deleted appointments: </div><br/>
+  <div id="appointmentDelete" class="news"></div>
+</div>
+<div class="section">
+  <div class="news">Latest news: </div><br/>
+  <div id="status" class="news"></div>
+</div>
 
 <script>
- 
+
   var eb = new vertx.EventBus("http://localhost:8081/eventbus");
 
   eb.onopen = function() {
     eb.registerHandler("PushNotification#Customer#updateAddress#customerId=cust-100000", function(msg) {
       var str = "<code>" + JSON.stringify(msg) + "</code><br>";
-      $('#status').prepend(str);
-    })    
-  }        
+      $('#addresses').prepend(str);
+    });
+    eb.registerHandler("PushNotification#Appointment#update#appointmentId=11", function(msg) {
+      var str = "<code>" + JSON.stringify(msg) + "</code><br>";
+      $('#appointmentUpdate').prepend(str);
+    });
+    eb.registerHandler("PushNotification#Appointment#update#appointmentId=42", function(msg) {
+      var str = "<code>" + JSON.stringify(msg) + "</code><br>";
+      $('#appointmentUpdate').prepend(str);
+    });
+    eb.registerHandler("PushNotification#Appointment#delete#appointmentId=42", function(msg) {
+      var str = "<code>" + JSON.stringify(msg) + "</code><br>";
+      $('#appointmentDelete').prepend(str);
+    })
+  }
 
 
 </script>

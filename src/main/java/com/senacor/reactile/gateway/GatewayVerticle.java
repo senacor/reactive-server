@@ -12,6 +12,7 @@ import com.senacor.reactile.gateway.commands.CustomerUpdateAddressCommandFactory
 import com.senacor.reactile.gateway.commands.StartCommandFactory;
 import com.senacor.reactile.gateway.commands.UserFindCommandFactory;
 import com.senacor.reactile.gateway.commands.UserReadCommandFactory;
+import com.senacor.reactile.service.appointment.Appointment;
 import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
@@ -85,7 +86,9 @@ public class GatewayVerticle extends AbstractVerticle {
 
         // Export Eventbus
         BridgeOptions bridgeOptions = new BridgeOptions()
-            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"));
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"))
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_APPOINTMENT_UPDATE + ".*"))
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_APPOINTMENT_DELETE + ".*"));
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
 
         // common handler:
@@ -102,6 +105,10 @@ public class GatewayVerticle extends AbstractVerticle {
 
         router.get("/appointments/customer/:customerId").method(HttpMethod.GET).handler(this::handleGetCustomerAppointments);
         router.get("/appointments/branch/:branchId").method(HttpMethod.GET).handler(this::handleGetBranchAppointments);
+        router.get("/appointments/create/").method(HttpMethod.POST).method(HttpMethod.PUT).handler(this::handleCreateAppointment);
+        router.get("/appointments/update/:appointmentId").method(HttpMethod.POST).method(HttpMethod.PUT).handler(this::handleUpdateAppointment);
+        router.get("/appointments/delete/:appointmentId").method(HttpMethod.POST).method(HttpMethod.PUT).method(HttpMethod.GET)
+            .handler(this::handleDeleteAppointment);
         router.get("/appointments/").method(HttpMethod.GET).handler(this::handleGetAllAppointments);
 
         router.get("/branches/").method(HttpMethod.GET).handler(this::handleGetBranches);
@@ -200,6 +207,51 @@ public class GatewayVerticle extends AbstractVerticle {
             HttpServerResponse resp = routingContext.response();
             appointmentFindByBranchCommandFactory.create(branchId).toObservable()
                 .map(appointments -> writeResponse(resp, new JsonObject().put("appointmentsByBranch", appointments)))
+                .subscribe(res -> routingContext.next());
+        }
+    }
+
+    private void handleCreateAppointment(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+
+        JsonObject newAppointmentJson = routingContext.getBodyAsJson();
+        if (newAppointmentJson == null) {
+            logger.warn("body is null");
+            sendError(400, "body is null", routingContext);
+        } else {
+            Appointment newAppointment = Appointment.fromJson(newAppointmentJson);
+            appointmentService.createOrUpdateAppointment(newAppointment).map(appointment -> writeResponse(response, appointment.toJson()))
+                .subscribe(res -> routingContext.next());
+        }
+    }
+
+    private void handleUpdateAppointment(RoutingContext routingContext) {
+        String appointmentIdStr = routingContext.request().getParam("appointmentId");
+        HttpServerResponse response = routingContext.response();
+        if (appointmentIdStr == null) {
+            logger.warn("Request Param :appointmentId is null");
+            sendError(400, "missing appointment parameter", routingContext);
+        } else {
+            JsonObject newAppointmentJson = routingContext.getBodyAsJson();
+            if (newAppointmentJson == null) {
+                logger.warn("body is null");
+                sendError(400, "body is null", routingContext);
+            } else {
+                Appointment newAppointment = Appointment.fromJson(newAppointmentJson);
+                appointmentService.createOrUpdateAppointment(newAppointment).map(appointment -> writeResponse(response, appointment.toJson()))
+                    .subscribe(res -> routingContext.next());
+            }
+        }
+    }
+
+    private void handleDeleteAppointment(RoutingContext routingContext) {
+        String appointmentIdStr = routingContext.request().getParam("appointmentId");
+        HttpServerResponse response = routingContext.response();
+        if (appointmentIdStr == null) {
+            logger.warn("Request Param :appointmentId is null");
+            sendError(400, "missing appointment parameter", routingContext);
+        } else {
+            appointmentService.deleteAppointment(appointmentIdStr).map(appointment -> writeResponse(response, appointment.toJson()))
                 .subscribe(res -> routingContext.next());
         }
     }

@@ -96,7 +96,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             .just(appointment) //
             .<Appointment>map(appointmentDatabase::saveOrUpdate) //
             .doOnNext(savedAppointment -> {
-                String eventAddress = APPOINTMENT_EVENT_UPDATE_APPOINTMENT;
+                String eventAddress = ADDRESS_EVENT_UPDATE_APPOINTMENT;
                 logger.info("creating or updating on '" + eventAddress + "'...");
                 vertx.eventBus().publish( //
                     eventAddress, //
@@ -117,7 +117,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             .just(appointmentId) //
             .map(appointmentDatabase::deleteById) //
             .doOnNext(appointment -> {
-                String eventAddress = APPOINTMENT_EVENT_DELETE_APPOINTMENT;
+                String eventAddress = ADDRESS_EVENT_DELETE_APPOINTMENT;
                 logger.info("deleting on '" + eventAddress + "'...");
                 vertx.eventBus().publish( //
                     eventAddress, //

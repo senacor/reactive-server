@@ -5,8 +5,8 @@ import rx.Observable;
 
 public interface AppointmentService {
 
-    String APPOINTMENT_EVENT_UPDATE_APPOINTMENT = "AppointmentService#updateAppointment";
-    String APPOINTMENT_EVENT_DELETE_APPOINTMENT = "AppointmentService#deleteAppointment";
+    String ADDRESS_EVENT_UPDATE_APPOINTMENT = "AppointmentService#updateAppointment";
+    String ADDRESS_EVENT_DELETE_APPOINTMENT = "AppointmentService#deleteAppointment";
 
     @Action(returnType = AppointmentList.class)
     public Observable<AppointmentList> getAllAppointments();
