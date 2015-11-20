@@ -1,6 +1,11 @@
 package com.senacor.reactile.service.newsticker;
 
-import org.assertj.core.api.Assertions;
+import static com.senacor.reactile.service.newsticker.NewsTickerStream.INTERVAL_WAIT_TIME;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,15 +37,36 @@ public class NewsServiceTest {
     @Test
     public void thatNewsItemsAreDelivered() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(INTERVAL_WAIT_TIME * 10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         final NewsCollection latestNews = newsService.getLatestNews(10).toBlocking().first();
 
-        Assertions.assertThat(latestNews.getNews()).hasSize(10);
+        assertThat(latestNews.getNews()).hasSize(10);
     }
 
-    // TODO Mehr Tests schreiben
+    @Test
+    public void testThatNewesetNewsIsRetrieved() {
+        try {
+            Thread.sleep(INTERVAL_WAIT_TIME * 2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        final List<String> newsBeforeWait =
+            newsService.getLatestNews(2).toBlocking().first().getNews().stream().map(News::getTitle).collect(Collectors.toList());
+
+        try {
+            Thread.sleep(INTERVAL_WAIT_TIME * 2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        final List<String> newsAfterWait =
+            newsService.getLatestNews(2).toBlocking().first().getNews().stream().map(News::getTitle).collect(Collectors.toList());
+
+        assertThat(newsBeforeWait).doesNotContainAnyElementsOf(newsAfterWait);
+    }
 }

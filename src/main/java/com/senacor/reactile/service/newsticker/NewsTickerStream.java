@@ -1,18 +1,20 @@
 package com.senacor.reactile.service.newsticker;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import rx.Observable;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
+import rx.Observable;
 
 /**
  * @author Andreas Keefer
  */
 public class NewsTickerStream {
 
+    public static final int INTERVAL_WAIT_TIME = 100;
     private static final List<String> TITLES = Arrays.asList("DGAP-News: Global PVQ",
             "Gabriel und Seehofer stellen Bedingungen an Griechenland",
             "DGAP-Adhoc: Energiedienst Holding AG: Halbjahresergebnis unter dem Vorjahr",
@@ -32,7 +34,7 @@ public class NewsTickerStream {
     private static final Random RANDOM = new Random();
 
     public Observable<News> getNewsObservable() {
-        return Observable.interval(100, TimeUnit.MILLISECONDS)
+        return Observable.interval(INTERVAL_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .map(count -> News.newBuilder()
                         .withTitle(TITLES.get(RANDOM.nextInt(TITLES.size())))
                         .withNews(RandomStringUtils.randomAlphabetic(RANDOM.nextInt(1000)))
