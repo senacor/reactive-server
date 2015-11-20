@@ -1,34 +1,37 @@
 package com.senacor.reactile.domain;
 
+import com.google.common.base.Throwables;
 import com.senacor.reactile.Services;
 import com.senacor.reactile.VertxRule;
 import com.senacor.reactile.gateway.InitialDataVerticle;
+import com.senacor.reactile.gateway.PushNotificationVerticle;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
-import com.senacor.reactile.service.customer.Address;
-import com.senacor.reactile.service.customer.Customer;
-import com.senacor.reactile.service.customer.CustomerFixtures;
-import com.senacor.reactile.service.customer.CustomerService;
+import com.senacor.reactile.service.customer.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.rxjava.core.Vertx;
+import io.vertx.rxjava.core.eventbus.Message;
 import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import rx.Observable;
 
 import javax.inject.Inject;
+
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasHeader;
 import static com.senacor.reactile.domain.HttpResponseMatchers.hasStatus;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasProperties;
 import static com.senacor.reactile.domain.JsonObjectMatchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 
 public class GatewayVerticleTest {
@@ -148,5 +151,43 @@ public class GatewayVerticleTest {
         Customer customerUpdated = Customer.fromJson(json);
         assertThat("customer.addresses", customerUpdated.getAddresses(), Matchers.hasSize(1));
         assertEquals(newAddress.getCity(), customerUpdated.getAddresses().get(0).getCity());
+    }
+
+    @Test @Ignore("Only for manual tests")
+    public void testCustomerUpdateEvent() throws Exception {
+        Customer customer = CustomerFixtures.randomCustomer();
+
+        final LinkedBlockingQueue<CustomerAddressChangedEvt> queue = new LinkedBlockingQueue<>();
+
+        // listen for events
+        String eventAddress = PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + customer.getId().getId();
+        logger.info("listening on address '" + eventAddress + "'");
+        vertxRule.eventBus().consumer(eventAddress)
+                .toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .map(CustomerAddressChangedEvt::fromJson)
+                .subscribe(queue::add,
+                        throwable -> fail(throwable.getMessage() + Throwables.getStackTraceAsString(throwable)));
+
+        Observable<Long> timer = Observable.timer(1000, 1000, TimeUnit.MILLISECONDS);
+
+        // create customer and update Address
+        timer.withLatestFrom(service.createCustomer(customer), (t, cust) -> cust)
+                .map(customerCreated -> Address.anAddress()
+                        .withAddress(customerCreated.getAddresses().get(0))
+                        .withZipCode("00815")
+                        .withCity("NewCity")
+                        .build())
+                .flatMap(newAddress -> service.updateAddress(customer.getId(), newAddress))
+                .subscribe(customerWithUpdatedAddress -> logger.info("updateAddress: " + customerWithUpdatedAddress));
+
+        CustomerAddressChangedEvt event = queue.poll(5L, TimeUnit.SECONDS);
+        logger.info("Received Event: " + event);
+        assertNotNull("CustomerAddressChangedEvt not received", event);
+        assertEquals("event.newAddress.city", "NewCity", event.getNewAddress().getCity());
+
+        Thread.sleep(100000);
+        logger.info("Received Events: " + queue.size());
     }
 }
