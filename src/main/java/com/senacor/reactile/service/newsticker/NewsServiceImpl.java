@@ -22,6 +22,7 @@ public class NewsServiceImpl implements NewsService{
     private final Vertx vertx;
     private final CircularFifoQueue<News> newFifQueue;
 
+    @Inject
     public NewsServiceImpl(NewsTickerStream newsTickerStream, Vertx vertx) {
         this.newsTickerStream = newsTickerStream;
         this.vertx = vertx;
@@ -29,7 +30,7 @@ public class NewsServiceImpl implements NewsService{
 
         newsTickerStream.getNewsObservable().subscribeOn(Schedulers.io())
                 .doOnEach(news -> {
-                    newFifQueue.add(news.getValue());
+                    newFifQueue.add((News)news.getValue());
                 })
                 .doOnError(throwable -> {
                     logger.error("error" + throwable.getMessage());
