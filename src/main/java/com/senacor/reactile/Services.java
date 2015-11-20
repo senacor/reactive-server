@@ -1,6 +1,7 @@
 package com.senacor.reactile;
 
 import com.google.common.collect.ImmutableSet;
+import com.senacor.reactile.service.appointment.Appointment;
 
 import java.util.Set;
 
@@ -18,8 +19,8 @@ public enum Services implements ServiceIdProvider {
     PushNotificationService("com.senacor.reactile.pushnotification-service"),
     HystrixMetricsStreamVerticle("com.senacor.reactile.hystrix-metrics-stream-service"),
     GatewayService("com.senacor.reactile.gateway-service", UserService, CustomerService, AccountService, BranchService,
-        CreditCardService, TransactionService, PushNotificationService,
-        HystrixMetricsStreamVerticle);
+        CreditCardService, TransactionService, PushNotificationService, AppointmentService,
+            HystrixMetricsStreamVerticle);
 
     private final String serviceName;
     private final Set<ServiceIdProvider> dependencies;

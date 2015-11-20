@@ -73,6 +73,7 @@ public class GatewayVerticleTest {
         assertThat(creditCards, hasSize(1));
 
         assertThat(json, hasProperties("branch", "branch"));
+        assertThat(json, hasProperties("appointments", "appointments"));
     }
 
     @Test

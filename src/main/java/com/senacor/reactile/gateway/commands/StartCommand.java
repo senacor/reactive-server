@@ -9,6 +9,8 @@ import com.senacor.reactile.json.JsonObjects;
 import com.senacor.reactile.service.account.AccountService;
 import com.senacor.reactile.service.account.TransactionList;
 import com.senacor.reactile.service.account.TransactionService;
+import com.senacor.reactile.service.appointment.AppointmentList;
+import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.creditcard.CreditCardList;
 import com.senacor.reactile.service.creditcard.CreditCardService;
@@ -43,6 +45,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
     private final AccountService accountService;
     private final CreditCardService creditCardService;
     private final TransactionService transactionService;
+    private final AppointmentService appointmentService;
 
     private final UserId userId;
     private final CustomerId customerId;
@@ -54,6 +57,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
                         AccountService accountService,
                         CreditCardService creditCardService,
                         TransactionService transactionService,
+                        AppointmentService appointmentService,
                         @Assisted UserId userId,
                         @Assisted CustomerId customerId) {
 
@@ -70,6 +74,7 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
         this.accountService = accountService;
         this.creditCardService = creditCardService;
         this.transactionService = transactionService;
+        this.appointmentService = appointmentService;
         this.userId = userId;
 
         this.customerId = customerId;
@@ -92,9 +97,8 @@ public class StartCommand extends HystrixObservableCommand<JsonObject> {
             Observable<JsonArray> transactionObservable = transactionService.getTransactionsForCustomer(customerId)
                     .map(TransactionList::getTransactionList)
                     .map(JsonObjects::toJsonArray);
-//            Observable<JsonArray> appointmentObservable = appointmentService.getAppointmentsByCustomerObservable(
-//                    customerId.getId()).map(AppointmentList::getAppointmentList).map(JsonObjects::toJsonArray);
-            Observable<JsonArray> appointmentObservable = Observable.just(new JsonArray());
+            Observable<JsonArray> appointmentObservable = appointmentService.getAppointmentsByCustomer(
+                    customerId.getId()).map(AppointmentList::getAppointmentList).map(JsonObjects::toJsonArray);
 
 
             return zip(customerObservable, accountObservable, creditCardObservable,
