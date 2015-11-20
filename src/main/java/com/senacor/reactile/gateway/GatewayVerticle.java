@@ -12,6 +12,7 @@ import com.senacor.reactile.service.user.UserId;
 import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -175,7 +176,7 @@ public class GatewayVerticle extends AbstractVerticle {
     private JsonObject combineBranchWithUsers(JsonObject branch, JsonizableList<JsonObject> usersOfBranch) {
         return new JsonObject()
                 .put("branch", branch)
-                .put("users", usersOfBranch.toList().size()+"");
+                .put("users", new JsonArray(usersOfBranch.toList()));
     }
 
 
