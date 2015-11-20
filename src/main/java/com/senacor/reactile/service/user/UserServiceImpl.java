@@ -27,12 +27,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Observable<JsonizableList<JsonObject>> findUser(JsonObject query){
         return mongoService.findObservable(COLLECTION, query)
-                .map(list -> new JsonizableList<JsonObject>(list));
+                .map(JsonizableList<JsonObject>::new);
     }
 
 
     @Override
-
     public Observable<User> login(UserId userId)
     {
         return getUser(userId);

@@ -42,7 +42,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Observable<AppointmentList> getAppointmentsByCustomer(String customerId) {
-        return null;
+        return Observable.<AppointmentList>create(subscriber -> {
+            try {
+                AppointmentList.Builder builder = AppointmentList.newBuilder().withAppointments(appointmentDatabase.findByCustomerId(customerId));
+                subscriber.onNext(builder.build());
+                subscriber.onCompleted();
+            } catch (RuntimeException e) {
+                subscriber.onError(e);
+            }
+        });
     }
 
     @Override
