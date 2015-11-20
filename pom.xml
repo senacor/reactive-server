@@ -24,6 +24,7 @@
         <catch-exception.version>1.2.0</catch-exception.version>
         <system-rules.version>1.8.0</system-rules.version>
         <guice.version>4.0-beta5</guice.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
 
         <generatedSourcesVertxProxy>${project.build.directory}/generated-sources/vertx-proxy</generatedSourcesVertxProxy>
         <commons-lang3.version>3.1</commons-lang3.version>
@@ -144,6 +145,12 @@
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
             <version>${embed.mongo.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>${commons-collections.version}</version>
         </dependency>
 
         <!--<dependency>-->
