@@ -2,7 +2,7 @@
 <head>
   <title></title>
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-  <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
   <script src="vertxbus.js"></script>
 </head>
 
@@ -25,7 +25,11 @@
     eb.registerHandler("PushNotification#Customer#updateAddress#customerId=cust-100000", function(msg) {
       var str = "<code>" + JSON.stringify(msg) + "</code><br>";
       $('#status').prepend(str);
-    })    
+    })
+    eb.registerHandler("PushNotification#Branch#BranchUserList", function(msg) {
+      var str = "<code>" + JSON.stringify(msg) + "</code><br>";
+      $('#status').prepend(str);
+    })
   }        
 
 

@@ -1,7 +1,9 @@
 package com.senacor.reactile.gateway;
 
+import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.CustomerAddressChangedEvt;
 import com.senacor.reactile.service.customer.CustomerService;
+import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -12,6 +14,7 @@ public class PushNotificationVerticle extends AbstractVerticle {
 
     public static final String PUBLISH_ADDRESS = "EventPump";
     public static final String PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE = "PushNotification#Customer#updateAddress#customerId=";
+    public static final String PUBLISH_BRANCH_USER_LIST = "PushNotification#Branch#BranchUserList";
     private static final Logger logger = LoggerFactory.getLogger(PushNotificationVerticle.class);
 
 
@@ -19,6 +22,18 @@ public class PushNotificationVerticle extends AbstractVerticle {
     public void start() {
         registerEventSubcriber();
         registerCustomerAddressUpdateHandler();
+        //registerBranchUserList();
+    }
+
+    private void registerBranchUserList() {
+        vertx.eventBus().consumer(GatewayVerticle.BRANCH_EVENT_ADDRESS).toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .subscribe(updateEvent -> {
+                    String publishAddress = PUBLISH_BRANCH_USER_LIST;
+                    logger.info("publish event on Address: " + publishAddress);
+                    vertx.eventBus().publish(publishAddress, updateEvent);
+                }, throwable -> logger.error("Error while handling event from " + GatewayVerticle.BRANCH_EVENT_ADDRESS, throwable));
     }
 
 

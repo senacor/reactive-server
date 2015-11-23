@@ -4,6 +4,8 @@ package com.senacor.reactile.service.branch;
 import com.google.inject.Inject;
 import com.senacor.reactile.json.JsonizableList;
 import io.vertx.core.Vertx;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
 import rx.Observable;
 
 public class BranchServiceImpl implements BranchService {
@@ -41,6 +43,7 @@ public class BranchServiceImpl implements BranchService {
                 subscriber.onError(e);
             }
         });
+
     }
 
     @Override

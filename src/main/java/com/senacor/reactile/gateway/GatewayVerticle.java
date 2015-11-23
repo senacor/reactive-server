@@ -5,6 +5,7 @@ import com.senacor.reactile.json.JsonizableList;
 import com.senacor.reactile.service.branch.BranchService;
 import com.senacor.reactile.service.customer.Address;
 import com.senacor.reactile.service.customer.CustomerId;
+import com.senacor.reactile.service.user.BranchUserEvt;
 import com.senacor.reactile.service.user.UserId;
 import com.senacor.reactile.service.user.UserService;
 import io.vertx.core.http.HttpMethod;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 public class GatewayVerticle extends AbstractVerticle {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayVerticle.class);
+    public static final String BRANCH_EVENT_ADDRESS = "Branch#Event";
 
     private final CustomerUpdateAddressCommandFactory customerUpdateAddressCommandFactory;
     private final UserReadCommandFactory userReadCommandFactory;
@@ -68,7 +70,8 @@ public class GatewayVerticle extends AbstractVerticle {
 
         // Export Eventbus
         BridgeOptions bridgeOptions = new BridgeOptions()
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"));
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_ADDRESS_CUSTOMER_ADDRESS_UPDATE + ".*"))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(PushNotificationVerticle.PUBLISH_BRANCH_USER_LIST + ".*"));
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(bridgeOptions));
 
         // common handler:
@@ -109,7 +112,13 @@ public class GatewayVerticle extends AbstractVerticle {
                 .map(users -> writeResponse(resp, new JsonObject().put("users",
                         users.stream().filter(u -> u.getString("branchId").equals(routingContext.request().getParam("branchId"))).collect(Collectors.toList()))
                 ))
-                .subscribe(res -> routingContext.next());
+                .subscribe(res -> {
+                    routingContext.next();
+                    String eventAddress = PushNotificationVerticle.PUBLISH_BRANCH_USER_LIST;
+                    logger.info("publishing on '" + eventAddress + "'...");
+                    vertx.eventBus().publish(eventAddress, new BranchUserEvt().toJson());
+                    logger.info("publishing on '" + eventAddress + "' done");
+                });
 
     }
 
