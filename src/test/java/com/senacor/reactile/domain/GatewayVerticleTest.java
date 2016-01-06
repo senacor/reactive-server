@@ -8,6 +8,9 @@ import com.senacor.reactile.gateway.PushNotificationVerticle;
 import com.senacor.reactile.guice.GuiceRule;
 import com.senacor.reactile.http.HttpResponse;
 import com.senacor.reactile.http.HttpTestClient;
+import com.senacor.reactile.service.appointment.Appointment;
+import com.senacor.reactile.service.appointment.AppointmentCreatedOrUpdatedEvt;
+import com.senacor.reactile.service.appointment.AppointmentService;
 import com.senacor.reactile.service.customer.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -46,6 +49,9 @@ public class GatewayVerticleTest {
 
     @Inject
     private CustomerService service;
+
+    @Inject
+    private AppointmentService appointmentService;
 
     private final HttpTestClient httpClient = new HttpTestClient(Vertx.vertx());
 
@@ -186,6 +192,42 @@ public class GatewayVerticleTest {
         logger.info("Received Event: " + event);
         assertNotNull("CustomerAddressChangedEvt not received", event);
         assertEquals("event.newAddress.city", "NewCity", event.getNewAddress().getCity());
+
+        Thread.sleep(100000);
+        logger.info("Received Events: " + queue.size());
+    }
+
+    @Test //@Ignore("Only for manual tests")
+    public void testAppointmentCreateOrUpdateEvent() throws Exception {
+        Customer customer = CustomerFixtures.randomCustomer();
+
+        final LinkedBlockingQueue<AppointmentCreatedOrUpdatedEvt> queue = new LinkedBlockingQueue<>();
+
+        // listen for events
+        String eventAddress = PushNotificationVerticle.PUBLISH_ADDRESS_APPOINTMENT_CREATE_OR_UPDATE + customer.getId().getId();
+        logger.info("listening on address '" + eventAddress + "'");
+        vertxRule.eventBus().consumer(eventAddress)
+                .toObservable()
+                .map(Message::body)
+                .cast(JsonObject.class)
+                .map(AppointmentCreatedOrUpdatedEvt::fromJson)
+                .subscribe(queue::add,
+                        throwable -> fail(throwable.getMessage() + Throwables.getStackTraceAsString(throwable)));
+
+        Observable<Long> timer = Observable.timer(1000, 1000, TimeUnit.MILLISECONDS);
+
+        // create customer and update Address
+        timer.withLatestFrom(service.createCustomer(customer), (t, cust) -> cust)
+                .map(customerCreated -> Appointment.newBuilder()
+                        .withId("99")
+                        .withCustomerId(customerCreated.getId().getId())
+                        .build())
+                .flatMap(newAppointment -> appointmentService.createOrUpdateAppointment(newAppointment))
+                .subscribe(appointment -> logger.info("create appointment: " + appointment));
+
+        AppointmentCreatedOrUpdatedEvt event = queue.poll(5L, TimeUnit.SECONDS);
+        logger.info("Received Event: " + event);
+        //assertNotNull("AppointmentCreatedOrUpdatedEvt not received", event);
 
         Thread.sleep(100000);
         logger.info("Received Events: " + queue.size());
