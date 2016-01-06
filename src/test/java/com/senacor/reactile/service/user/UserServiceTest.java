@@ -52,10 +52,10 @@ public class UserServiceTest {
     }
 
     @Test
-    public void thatUserCanBeFoundByFirstname() {
-        User momann = new User(new UserId("Find"), "Michael", "Find", "1");
-        mongoInitializer.writeBlocking(momann);
-        ArrayList<User> collect = service.findUser(new JsonObject().put("lastName", "Find"))
+    public void thatUserCanBeFoundByLastname() {
+        User jumbo = new User(new UserId("Find"), "Jumbo", "Elefant", "1");
+        mongoInitializer.writeBlocking(jumbo);
+        ArrayList<User> collect = service.findUser(new JsonObject().put("lastName", "Elefant"))
                 .flatMap(jsonizableList -> Observable.from(jsonizableList.toList()))
                 .doOnNext(System.out::println)
                 .map(jsonObject1 -> User.fromJson(jsonObject1))
