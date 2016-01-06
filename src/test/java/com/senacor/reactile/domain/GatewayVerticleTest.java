@@ -197,7 +197,7 @@ public class GatewayVerticleTest {
         logger.info("Received Events: " + queue.size());
     }
 
-    @Test //@Ignore("Only for manual tests")
+    @Test @Ignore("Only for manual tests")
     public void testAppointmentCreateOrUpdateEvent() throws Exception {
         Customer customer = CustomerFixtures.randomCustomer();
 
